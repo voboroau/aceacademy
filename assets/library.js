@@ -4,6 +4,12 @@ const pathways = [
     href: "./pathways/crs-nasal-polyps/",
     tags: ["ENT", "CRS", "Asthma"],
     summary: "Assessment → saline + intranasal steroid → review → escalation → CT/ENT referral + safety-net."
+  },
+  {
+    title: "COPD Exacerbation — Click-through",
+    href: "./pathways/copd-exacerbation/",
+    tags: ["Resp", "COPD", "Acute"],
+    summary: "Triage → severity → SABA/SAMA + steroids → antibiotics criteria → escalation/ED criteria → follow-up."
   }
 ];
 
