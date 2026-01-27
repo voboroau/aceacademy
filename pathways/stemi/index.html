@@ -1,0 +1,848 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Australian GP STEMI Pathway (Click-through)</title>
+  <meta name="description" content="Stepwise Australian GP first-response pathway for suspected STEMI (ST-elevation myocardial infarction)." />
+  <style>
+    :root{
+      --bg:#0b1220;
+      --card:#121b2e;
+      --card2:#0f172a;
+      --text:#e5e7eb;
+      --muted:#9ca3af;
+      --line:#24314f;
+      --accent:#60a5fa;
+      --accent2:#34d399;
+      --danger:#fb7185;
+      --warn:#fbbf24;
+      --ok:#22c55e;
+      --shadow: 0 12px 34px rgba(0,0,0,.35);
+      --radius:16px;
+      --radius2:12px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:var(--sans);
+      background: radial-gradient(1200px 600px at 20% -10%, rgba(96,165,250,.25), transparent 60%),
+                  radial-gradient(900px 500px at 100% 0%, rgba(52,211,153,.18), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+    }
+    a{color:inherit}
+    .wrap{max-width:980px; margin:28px auto; padding:0 16px 60px;}
+    .topbar{
+      display:flex; gap:12px; align-items:center; justify-content:space-between;
+      background: linear-gradient(180deg, rgba(18,27,46,.88), rgba(18,27,46,.70));
+      border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow);
+      padding:14px 14px;
+      position:sticky; top:12px; backdrop-filter: blur(10px); z-index:20;
+    }
+    .brand{
+      display:flex; gap:12px; align-items:center; min-width: 240px;
+    }
+    .badge{
+      width:40px; height:40px; border-radius:12px;
+      background: linear-gradient(135deg, rgba(96,165,250,.95), rgba(52,211,153,.9));
+      display:grid; place-items:center; color:#06101f; font-weight:900;
+      box-shadow: 0 10px 26px rgba(96,165,250,.18);
+      flex: 0 0 auto;
+    }
+    .brand h1{font-size:15px; margin:0; line-height:1.2}
+    .brand p{font-size:12px; margin:2px 0 0; color:var(--muted)}
+    .controls{
+      display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end;
+    }
+    .btn{
+      appearance:none; border:1px solid var(--line); background: rgba(15,23,42,.55);
+      color:var(--text); padding:9px 12px; border-radius:12px; cursor:pointer;
+      transition: transform .06s ease, border-color .15s ease, background .15s ease;
+      display:inline-flex; gap:8px; align-items:center; font-weight:650;
+      box-shadow: 0 8px 20px rgba(0,0,0,.18);
+      text-decoration:none;
+    }
+    .btn:hover{border-color: rgba(96,165,250,.55); transform: translateY(-1px);}
+    .btn:active{transform: translateY(0px);}
+    .btn.primary{background: rgba(96,165,250,.14); border-color: rgba(96,165,250,.45);}
+    .btn.good{background: rgba(52,211,153,.12); border-color: rgba(52,211,153,.45);}
+    .btn.danger{background: rgba(251,113,133,.10); border-color: rgba(251,113,133,.45);}
+    .pill{
+      border:1px solid var(--line); border-radius:999px; padding:6px 10px;
+      color:var(--muted); font-size:12px; display:inline-flex; gap:8px; align-items:center;
+      background: rgba(15,23,42,.40);
+    }
+    .grid{
+      display:grid; grid-template-columns: 1.35fr .65fr; gap:16px;
+      margin-top:16px;
+    }
+    @media (max-width: 920px){ .grid{grid-template-columns:1fr} .brand{min-width:0} }
+    .card{
+      background: linear-gradient(180deg, rgba(18,27,46,.92), rgba(15,23,42,.85));
+      border:1px solid var(--line); border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .card-h{
+      padding:14px 16px; border-bottom:1px solid rgba(36,49,79,.8);
+      display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+    }
+    .card-h h2{margin:0; font-size:16px;}
+    .card-h .sub{margin:4px 0 0; color:var(--muted); font-size:12px; line-height:1.4;}
+    .card-b{padding:16px;}
+    .crumbs{
+      display:flex; gap:8px; flex-wrap:wrap; align-items:center;
+      color:var(--muted); font-size:12px;
+    }
+    .crumbs span{opacity:.9}
+    .crumbs .dot{opacity:.35}
+    .progress{
+      height:10px; background: rgba(255,255,255,.06);
+      border-radius:999px; overflow:hidden; border:1px solid rgba(36,49,79,.9);
+    }
+    .progress > div{
+      height:100%; width:0%;
+      background: linear-gradient(90deg, rgba(96,165,250,.95), rgba(52,211,153,.95));
+      border-radius:999px;
+      transition: width .25s ease;
+    }
+    .stepno{
+      font-family: var(--mono);
+      font-size:12px; color:var(--muted);
+      border:1px solid rgba(36,49,79,.9); padding:6px 10px; border-radius:12px;
+      background: rgba(15,23,42,.42);
+      flex:0 0 auto;
+    }
+    .section{
+      margin-top:12px;
+      border:1px solid rgba(36,49,79,.85);
+      border-radius:14px;
+      background: rgba(11,18,32,.30);
+      overflow:hidden;
+    }
+    .section .sh{
+      padding:10px 12px;
+      border-bottom:1px solid rgba(36,49,79,.65);
+      display:flex; gap:10px; align-items:center; justify-content:space-between;
+    }
+    .section .sh strong{font-size:13px;}
+    .section .sh small{color:var(--muted)}
+    .section .sb{padding:12px;}
+    ul{margin:8px 0 0 18px; padding:0}
+    li{margin:6px 0; line-height:1.35}
+    .krow{
+      display:grid; grid-template-columns: 1fr 1fr; gap:10px;
+    }
+    @media (max-width: 560px){ .krow{grid-template-columns:1fr} }
+    .kv{
+      border:1px solid rgba(36,49,79,.8);
+      border-radius:14px; padding:10px 12px;
+      background: rgba(15,23,42,.40);
+    }
+    .kv .k{font-size:12px; color:var(--muted);}
+    .kv .v{margin-top:4px; font-weight:700;}
+    .callout{
+      border:1px solid rgba(251,113,133,.45);
+      background: rgba(251,113,133,.08);
+      border-radius:14px; padding:12px;
+    }
+    .callout strong{color:#fecdd3}
+    .callout.good{
+      border-color: rgba(34,197,94,.45);
+      background: rgba(34,197,94,.10);
+    }
+    .callout.warn{
+      border-color: rgba(251,191,36,.50);
+      background: rgba(251,191,36,.10);
+    }
+    .row{
+      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+    }
+    .toggle{
+      display:inline-flex; align-items:center; gap:10px;
+      border:1px solid rgba(36,49,79,.9);
+      background: rgba(15,23,42,.40);
+      padding:8px 10px; border-radius:14px;
+      font-size:12px; color:var(--muted);
+    }
+    .toggle input{width:18px; height:18px; accent-color: var(--accent);}
+    .reveal{
+      margin-left:auto;
+      font-size:12px;
+    }
+    .hiddenContent{
+      display:none;
+    }
+    .footerNav{
+      display:flex; gap:10px; justify-content:space-between; align-items:center;
+      margin-top:12px;
+    }
+    .footerNav .btn{min-width:120px; justify-content:center;}
+    .mini{
+      color:var(--muted); font-size:12px; line-height:1.4;
+    }
+    .kbd{
+      font-family: var(--mono);
+      font-size:12px;
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(36,49,79,.9);
+      padding:3px 8px; border-radius:10px;
+      color: var(--text);
+    }
+    @media print{
+      body{background:#fff; color:#000}
+      .topbar, .controls, .footerNav, .btn, .toggle{display:none !important}
+      .card{box-shadow:none; border:1px solid #999}
+      .card, .section, .kv, .callout{background:#fff !important}
+      .wrap{max-width:none; margin:0; padding:0}
+      a{color:#000; text-decoration:underline}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="badge">⚡</div>
+        <div>
+          <h1>STEMI (ST-Elevation MI) – Australian GP First-Response Pathway</h1>
+          <p>Click-through guide: identify → activate transfer → initial therapy → reperfusion plan → handover.</p>
+        </div>
+      </div>
+
+      <div class="controls">
+        <!-- Change this to your GitHub Pages library homepage -->
+        <a class="btn" id="homeBtn" href="https://voboroau.github.io/index.html" title="Back to library home">🏠 Home</a>
+        <button class="btn" id="restartBtn" title="Restart this pathway">⟲ Restart</button>
+        <button class="btn good" id="printBtn" title="Print or Save as PDF">🖨️ Print</button>
+        <span class="pill" title="Keyboard shortcuts">
+          ⌨️ <span><span class="kbd">←</span> Back</span> <span><span class="kbd">→</span> Next</span>
+        </span>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="card-h">
+          <div>
+            <h2 id="stepTitle">Loading…</h2>
+            <div class="sub" id="stepSubtitle"></div>
+            <div style="margin-top:10px" class="crumbs" id="crumbs"></div>
+          </div>
+          <div class="stepno" id="stepNo">Step</div>
+        </div>
+
+        <div class="card-b">
+          <div class="progress" aria-label="progress"><div id="progBar"></div></div>
+
+          <div class="section" style="margin-top:14px">
+            <div class="sh">
+              <strong>Prompt</strong>
+              <label class="toggle" title="Hide details until you click Reveal (useful for practice)">
+                <input type="checkbox" id="examMode" />
+                Exam mode (hide details)
+              </label>
+              <button class="btn primary reveal" id="revealBtn" style="display:none">👁️ Reveal</button>
+            </div>
+            <div class="sb" id="promptArea"></div>
+          </div>
+
+          <div class="section">
+            <div class="sh">
+              <strong>Actions / Checklist</strong>
+              <small id="actionsHint"></small>
+            </div>
+            <div class="sb" id="actionsArea"></div>
+          </div>
+
+          <div class="section">
+            <div class="sh">
+              <strong>Decision points</strong>
+              <small>tap to expand</small>
+            </div>
+            <div class="sb" id="decisionArea"></div>
+          </div>
+
+          <div class="section">
+            <div class="sh">
+              <strong>Handover essentials</strong>
+              <small>ISBAR / MIST</small>
+            </div>
+            <div class="sb" id="handoverArea"></div>
+          </div>
+
+          <div class="footerNav">
+            <button class="btn" id="backBtn">← Back</button>
+            <div class="mini" id="tipArea"></div>
+            <button class="btn primary" id="nextBtn">Next →</button>
+          </div>
+
+          <p class="mini" style="margin-top:12px">
+            Safety: If suspected STEMI, prioritise <b>rapid transfer/activation</b>. Follow local ambulance/cardiology network protocols.
+            Reperfusion timing principle: <b>primary PCI preferred</b> if achievable within ~120 min of first medical contact; otherwise consider fibrinolysis when eligible and timely. :contentReference[oaicite:1]{index=1}
+          </p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-h">
+          <div>
+            <h2>Quick reference</h2>
+            <div class="sub">Common GP clinic first-response items (adapt to your practice + local protocols).</div>
+          </div>
+        </div>
+        <div class="card-b">
+          <div class="callout">
+            <strong>Immediate priorities (in order)</strong>
+            <ul>
+              <li><b>Call 000</b> / activate local STEMI pathway; request ambulance with ECG transmission if available.</li>
+              <li>ABC approach; monitor; IV access; <b>12-lead ECG within 10 min</b> (repeat if ongoing symptoms).</li>
+              <li>Give <b>aspirin 300 mg (chewed)</b> unless true anaphylaxis/major contraindication. :contentReference[oaicite:2]{index=2}</li>
+              <li>GTN SL/spray if appropriate (avoid if hypotension/RV infarct/PDE5). Oxygen only if needed.</li>
+            </ul>
+          </div>
+
+          <div class="section" style="margin-top:12px">
+            <div class="sh"><strong>Core doses (typical)</strong><small>confirm local protocols</small></div>
+            <div class="sb krow">
+              <div class="kv"><div class="k">Aspirin</div><div class="v">300 mg PO chewed (loading)</div></div>
+              <div class="kv"><div class="k">GTN</div><div class="v">0.4 mg SL/spray; repeat q5 min ×3 if safe</div></div>
+              <div class="kv"><div class="k">Oxygen</div><div class="v">Only if hypoxic / respiratory distress</div></div>
+              <div class="kv"><div class="k">Analgesia</div><div class="v">Titrate opioid if severe pain (avoid hypotension)</div></div>
+            </div>
+          </div>
+
+          <div class="section" style="margin-top:12px">
+            <div class="sh"><strong>Don’t miss</strong><small>STEMI equivalents</small></div>
+            <div class="sb">
+              <ul>
+                <li>Posterior MI: ST depression V1–V3 + tall R waves (consider posterior leads V7–V9).</li>
+                <li>Inferior MI with RV involvement: hypotension, clear lungs; ST elevation V4R.</li>
+                <li>Ongoing ischemic symptoms + ECG changes → treat as time-critical.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="callout warn" style="margin-top:12px">
+            <strong>Thrombolysis note</strong>
+            <div class="mini" style="margin-top:6px">
+              Fibrinolysis is typically delivered within organised networks (prehospital/ED/rural protocols).
+              Consider when PCI delay &gt;120 min and within time window, if eligible and per local authority. :contentReference[oaicite:3]{index=3}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  // === Pathway content (edit as needed) ===
+  const steps = [
+    {
+      title: "Step 1 — Recognise possible STEMI (time-critical)",
+      subtitle: "Chest pain or equivalent symptoms + risk factors. Treat as emergency until proven otherwise.",
+      crumbs: ["STEMI", "Recognition", "Immediate response"],
+      prompt: `
+        <div class="callout warn">
+          <strong>Trigger this pathway if:</strong>
+          <ul>
+            <li>Ongoing central chest pressure/tightness &gt;10 minutes, or recurrent crescendo symptoms</li>
+            <li>Or “equivalents”: dyspnoea, diaphoresis, syncope/presyncope, epigastric pain, nausea/vomiting, jaw/arm pain</li>
+            <li>High-risk groups: older, diabetes, women, CKD, prior CAD (may present atypically)</li>
+          </ul>
+        </div>
+        <div class="mini" style="margin-top:10px">
+          In Australian primary care, the key investigation while arranging transfer is a <b>12-lead ECG</b>;
+          troponin is rarely needed before transfer when ACS is suspected. :contentReference[oaicite:4]{index=4}
+        </div>
+      `,
+      actions: [
+        "Call for help within clinic; bring emergency trolley + defib",
+        "ABCs; sit/recline patient; reassure; keep nil by mouth (except meds)",
+        "Record symptom onset time (exact clock time)"
+      ],
+      decisions: [
+        {
+          q: "Any immediate instability?",
+          a: `
+            <ul>
+              <li>Shock/hypotension, severe dyspnoea, altered consciousness, malignant arrhythmia, cardiac arrest</li>
+            </ul>
+            <div class="callout"><strong>Action:</strong> Call 000 immediately, start resuscitation/ALS, defib if shockable rhythm.</div>
+          `
+        },
+        {
+          q: "Need urgent 12-lead ECG now?",
+          a: `<div class="callout good"><strong>Yes.</strong> Aim <b>ECG within 10 minutes</b> of first medical contact; repeat if ongoing pain and initial ECG non-diagnostic.</div>`
+        }
+      ],
+      handover: [
+        "Patient ID + location",
+        "Symptom onset time + current pain score",
+        "Vital signs + instability features",
+        "Past cardiac history, meds (esp anticoagulants), allergies"
+      ],
+      tip: "Tip: Document <b>times</b> — symptom onset, first medical contact, ECG done, aspirin given."
+    },
+
+    {
+      title: "Step 2 — Activate transfer + perform ECG",
+      subtitle: "Do not delay ambulance activation for extra tests.",
+      crumbs: ["STEMI", "ECG", "Activate network"],
+      prompt: `
+        <div class="callout">
+          <strong>Do first:</strong>
+          <ul>
+            <li><b>Call 000</b> and state: “<b>Suspected STEMI</b>” if ECG supports it or suspicion is high</li>
+            <li>Request ambulance capable of ECG transmission if available</li>
+          </ul>
+        </div>
+        <div class="section" style="margin-top:12px">
+          <div class="sh"><strong>ECG essentials</strong><small>good quality tracing</small></div>
+          <div class="sb">
+            <ul>
+              <li>12-lead ECG; repeat q10–15 min if ongoing symptoms</li>
+              <li>Consider right-sided leads (V4R) if inferior MI suspected</li>
+              <li>Consider posterior leads (V7–V9) if ST depression V1–V3</li>
+            </ul>
+          </div>
+        </div>
+      `,
+      actions: [
+        "Attach monitor: HR, BP, SpO₂; obtain IV access (1–2 lines if possible)",
+        "Print ECG and (if possible) send/transmit per local protocol",
+        "Check BGL (hypoglycaemia can mimic symptoms)"
+      ],
+      decisions: [
+        {
+          q: "ECG shows STEMI criteria or STEMI-equivalent?",
+          a: `
+            <div class="callout good"><strong>Yes:</strong> Treat as STEMI → continue pathway, ensure immediate transfer/activation.</div>
+            <div class="mini" style="margin-top:8px">
+              Thresholds vary by lead/sex/age; if unsure, transmit ECG / discuss with cardiology/ED.
+            </div>
+          `
+        },
+        {
+          q: "ECG non-diagnostic but symptoms ongoing/high-risk?",
+          a: `<div class="callout warn"><strong>Still urgent transfer.</strong> Repeat ECGs and treat as possible ACS while awaiting ambulance.</div>`
+        }
+      ],
+      handover: [
+        "Attach ECG copy (time-stamped) and any repeats",
+        "Confirm whether ECG was transmitted/verbally reported",
+        "State suspected territory (inferior/anterior/posterior/RV)"
+      ],
+      tip: "If inferior STEMI suspected, think about RV infarct before giving GTN."
+    },
+
+    {
+      title: "Step 3 — Immediate GP clinic treatments (while awaiting ambulance)",
+      subtitle: "Treat pain and ischaemia safely; avoid causing hypotension.",
+      crumbs: ["STEMI", "Initial therapy", "Safety checks"],
+      prompt: `
+        <div class="callout good">
+          <strong>Aspirin</strong>
+          <ul>
+            <li>Give <b>aspirin 300 mg PO (chewed)</b> ASAP unless true anaphylaxis/major bleeding contraindication.</li>
+          </ul>
+        </div>
+        <div class="mini" style="margin-top:8px">Aspirin loading is recommended early in suspected ACS. :contentReference[oaicite:5]{index=5}</div>
+
+        <div class="section" style="margin-top:12px">
+          <div class="sh"><strong>Other supportive measures</strong><small>per protocols</small></div>
+          <div class="sb">
+            <ul>
+              <li><b>Oxygen</b>: only if hypoxic/resp distress (avoid routine oxygen in normoxic patients)</li>
+              <li><b>GTN</b>: SL/spray if SBP adequate and no contraindications (see decision points)</li>
+              <li><b>Analgesia</b>: titrate opioid if severe pain; treat nausea as needed</li>
+            </ul>
+          </div>
+        </div>
+      `,
+      actions: [
+        "Aspirin 300 mg chewed (document time) unless contraindicated",
+        "If SpO₂ low / resp distress: give oxygen and titrate to targets per local protocol",
+        "If pain persists and safe: GTN SL/spray; reassess BP after each dose",
+        "If severe pain: titrated analgesia; monitor BP/resp status",
+        "Keep defib ready; continuously monitor rhythm"
+      ],
+      decisions: [
+        {
+          q: "Is GTN safe to give?",
+          a: `
+            <ul>
+              <li>Avoid if SBP low (e.g., &lt;90–100 mmHg) or suspected RV infarct</li>
+              <li>Avoid if recent PDE5 inhibitor use (sildenafil/tadalafil/vardenafil)</li>
+              <li>Avoid if severe aortic stenosis suspected</li>
+            </ul>
+            <div class="callout warn"><strong>If unsure:</strong> prioritise transfer and analgesia; discuss with retrieval/ED.</div>
+          `
+        },
+        {
+          q: "When to consider additional antiplatelet/anticoagulant in GP clinic?",
+          a: `
+            <div class="mini">
+              Often guided by local STEMI network (ambulance/ED/cardiology). If your region has a protocol for pre-hospital DAPT/anticoagulation,
+              follow it and document exact doses/times.
+            </div>
+          `
+        }
+      ],
+      handover: [
+        "Exact times: aspirin/GTN/analgesia/oxygen start",
+        "Allergies, anticoagulants, bleeding risks",
+        "Latest vitals and pain score after treatments"
+      ],
+      tip: "Don’t delay ambulance transfer to ‘complete’ treatment—treat while moving the process forward."
+    },
+
+    {
+      title: "Step 4 — Reperfusion strategy (big decision: PCI vs fibrinolysis)",
+      subtitle: "Primary PCI preferred when timely; otherwise consider fibrinolysis if eligible and within window.",
+      crumbs: ["STEMI", "Reperfusion", "PCI vs lysis"],
+      prompt: `
+        <div class="callout">
+          <strong>Principle (Australia/NZ):</strong>
+          <ul>
+            <li><b>Primary PCI preferred</b> if it can be delivered within about <b>120 minutes</b> of first medical contact.</li>
+            <li>If PCI is delayed &gt;120 minutes and the patient is eligible (and within time window), <b>consider fibrinolysis</b> per network/protocol.</li>
+          </ul>
+        </div>
+        <div class="mini" style="margin-top:8px">
+          Source principle: Australian ACS guidance and ANZCOR state PCI within ~120 min; fibrinolysis considered when PCI delay exceeds this and patient is eligible. :contentReference[oaicite:6]{index=6}
+        </div>
+
+        <div class="section" style="margin-top:12px">
+          <div class="sh"><strong>Time window reminders</strong><small>typical</small></div>
+          <div class="sb">
+            <ul>
+              <li>Most benefit if reperfusion is early; commonly considered within <b>12 hours</b> of symptom onset (network dependent).</li>
+              <li>Late presenters, cardiogenic shock, or complications often favour <b>urgent PCI</b> pathways.</li>
+            </ul>
+          </div>
+        </div>
+      `,
+      actions: [
+        "Confirm symptom onset time and communicate to ambulance/receiving centre",
+        "Ask ambulance/network: expected time to PCI-capable centre",
+        "If your region supports it: determine fibrinolysis eligibility and contraindications rapidly",
+        "Prepare for deterioration: VF/VT, bradyarrhythmias, pulmonary oedema"
+      ],
+      decisions: [
+        {
+          q: "Can primary PCI be delivered within ~120 minutes of first medical contact?",
+          a: `<div class="callout good"><strong>Yes:</strong> proceed with urgent transfer for primary PCI pathway. :contentReference[oaicite:7]{index=7}</div>`
+        },
+        {
+          q: "If PCI delay &gt;120 min: is fibrinolysis an option in your network and is the patient eligible?",
+          a: `
+            <div class="callout warn"><strong>Consider fibrinolysis</strong> when PCI is delayed &gt;120 min and no absolute contraindications, ideally as soon as possible per protocol. :contentReference[oaicite:8]{index=8}</div>
+            <div class="mini" style="margin-top:8px">
+              Absolute contraindications vary by protocol (e.g., prior intracranial haemorrhage, known intracranial pathology, recent stroke,
+              active bleeding, major recent surgery/trauma, etc.). Use your network checklist.
+            </div>
+          `
+        }
+      ],
+      handover: [
+        "Reperfusion plan: PCI vs lysis discussion and rationale (timing/eligibility)",
+        "Contraindications screened (anticoagulants, recent stroke/bleeding, surgery/trauma)",
+        "Any complications during wait (arrhythmia, hypotension, pulmonary oedema)"
+      ],
+      tip: "If you don’t have an authorised lysis protocol, focus on rapid transfer + early aspirin + safe symptom control."
+    },
+
+    {
+      title: "Step 5 — Monitor & manage complications while awaiting transfer",
+      subtitle: "Be ready for VF/VT, bradycardia, shock, pulmonary oedema.",
+      crumbs: ["STEMI", "Complications", "Resuscitation readiness"],
+      prompt: `
+        <div class="callout">
+          <strong>Continuous monitoring</strong>
+          <ul>
+            <li>Rhythm + vitals; reassess pain, BP, SpO₂ frequently</li>
+            <li>Keep defib pads ready if available</li>
+            <li>Repeat ECG if symptoms change</li>
+          </ul>
+        </div>
+
+        <div class="section" style="margin-top:12px">
+          <div class="sh"><strong>Common early complications</strong><small>examples</small></div>
+          <div class="sb">
+            <ul>
+              <li>Ventricular arrhythmias (VF/VT)</li>
+              <li>Bradycardia/AV block (esp inferior MI)</li>
+              <li>Cardiogenic shock</li>
+              <li>Pulmonary oedema</li>
+            </ul>
+          </div>
+        </div>
+      `,
+      actions: [
+        "If arrest/shockable rhythm: start CPR + defibrillate per ALS, call 000 (if not already)",
+        "If hypotension: lay flat, reassess GTN/analgesia, consider RV infarct, obtain senior help",
+        "If pulmonary oedema: sit up, oxygen if hypoxic, rapid transfer; follow local acute pulmonary oedema protocol",
+        "Document events and times"
+      ],
+      decisions: [
+        {
+          q: "Inferior STEMI with hypotension + clear lungs?",
+          a: `
+            <div class="callout warn"><strong>Think RV infarct.</strong> Avoid GTN and excessive diuresis; discuss with retrieval/ED.</div>
+          `
+        },
+        {
+          q: "Persistent severe pain despite initial measures?",
+          a: `
+            <div class="mini">
+              Ongoing pain suggests ongoing ischaemia—prioritise rapid reperfusion pathway.
+              Continue titrated analgesia with close monitoring and avoid hypotension.
+            </div>
+          `
+        }
+      ],
+      handover: [
+        "Any arrhythmias (VF/VT/blocks) and treatment delivered",
+        "Hemodynamics trend (lowest BP, O₂ needs)",
+        "Response to analgesia/GTN, adverse effects"
+      ],
+      tip: "A calm team with clear roles helps: airway/monitoring, meds/timekeeper, documentation, comms with ambulance."
+    },
+
+    {
+      title: "Step 6 — Structured handover + documentation (finish strong)",
+      subtitle: "Clear times + treatments improve outcomes and reduce duplication.",
+      crumbs: ["STEMI", "Handover", "Documentation"],
+      prompt: `
+        <div class="callout good">
+          <strong>Use a structured handover (ISBAR / MIST)</strong>
+          <ul>
+            <li><b>I</b>dentify / <b>S</b>ituation: suspected STEMI, current status</li>
+            <li><b>B</b>ackground: onset time, risk factors, history, meds</li>
+            <li><b>A</b>ssessment: ECG findings, vitals trend, complications</li>
+            <li><b>R</b>ecommendation: reperfusion plan (PCI vs lysis pathway), next steps</li>
+          </ul>
+        </div>
+
+        <div class="section" style="margin-top:12px">
+          <div class="sh"><strong>“Must-say” items</strong><small>copy/paste mental checklist</small></div>
+          <div class="sb">
+            <ul>
+              <li>Symptom onset time + first medical contact time</li>
+              <li>Time ECG done + key finding summary</li>
+              <li>Time aspirin given; GTN doses; analgesia; oxygen</li>
+              <li>Allergies, anticoagulants, bleeding risks, recent stroke/surgery/trauma</li>
+              <li>Any deterioration/events during wait</li>
+            </ul>
+          </div>
+        </div>
+      `,
+      actions: [
+        "Send/print ECG copies (initial + repeats) with timestamps",
+        "Write a brief note: times, observations, treatments, response, plan",
+        "If you have electronic messaging: forward summary to receiving ED/cardiology per protocol"
+      ],
+      decisions: [
+        {
+          q: "Is the patient safe for transport now?",
+          a: `
+            <div class="mini">
+              This is mainly an ambulance clinical decision; provide current vitals, stability concerns, and ensure monitoring continues until handover.
+            </div>
+          `
+        }
+      ],
+      handover: [
+        "Printed ECGs attached",
+        "Medication list + allergy status",
+        "Times list (onset/FMC/ECG/aspirin/etc.)",
+        "Your contact number for clarification"
+      ],
+      tip: "End of pathway: you can Print/Save as PDF from the top bar for a hardcopy checklist."
+    }
+  ];
+
+  // === State ===
+  let idx = 0;
+  let examMode = false;
+  let revealed = true;
+
+  // === Elements ===
+  const stepTitle = document.getElementById("stepTitle");
+  const stepSubtitle = document.getElementById("stepSubtitle");
+  const stepNo = document.getElementById("stepNo");
+  const crumbs = document.getElementById("crumbs");
+  const progBar = document.getElementById("progBar");
+
+  const promptArea = document.getElementById("promptArea");
+  const actionsArea = document.getElementById("actionsArea");
+  const decisionArea = document.getElementById("decisionArea");
+  const handoverArea = document.getElementById("handoverArea");
+
+  const backBtn = document.getElementById("backBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  const restartBtn = document.getElementById("restartBtn");
+  const printBtn = document.getElementById("printBtn");
+
+  const examToggle = document.getElementById("examMode");
+  const revealBtn = document.getElementById("revealBtn");
+  const tipArea = document.getElementById("tipArea");
+  const actionsHint = document.getElementById("actionsHint");
+
+  // === Render helpers ===
+  function renderCrumbs(list){
+    crumbs.innerHTML = "";
+    list.forEach((c, i) => {
+      const s = document.createElement("span");
+      s.textContent = c;
+      crumbs.appendChild(s);
+      if(i < list.length - 1){
+        const dot = document.createElement("span");
+        dot.className = "dot";
+        dot.textContent = "›";
+        crumbs.appendChild(dot);
+      }
+    });
+  }
+
+  function renderActions(items){
+    actionsArea.innerHTML = "";
+    const ul = document.createElement("ul");
+    items.forEach((t) => {
+      const li = document.createElement("li");
+      const id = "act_" + idx + "_" + Math.random().toString(16).slice(2);
+      li.innerHTML = `
+        <label style="display:flex; gap:10px; align-items:flex-start; cursor:pointer;">
+          <input type="checkbox" style="margin-top:3px; width:18px; height:18px; accent-color: var(--accent2);" id="${id}">
+          <span>${t}</span>
+        </label>
+      `;
+      ul.appendChild(li);
+    });
+    actionsArea.appendChild(ul);
+    actionsHint.textContent = `${items.length} items`;
+  }
+
+  function renderDecisions(items){
+    decisionArea.innerHTML = "";
+    if(!items || !items.length){
+      decisionArea.innerHTML = `<div class="mini">No decision points in this step.</div>`;
+      return;
+    }
+    items.forEach((d, i) => {
+      const wrap = document.createElement("div");
+      wrap.style.marginBottom = "10px";
+      wrap.innerHTML = `
+        <details style="border:1px solid rgba(36,49,79,.75); border-radius:14px; background: rgba(15,23,42,.35); padding:10px 12px;">
+          <summary style="cursor:pointer; font-weight:700; outline:none;">${d.q}</summary>
+          <div style="margin-top:10px; color: var(--text);">${d.a}</div>
+        </details>
+      `;
+      decisionArea.appendChild(wrap);
+    });
+  }
+
+  function renderHandover(items){
+    handoverArea.innerHTML = "";
+    const ul = document.createElement("ul");
+    items.forEach((t) => {
+      const li = document.createElement("li");
+      li.textContent = t;
+      ul.appendChild(li);
+    });
+    handoverArea.appendChild(ul);
+  }
+
+  function applyExamMode(){
+    examMode = !!examToggle.checked;
+    revealed = !examMode;
+    revealBtn.style.display = examMode ? "inline-flex" : "none";
+    render();
+  }
+
+  function render(){
+    const s = steps[idx];
+    stepTitle.textContent = s.title;
+    stepSubtitle.innerHTML = s.subtitle;
+    stepNo.textContent = `Step ${idx+1} / ${steps.length}`;
+    renderCrumbs(s.crumbs);
+
+    // progress
+    const pct = Math.round(((idx+1)/steps.length)*100);
+    progBar.style.width = pct + "%";
+
+    // exam mode: hide details unless revealed
+    const contentHTML = `
+      <div class="${(examMode && !revealed) ? "hiddenContent" : ""}" id="detailBlock">
+        ${s.prompt}
+      </div>
+      ${(examMode && !revealed) ? `<div class="mini">Exam mode is ON. Click <b>Reveal</b> to show details.</div>` : ""}
+    `;
+    promptArea.innerHTML = contentHTML;
+
+    renderActions(s.actions || []);
+    renderDecisions(s.decisions || []);
+    renderHandover(s.handover || []);
+    tipArea.innerHTML = s.tip ? s.tip : "";
+
+    backBtn.disabled = idx === 0;
+    nextBtn.textContent = (idx === steps.length - 1) ? "Finish ✓" : "Next →";
+  }
+
+  function next(){
+    if(idx < steps.length - 1){
+      idx++;
+      if(examMode){ revealed = false; }
+      render();
+      window.scrollTo({top:0, behavior:"smooth"});
+    } else {
+      // finish behaviour: go to top and briefly flash
+      window.scrollTo({top:0, behavior:"smooth"});
+      alert("Pathway complete. You can Print/Save as PDF or Restart.");
+    }
+  }
+
+  function back(){
+    if(idx > 0){
+      idx--;
+      if(examMode){ revealed = false; }
+      render();
+      window.scrollTo({top:0, behavior:"smooth"});
+    }
+  }
+
+  // === Events ===
+  backBtn.addEventListener("click", back);
+  nextBtn.addEventListener("click", next);
+
+  restartBtn.addEventListener("click", () => {
+    idx = 0;
+    revealed = !examMode;
+    render();
+    window.scrollTo({top:0, behavior:"smooth"});
+  });
+
+  printBtn.addEventListener("click", () => window.print());
+
+  examToggle.addEventListener("change", applyExamMode);
+
+  revealBtn.addEventListener("click", () => {
+    revealed = true;
+    render();
+  });
+
+  window.addEventListener("keydown", (e) => {
+    if(e.key === "ArrowRight") next();
+    if(e.key === "ArrowLeft") back();
+  });
+
+  // === Init ===
+  render();
+})();
+</script>
+</body>
+</html>
