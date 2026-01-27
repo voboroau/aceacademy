@@ -1,0 +1,607 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dyspnoea (Shortness of Breath) — Click-through</title>
+
+  <link rel="stylesheet" href="../../assets/ace-core.css">
+  <script src="../../assets/pathway-nav.js" defer></script>
+
+  <style>
+    .stepper-top{display:flex;gap:12px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap}
+    .progress{height:10px;background:rgba(255,255,255,.08);border:1px solid #24314f;border-radius:999px;overflow:hidden;margin-top:12px}
+    .progress>div{height:100%;width:0%;background:linear-gradient(90deg, rgba(96,165,250,.95), rgba(52,211,153,.95));transition:width .25s ease}
+    .pill{border:1px solid #24314f;border-radius:999px;padding:6px 10px;background:rgba(0,0,0,.25);color:#9ca3af;font-size:.85rem;display:inline-flex;gap:8px;align-items:center}
+    .toggle{display:inline-flex;align-items:center;gap:10px;border:1px solid #24314f;border-radius:14px;background:rgba(0,0,0,.25);padding:8px 10px;color:#e5e7eb;font-weight:800;font-size:.9rem}
+    .toggle input{width:18px;height:18px}
+    details{border:1px solid #24314f;border-radius:14px;padding:10px 12px;background:rgba(0,0,0,.18);margin-bottom:10px}
+    summary{cursor:pointer;font-weight:900}
+    .footerNav{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-top:16px}
+    .footerNav .btn{min-width:120px;justify-content:center}
+    .hiddenBlock{display:none}
+    .kgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media (max-width:720px){.kgrid{grid-template-columns:1fr}}
+    .kbox{border:1px solid #24314f;border-radius:14px;padding:10px 12px;background:rgba(0,0,0,.18)}
+    .kbox .k{font-weight:900;font-size:.9rem}
+    .kbox .v{margin-top:6px}
+    @media print{.stepper-controls,.footerNav,.toggle,.pill{display:none !important}}
+  </style>
+</head>
+
+<body>
+<main class="wrap">
+
+  <div class="card">
+    <div class="stepper-top">
+      <div>
+        <h1>Dyspnoea (Shortness of Breath) — Australian GP Click-through</h1>
+        <p class="muted">Rapid triage → ABCDE → high-yield causes → targeted tests → initial treatment → disposition.</p>
+        <div class="muted small">Keyboard: <b>←</b> Back • <b>→</b> Next</div>
+      </div>
+
+      <div class="stepper-controls" style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+        <span class="pill" id="stepNo">Step 1 / 8</span>
+
+        <label class="toggle" title="Hide key thresholds/critical details until you click Reveal">
+          <input type="checkbox" id="examMode">
+          Exam mode
+        </label>
+
+        <button class="btn" id="revealBtn" style="display:none">👁️ Reveal</button>
+        <button class="btn" id="restartBtn">⟲ Restart</button>
+      </div>
+    </div>
+
+    <div class="progress" aria-label="Progress"><div id="bar"></div></div>
+  </div>
+
+  <div class="card">
+    <h2 id="stepTitle">Loading…</h2>
+    <p class="muted" id="stepSubtitle"></p>
+
+    <div class="section">
+      <div class="section-header">Prompt</div>
+      <div class="section-body" id="prompt"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">Actions / Checklist</div>
+      <div class="section-body" id="actions"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">Decision points</div>
+      <div class="section-body" id="decisions"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">Handover essentials</div>
+      <div class="section-body" id="handover"></div>
+    </div>
+
+    <div class="footerNav">
+      <button class="btn" id="backBtn">← Back</button>
+      <div class="muted small" id="tip"></div>
+      <button class="btn" id="nextBtn">Next →</button>
+    </div>
+  </div>
+
+  <p class="muted small">
+    Safety note: Dyspnoea can represent life-threatening illness. If unstable or red flags present, activate emergency response / call 000.
+    Educational pathway only; follow local protocols and clinical judgement.
+  </p>
+
+</main>
+
+<script>
+(() => {
+  const steps = [
+    {
+      title: "Step 1 — Rapid triage: is this immediately life-threatening?",
+      subtitle: "Decide within seconds: unstable → treat and transfer.",
+      prompt: `
+        <div class="callout danger">
+          <strong>Red flags (treat as emergency):</strong>
+          <ul>
+            <li>Severe respiratory distress, inability to speak, exhaustion, cyanosis</li>
+            <li>Altered consciousness, agitation/confusion</li>
+            <li>Hypotension, syncope, shock features</li>
+            <li>Chest pain/pressure, arrhythmia symptoms</li>
+            <li>Stridor / airway swelling / anaphylaxis features</li>
+            <li>SpO₂ very low or rapidly falling</li>
+          </ul>
+        </div>
+
+        <div id="thresholdBlock">
+          <div class="callout warn">
+            <strong>Quick “unstable” triggers (practical):</strong>
+            <ul>
+              <li><b>SpO₂ &lt; 90%</b> (or &lt;92% with distress), <b>RR &gt; 30</b>, or marked work of breathing</li>
+              <li><b>SBP &lt; 90</b>, new confusion, or collapsing</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="muted small" style="margin-top:10px">
+          If unstable: oxygen/airway positioning, bronchodilator if wheeze, IM adrenaline if anaphylaxis, and call 000 early.
+        </div>
+      `,
+      actions: [
+        "Call for help; bring oxygen, suction, defib, emergency meds",
+        "Position (upright if comfortable; recovery position if reduced consciousness)",
+        "Immediate vitals: RR, HR, BP, SpO₂, temp; assess mental state",
+        "If unstable: call 000 and start ABCDE management now"
+      ],
+      decisions: [
+        { q: "Unstable right now?", a: `<div class="callout danger"><strong>Yes:</strong> Treat + call 000 + prepare transfer. Do not delay for extensive history/tests.</div>` },
+        { q: "Stridor, facial/tongue swelling, widespread urticaria, collapse after exposure?", a: `<div class="callout danger"><strong>Anaphylaxis likely:</strong> IM adrenaline immediately, oxygen, IV access/fluids, call 000.</div>` }
+      ],
+      handover: [
+        "Primary concern: airway/breathing/circulation status",
+        "Worst vitals recorded + trends",
+        "Immediate treatments given and response"
+      ],
+      tip: "If you’re wondering whether to call 000, you probably should."
+    },
+
+    {
+      title: "Step 2 — ABCDE initial management (first 5 minutes)",
+      subtitle: "Stabilise while you think.",
+      prompt: `
+        <div class="kgrid">
+          <div class="kbox">
+            <div class="k">A — Airway</div>
+            <div class="v">Stridor? swelling? secretions? protect airway, suction, consider anaphylaxis/foreign body.</div>
+          </div>
+          <div class="kbox">
+            <div class="k">B — Breathing</div>
+            <div class="v">SpO₂, RR, work of breathing, wheeze/crackles, symmetry, percussion, PEFR if asthma.</div>
+          </div>
+          <div class="kbox">
+            <div class="k">C — Circulation</div>
+            <div class="v">HR/BP, perfusion, JVP, oedema, chest pain, ECG rhythm.</div>
+          </div>
+          <div class="kbox">
+            <div class="k">D/E</div>
+            <div class="v">Consciousness, BGL, temp, rash/urticaria, calf swelling, DVT risk factors.</div>
+          </div>
+        </div>
+
+        <div id="o2Block" class="callout warn" style="margin-top:12px">
+          <strong>Oxygen (pragmatic):</strong> give if hypoxic or in distress. Titrate to clinical context
+          (avoid over-oxygenation in CO₂ retainers where relevant, but don’t withhold oxygen in distress).
+        </div>
+      `,
+      actions: [
+        "Oxygen if hypoxic/distressed; monitor continuously",
+        "Nebulised bronchodilator if wheeze/bronchospasm suspected",
+        "IV access if moderate–severe; consider fluids if hypotensive",
+        "12-lead ECG early if chest pain, syncope, palpitations, or cardiac risk"
+      ],
+      decisions: [
+        { q: "Wheeze with history of asthma/COPD?", a: `<div class="callout warn"><strong>Treat bronchospasm early:</strong> SABA ± ipratropium; consider steroids; reassess response.</div>` },
+        { q: "Crackles, raised JVP, oedema, orthopnoea?", a: `<div class="callout warn"><strong>Consider acute heart failure/pulmonary oedema:</strong> sit upright, oxygen if needed, urgent transfer; ECG; consider nitrates/diuretics per protocol and BP.</div>` }
+      ],
+      handover: [
+        "Airway risk, oxygen delivery method and SpO₂ response",
+        "ECG summary if done",
+        "Bronchodilator/steroid/other treatments and response"
+      ],
+      tip: "Treat what you can see (wheeze, shock, stridor) while you refine the diagnosis."
+    },
+
+    {
+      title: "Step 3 — Focused history in 60–120 seconds",
+      subtitle: "Time course + triggers often reveal the cause.",
+      prompt: `
+        <div class="callout">
+          <strong>High-yield questions:</strong>
+          <ul>
+            <li><b>Onset:</b> sudden (minutes–hours) vs gradual (days–weeks)</li>
+            <li><b>Trigger:</b> exertion, infection, allergen, new meds, trauma, aspiration</li>
+            <li><b>Symptoms:</b> chest pain, cough/sputum, fever, wheeze, haemoptysis, pleuritic pain</li>
+            <li><b>Cardiac:</b> orthopnoea/PND, ankle swelling, palpitations, syncope</li>
+            <li><b>VTE risks:</b> immobility, surgery, cancer, OCP/HRT, previous DVT/PE, pregnancy</li>
+            <li><b>PMH:</b> asthma/COPD, HF/IHD, anxiety/panic, anaemia, renal disease</li>
+          </ul>
+        </div>
+
+        <div id="dangerHistoryBlock">
+          <div class="callout danger">
+            <strong>Think immediately lethal causes:</strong>
+            <ul>
+              <li>Pulmonary embolism</li>
+              <li>Acute coronary syndrome / arrhythmia</li>
+              <li>Asthma severe exacerbation</li>
+              <li>Pneumothorax</li>
+              <li>Anaphylaxis</li>
+              <li>Acute pulmonary oedema</li>
+            </ul>
+          </div>
+        </div>
+      `,
+      actions: [
+        "Clarify exact onset time and progression (sudden vs gradual)",
+        "Ask about chest pain (pleuritic vs pressure), fever, cough, wheeze",
+        "Screen VTE risks and recent immobilisation/surgery",
+        "Medication review (beta-blockers, sedatives, opioids), allergies, smoking/vaping"
+      ],
+      decisions: [
+        { q: "Sudden dyspnoea + pleuritic pain/haemoptysis/syncope + VTE risks?", a: `<div class="callout danger"><strong>Suspect PE:</strong> urgent transfer/ED for imaging/anticoagulation decisions.</div>` },
+        { q: "Sudden dyspnoea + unilateral pleuritic pain + decreased breath sounds?", a: `<div class="callout danger"><strong>Suspect pneumothorax:</strong> urgent CXR/ED; if tension physiology, call 000 immediately.</div>` }
+      ],
+      handover: [
+        "Time course and key positives/negatives (PE risks, fever, chest pain type)",
+        "Relevant PMH (asthma/COPD/HF/IHD) and meds"
+      ],
+      tip: "Sudden onset = PE/pneumothorax/arrhythmia/ACS until proven otherwise."
+    },
+
+    {
+      title: "Step 4 — Focused examination (what to look for fast)",
+      subtitle: "Look for pattern recognition: wheeze vs crackles vs quiet chest vs unilateral signs.",
+      prompt: `
+        <div class="callout">
+          <strong>Exam pattern checklist:</strong>
+          <ul>
+            <li><b>General:</b> ability to speak, accessory muscles, diaphoresis, cyanosis, agitation</li>
+            <li><b>Resp:</b> wheeze, crackles, stridor, chest expansion symmetry, percussion, tracheal deviation</li>
+            <li><b>Cardio:</b> JVP, oedema, murmurs, gallop, pulse irregularity</li>
+            <li><b>DVT signs:</b> unilateral leg swelling/pain (supportive, not definitive)</li>
+            <li><b>Temp</b> and hydration status</li>
+          </ul>
+        </div>
+
+        <div id="examRedFlagsBlock">
+          <div class="callout danger">
+            <strong>Exam red flags:</strong>
+            <ul>
+              <li>Silent chest / poor air entry</li>
+              <li>Stridor / airway compromise</li>
+              <li>Hypotension + raised JVP (obstructive shock possibilities)</li>
+              <li>Unilateral hyperresonance + distress (possible tension pneumo)</li>
+            </ul>
+          </div>
+        </div>
+      `,
+      actions: [
+        "Auscultate lungs (wheeze/crackles/quiet), compare sides",
+        "Check JVP, oedema, heart rhythm regularity",
+        "Measure PEFR in asthma if feasible and safe",
+        "Repeat SpO₂ and BP after any intervention"
+      ],
+      decisions: [
+        { q: "Wheeze + reduced PEFR + prolonged expiration?", a: `<div class="callout warn"><strong>Likely asthma/COPD:</strong> bronchodilators ± steroids; consider antibiotics only if bacterial features; reassess frequently.</div>` },
+        { q: "Crackles + hypertension/raised JVP + frothy sputum?", a: `<div class="callout danger"><strong>Likely acute pulmonary oedema:</strong> urgent transfer; treat per protocol (position, oxygen, CPAP in ED/ambulance).</div>` }
+      ],
+      handover: [
+        "Key exam findings (wheeze/crackles/stridor/unilateral signs)",
+        "PEFR value/percent if measured"
+      ],
+      tip: "A ‘quiet chest’ can be worse than a loud wheeze."
+    },
+
+    {
+      title: "Step 5 — Minimal high-yield investigations in GP (don’t delay transfer)",
+      subtitle: "Pick tests that change immediate decisions.",
+      prompt: `
+        <div class="callout">
+          <strong>Common GP-available tests (as appropriate):</strong>
+          <ul>
+            <li>Pulse oximetry (continuous if moderate–severe)</li>
+            <li>12-lead ECG</li>
+            <li>BGL</li>
+            <li>Peak flow (asthma) if safe</li>
+            <li>Point-of-care Hb (if available) for anaemia consideration</li>
+          </ul>
+        </div>
+
+        <div id="testsBlock" class="callout warn">
+          <strong>Usually ED/ambulance network:</strong>
+          <ul>
+            <li>Chest X-ray, troponin, D-dimer/CTPA, ABG/VBG, BNP, formal bloods</li>
+          </ul>
+          <div class="muted small">Do not delay transfer for these if unstable or high-risk.</div>
+        </div>
+      `,
+      actions: [
+        "ECG for chest pain, syncope, palpitations, older patients or cardiac risk",
+        "BGL if altered mental state, diaphoresis, or unclear cause",
+        "Peak flow if asthma suspected and patient can cooperate",
+        "Arrange CXR/labs only if stable and it won’t delay care"
+      ],
+      decisions: [
+        { q: "ECG shows AF with RVR / SVT / bradyarrhythmia?", a: `<div class="callout danger"><strong>Arrhythmia likely driver:</strong> manage per arrhythmia protocol and transfer if unstable or symptomatic.</div>` },
+        { q: "Dyspnoea + pleuritic pain + tachycardia + low SpO₂?", a: `<div class="callout danger"><strong>PE remains high on list:</strong> ED for definitive imaging and treatment decisions.</div>` }
+      ],
+      handover: [
+        "ECG result (attach copy if possible)",
+        "Peak flow and SpO₂ on room air vs oxygen"
+      ],
+      tip: "Tests are useful only if they don’t steal time from treatment or transfer."
+    },
+
+    {
+      title: "Step 6 — Treat the likely syndrome while refining diagnosis",
+      subtitle: "Start safe, reversible treatments based on pattern.",
+      prompt: `
+        <div class="kgrid">
+          <div class="kbox">
+            <div class="k">Bronchospasm (asthma/COPD)</div>
+            <div class="v">SABA (spacer/neb) ± ipratropium; early steroids; consider magnesium/transfer if severe.</div>
+          </div>
+          <div class="kbox">
+            <div class="k">Infection (pneumonia)</div>
+            <div class="v">Oxygen if needed; consider antibiotics if clinically likely; urgent transfer if hypoxic/septic.</div>
+          </div>
+          <div class="kbox">
+            <div class="k">Pulmonary oedema</div>
+            <div class="v">Sit upright; oxygen if needed; urgent transfer; BP-guided nitrates/diuretics per protocol.</div>
+          </div>
+          <div class="kbox">
+            <div class="k">Anaphylaxis</div>
+            <div class="v">IM adrenaline immediately + oxygen + fluids + transfer.</div>
+          </div>
+        </div>
+
+        <div id="medsBlock" class="callout warn" style="margin-top:12px">
+          <strong>Medication safety reminders:</strong>
+          <ul>
+            <li>Avoid over-sedating an anxious dyspnoeic patient (risk of respiratory depression)</li>
+            <li>Oxygen is a drug: titrate, but do not withhold if hypoxic/distressed</li>
+            <li>In suspected PE/ACS, definitive anticoagulation/antiplatelets often guided by ED/cardiology protocols</li>
+          </ul>
+        </div>
+      `,
+      actions: [
+        "If wheeze: bronchodilators now; consider steroids early",
+        "If suspected anaphylaxis: IM adrenaline immediately",
+        "If suspected pulmonary oedema: upright + urgent transfer; ECG; BP-guided management per protocol",
+        "If suspected PE/ACS/pneumothorax: prioritise transfer/ED"
+      ],
+      decisions: [
+        { q: "Anxiety/panic suspected — can it still be serious?", a: `<div class="callout warn"><strong>Yes.</strong> Panic is a diagnosis of exclusion. Check vitals, SpO₂, exam, ECG where appropriate.</div>` },
+        { q: "Normal SpO₂ but severe dyspnoea?", a: `<div class="callout warn"><strong>Consider:</strong> anxiety/hyperventilation, early asthma, metabolic acidosis, anaemia, PE early, cardiac causes. Don’t dismiss—reassess and escalate if worsening.</div>` }
+      ],
+      handover: [
+        "Treatments started and response (symptoms + objective changes)",
+        "Working diagnosis and top differentials"
+      ],
+      tip: "Treat pattern-based syndromes, then reassess. The response is diagnostic."
+    },
+
+    {
+      title: "Step 7 — Disposition: who can stay in GP vs who must go to ED?",
+      subtitle: "Err on safety. Dyspnoea is high-risk when unexplained.",
+      prompt: `
+        <div class="callout danger">
+          <strong>ED / ambulance transfer is recommended if:</strong>
+          <ul>
+            <li>Any instability/red flags, hypoxia, significant tachypnoea, or worsening course</li>
+            <li>Suspected PE, ACS, pneumothorax, anaphylaxis, acute pulmonary oedema</li>
+            <li>Severe asthma/COPD exacerbation or poor response to initial treatment</li>
+            <li>New arrhythmia with symptoms or haemodynamic impact</li>
+          </ul>
+        </div>
+
+        <div id="gpBlock" class="callout ok">
+          <strong>Possible GP management only if ALL are true:</strong>
+          <ul>
+            <li>Stable vitals, no red flags, and clear benign cause</li>
+            <li>Good response to initial treatment with sustained improvement</li>
+            <li>Safe home supports + clear return precautions + close follow-up arranged</li>
+          </ul>
+        </div>
+      `,
+      actions: [
+        "Decide transfer vs GP management based on risk + response",
+        "If transferring: keep monitoring until ambulance arrives; send ECG/notes",
+        "If managing in GP: provide written advice + strict return precautions"
+      ],
+      decisions: [
+        { q: "Improved after bronchodilator — safe to discharge?", a: `<div class="callout warn"><strong>Only if:</strong> stable vitals, sustained improvement, safe supports, and clear plan. Otherwise consider ED.</div>` },
+        { q: "Unexplained dyspnoea with normal exam/tests?", a: `<div class="callout warn"><strong>Still consider ED</strong> if symptoms significant, persistent, or risk factors present. “Unexplained” can be early serious disease.</div>` }
+      ],
+      handover: [
+        "Reason for transfer and key concerns",
+        "Objective data: vitals trend, SpO₂, ECG, peak flow",
+        "Treatments given and response"
+      ],
+      tip: "A ‘well-looking’ patient can deteriorate fast—use vitals and trajectory."
+    },
+
+    {
+      title: "Step 8 — Structured handover + documentation (finish strong)",
+      subtitle: "Clear information prevents duplication and delays in ED.",
+      prompt: `
+        <div class="callout">
+          <strong>ISBAR / MIST handover template:</strong>
+          <ul>
+            <li><b>I/S:</b> Patient, location, “Dyspnoea — suspected X”</li>
+            <li><b>B:</b> Onset/time course, triggers, key history (asthma/COPD/HF, VTE risks)</li>
+            <li><b>A:</b> Vitals trend, SpO₂ on RA vs O₂, exam pattern, ECG summary</li>
+            <li><b>R:</b> What you need (urgent review, imaging, escalation) + concerns</li>
+          </ul>
+        </div>
+
+        <div id="docBlock" class="callout warn">
+          <strong>Must-document times:</strong>
+          <ul>
+            <li>Onset time, arrival time, first vitals, first oxygen/bronchodilator dose, ECG time</li>
+            <li>Response at 10–15 min intervals if moderate–severe</li>
+          </ul>
+        </div>
+      `,
+      actions: [
+        "Attach/print ECG if performed",
+        "Write concise note: onset, vitals, exam, differentials, treatment, response",
+        "Provide patient/carer advice and return precautions if not transferring"
+      ],
+      decisions: [
+        { q: "What are ‘return now’ warnings if managed in GP?", a: `<div class="callout danger"><strong>Return/000 if:</strong> worsening breathlessness, chest pain, fainting, blue lips, confusion, inability to speak, or SpO₂ drops (if monitoring at home).</div>` }
+      ],
+      handover: [
+        "Complete medication list + allergies",
+        "Comorbidities and risk factors (HF/IHD/VTE/asthma/COPD)",
+        "Contact number for follow-up questions"
+      ],
+      tip: "Best handovers include: timeline + objective trend + response to treatment."
+    }
+  ];
+
+  // -----------------------------
+  // State
+  // -----------------------------
+  let idx = 0;
+  let examMode = false;
+  let revealed = true;
+
+  // Elements
+  const bar = document.getElementById("bar");
+  const stepNo = document.getElementById("stepNo");
+  const stepTitle = document.getElementById("stepTitle");
+  const stepSubtitle = document.getElementById("stepSubtitle");
+  const prompt = document.getElementById("prompt");
+  const actions = document.getElementById("actions");
+  const decisions = document.getElementById("decisions");
+  const handover = document.getElementById("handover");
+  const tip = document.getElementById("tip");
+
+  const backBtn = document.getElementById("backBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  const restartBtn = document.getElementById("restartBtn");
+  const examToggle = document.getElementById("examMode");
+  const revealBtn = document.getElementById("revealBtn");
+
+  // Blocks to hide in exam mode (thresholds/critical details)
+  const EXAM_HIDE_IDS = [
+    "thresholdBlock",
+    "o2Block",
+    "dangerHistoryBlock",
+    "examRedFlagsBlock",
+    "testsBlock",
+    "medsBlock",
+    "gpBlock",
+    "docBlock"
+  ];
+
+  function renderActions(list){
+    actions.innerHTML = "<ul>" + list.map(x => `
+      <li>
+        <label style="display:flex;gap:10px;align-items:flex-start;cursor:pointer;">
+          <input type="checkbox" style="margin-top:3px;width:18px;height:18px;">
+          <span>${x}</span>
+        </label>
+      </li>
+    `).join("") + "</ul>";
+  }
+
+  function renderDecisions(list){
+    if(!list || !list.length){
+      decisions.innerHTML = `<div class="muted small">No decision points in this step.</div>`;
+      return;
+    }
+    decisions.innerHTML = list.map(d => `
+      <details>
+        <summary>${d.q}</summary>
+        <div style="margin-top:10px">${d.a}</div>
+      </details>
+    `).join("");
+  }
+
+  function renderHandover(list){
+    handover.innerHTML = "<ul>" + list.map(x => `<li>${x}</li>`).join("") + "</ul>";
+  }
+
+  function applyExamHiding(){
+    EXAM_HIDE_IDS.forEach(id => {
+      const el = document.getElementById(id);
+      if(!el) return;
+      el.classList.toggle("hiddenBlock", examMode && !revealed);
+    });
+
+    const hiddenAny = examMode && !revealed && EXAM_HIDE_IDS.some(id => document.getElementById(id));
+    if(hiddenAny){
+      const hint = document.createElement("div");
+      hint.className = "callout warn";
+      hint.innerHTML = `<strong>Exam mode:</strong> key thresholds/details hidden. Click <b>Reveal</b> to show.`;
+      prompt.prepend(hint);
+    }
+  }
+
+  function render(){
+    const s = steps[idx];
+
+    stepTitle.textContent = s.title;
+    stepSubtitle.textContent = s.subtitle;
+
+    prompt.innerHTML = s.prompt;
+    renderActions(s.actions || []);
+    renderDecisions(s.decisions || []);
+    renderHandover(s.handover || []);
+    tip.textContent = s.tip || "";
+
+    stepNo.textContent = `Step ${idx+1} / ${steps.length}`;
+    bar.style.width = Math.round(((idx+1)/steps.length)*100) + "%";
+
+    backBtn.disabled = idx === 0;
+    nextBtn.textContent = (idx === steps.length - 1) ? "Finish ✓" : "Next →";
+
+    revealBtn.style.display = examMode ? "inline-flex" : "none";
+    applyExamHiding();
+  }
+
+  function next(){
+    if(idx < steps.length - 1){
+      idx++;
+      if(examMode) revealed = false;
+      window.scrollTo({top:0, behavior:"smooth"});
+      render();
+    } else {
+      window.scrollTo({top:0, behavior:"smooth"});
+      alert("Pathway complete. Use the Print button in the top nav to save as PDF.");
+    }
+  }
+
+  function back(){
+    if(idx > 0){
+      idx--;
+      if(examMode) revealed = false;
+      window.scrollTo({top:0, behavior:"smooth"});
+      render();
+    }
+  }
+
+  backBtn.addEventListener("click", back);
+  nextBtn.addEventListener("click", next);
+
+  restartBtn.addEventListener("click", () => {
+    idx = 0;
+    revealed = !examMode;
+    window.scrollTo({top:0, behavior:"smooth"});
+    render();
+  });
+
+  examToggle.addEventListener("change", () => {
+    examMode = !!examToggle.checked;
+    revealed = !examMode;
+    render();
+  });
+
+  revealBtn.addEventListener("click", () => {
+    revealed = true;
+    render();
+  });
+
+  window.addEventListener("keydown", (e) => {
+    if(e.key === "ArrowRight") next();
+    if(e.key === "ArrowLeft") back();
+  });
+
+  render();
+})();
+</script>
+
+</body>
+</html>
