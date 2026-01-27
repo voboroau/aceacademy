@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Acute Asthma — Australian GP Click-through Pathway</title>
+
+<style>
+:root{
+  --bg:#0b1220; --card:#121b2e; --text:#e5e7eb; --muted:#9ca3af;
+  --line:#24314f; --accent:#60a5fa; --ok:#22c55e; --warn:#fbbf24; --danger:#fb7185;
+  --radius:16px; --shadow:0 12px 30px rgba(0,0,0,.35);
+  --sans:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; font-family:var(--sans); color:var(--text);
+  background:radial-gradient(900px 500px at 10% -10%,rgba(96,165,250,.25),transparent 60%),var(--bg);
+}
+.wrap{max-width:980px;margin:28px auto;padding:0 16px 60px}
+.card{background:linear-gradient(180deg,rgba(18,27,46,.95),rgba(15,23,42,.9));
+  border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.card-h{padding:14px 16px;border-bottom:1px solid var(--line)}
+.card-b{padding:16px}
+h1,h2{margin:0}
+h1{font-size:18px}
+h2{font-size:16px}
+.sub{font-size:12px;color:var(--muted);margin-top:4px}
+.btn{
+  border:1px solid var(--line);background:rgba(15,23,42,.6);
+  color:var(--text);padding:9px 12px;border-radius:12px;cursor:pointer;
+}
+.btn.primary{border-color:rgba(96,165,250,.5);background:rgba(96,165,250,.15)}
+.btn.warn{border-color:rgba(251,191,36,.5);background:rgba(251,191,36,.12)}
+.btn.danger{border-color:rgba(251,113,133,.5);background:rgba(251,113,133,.12)}
+.top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.progress{height:10px;background:#111827;border-radius:999px;margin-top:12px;overflow:hidden}
+.progress div{height:100%;background:linear-gradient(90deg,#60a5fa,#34d399);width:0%}
+.section{margin-top:14px;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.section-h{padding:10px 12px;border-bottom:1px solid var(--line);font-weight:700}
+.section-b{padding:12px}
+ul{margin:6px 0 0 18px}
+li{margin:6px 0}
+.callout{border:1px solid rgba(251,113,133,.5);background:rgba(251,113,133,.1);
+  border-radius:14px;padding:12px}
+.callout.warn{border-color:rgba(251,191,36,.6);background:rgba(251,191,36,.12)}
+.callout.ok{border-color:rgba(34,197,94,.6);background:rgba(34,197,94,.12)}
+.footer{display:flex;justify-content:space-between;gap:10px;margin-top:16px}
+.mini{font-size:12px;color:var(--muted)}
+@media print{
+  .btn,.footer{display:none}
+  body{background:#fff;color:#000}
+  .card{box-shadow:none}
+}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+<div class="card">
+  <div class="card-h">
+    <div class="top">
+      <div>
+        <h1>Acute Asthma — Australian GP Pathway</h1>
+        <div class="sub">Rapid assessment → bronchodilation → steroids → escalation → transfer & handover</div>
+      </div>
+      <div>
+        <a class="btn" href="https://voboroau.github.io/index.html">🏠 Library</a>
+        <button class="btn" onclick="window.print()">🖨 Print</button>
+      </div>
+    </div>
+    <div class="progress"><div id="bar"></div></div>
+  </div>
+
+  <div class="card-b">
+    <h2 id="title"></h2>
+    <div class="sub" id="subtitle"></div>
+
+    <div class="section">
+      <div class="section-h">Actions</div>
+      <div class="section-b" id="actions"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-h">Decision points</div>
+      <div class="section-b" id="decisions"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-h">Handover essentials</div>
+      <div class="section-b" id="handover"></div>
+    </div>
+
+    <div class="footer">
+      <button class="btn" onclick="back()">← Back</button>
+      <div class="mini" id="tip"></div>
+      <button class="btn primary" onclick="next()">Next →</button>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+const steps=[
+{
+title:"Step 1 — Recognise acute asthma",
+subtitle:"Assess severity immediately",
+actions:[
+"Check ABCs, sit patient upright",
+"Vitals: RR, HR, BP, SpO₂, PEFR if able",
+"Assess speech, accessory muscle use, exhaustion"
+],
+decisions:`
+<div class="callout warn"><b>Severe asthma features:</b>
+<ul>
+<li>Unable to complete sentences</li>
+<li>RR ≥25, HR ≥110</li>
+<li>PEFR 33–50% predicted</li>
+</ul></div>
+<div class="callout"><b>Life-threatening:</b>
+<ul>
+<li>Silent chest, cyanosis</li>
+<li>PEFR &lt;33%</li>
+<li>Hypotension, exhaustion, confusion</li>
+</ul></div>
+`,
+handover:["Onset + triggers","Baseline asthma control","Previous ICU/intubation"],
+tip:"If severe or life-threatening → treat as emergency and call 000 early."
+},
+{
+title:"Step 2 — Immediate treatment",
+subtitle:"Do not delay bronchodilators",
+actions:[
+"Oxygen to target SpO₂ 94–98%",
+"Salbutamol 4–10 puffs via spacer q20min OR continuous neb",
+"Ipratropium bromide neb added if severe",
+"Prednisolone 50 mg PO or Hydrocortisone 100 mg IV"
+],
+decisions:`
+<div class="callout ok"><b>Early systemic steroids reduce admission and relapse.</b></div>
+`,
+handover:["Times and doses of bronchodilators","Steroid given (drug + time)"],
+tip:"Spacer delivery is as effective as nebuliser if patient cooperative."
+},
+{
+title:"Step 3 — Reassess after 1 hour",
+subtitle:"Response determines escalation",
+actions:[
+"Repeat PEFR, vitals, symptom assessment",
+"Continue salbutamol hourly if improving",
+"Monitor for fatigue or deterioration"
+],
+decisions:`
+<div class="callout warn"><b>Poor response:</b>
+<ul>
+<li>Persistent tachypnoea or hypoxia</li>
+<li>PEFR &lt;50%</li>
+</ul>
+→ Escalate and arrange transfer</div>
+`,
+handover:["Trend of PEFR","Response to therapy"],
+tip:"Deterioration after initial improvement is a red flag."
+},
+{
+title:"Step 4 — Escalation & transfer",
+subtitle:"Severe or life-threatening asthma",
+actions:[
+"Call 000 / retrieval early",
+"IV magnesium sulfate 2 g over 20 min (if severe)",
+"Prepare for NIV / intubation if deteriorating"
+],
+decisions:`
+<div class="callout danger"><b>Impending respiratory failure:</b>
+<ul>
+<li>Rising CO₂</li>
+<li>Decreasing RR</li>
+<li>Reduced consciousness</li>
+</ul></div>
+`,
+handover:["MgSO₄ given","Any arrhythmias or hypotension"],
+tip:"A quiet chest is worse than a wheezy chest."
+},
+{
+title:"Step 5 — Discharge planning (if safe)",
+subtitle:"Prevent relapse",
+actions:[
+"Step-up preventer (ICS or ICS/LABA)",
+"Prednisolone course 5–7 days",
+"Inhaler technique + spacer",
+"Written asthma action plan",
+"GP review within 48 hours"
+],
+decisions:`
+<div class="callout ok"><b>Discharge only if:</b>
+<ul>
+<li>PEFR &gt;60–75%</li>
+<li>Stable for several hours</li>
+</ul></div>
+`,
+handover:["Action plan provided","Follow-up arranged"],
+tip:"Every acute attack is a chance to fix long-term control."
+}
+];
+
+let i=0;
+function render(){
+document.getElementById("title").innerText=steps[i].title;
+document.getElementById("subtitle").innerText=steps[i].subtitle;
+document.getElementById("actions").innerHTML="<ul>"+steps[i].actions.map(a=>"<li>"+a+"</li>").join("")+"</ul>";
+document.getElementById("decisions").innerHTML=steps[i].decisions;
+document.getElementById("handover").innerHTML="<ul>"+steps[i].handover.map(h=>"<li>"+h+"</li>").join("")+"</ul>";
+document.getElementById("tip").innerText=steps[i].tip;
+document.getElementById("bar").style.width=((i+1)/steps.length*100)+"%";
+}
+function next(){ if(i<steps.length-1){i++;render()} }
+function back(){ if(i>0){i--;render()} }
+render();
+</script>
+</body>
+</html>
