@@ -46,6 +46,12 @@ const pathways = [
   href: "./pathways/acute-asthma/",
   tags: ["Respiratory", "Emergency", "Asthma"],
   summary: "Assess severity → SABA (spacer/neb) + O₂ if needed → steroids early → reassess → escalate (ipratropium/MgSO₄/transfer) → discharge plan & action plan."
+},
+{
+  title: "Anaphylaxis — Click-through",
+  href: "./pathways/anaphylaxis/",
+  tags: ["Emergency", "Allergy", "Immunology"],
+  summary: "Rapid recognition → IM adrenaline early → airway/oxygen/IV fluids → repeat adrenaline if needed → transfer, observation, autoinjector & action plan."
 }
 
 ];
