@@ -16,6 +16,12 @@ const pathways = [
   href: "./pathways/hyperthyroidism-thyrotoxicosis/",
   tags: ["Endocrine", "Thyroid"],
   summary: "Confirm biochemistry → triage emergencies → determine cause → β-blocker → referral and follow-up."
+},
+  {
+  title: "Acute Diarrhoea / Gastroenteritis — Click-through",
+  href: "./pathways/acute-diarrhoea-gastroenteritis/",
+  tags: ["GI", "Infectious", "Acute"],
+  summary: "Triage dehydration and red flags → selective stool testing → supportive care → antibiotics only when indicated → safety-net and public health."
 }
 ];
 
