@@ -10,7 +10,13 @@ const pathways = [
     href: "./pathways/copd-exacerbation/",
     tags: ["Resp", "COPD", "Acute"],
     summary: "Triage → severity → SABA/SAMA + steroids → antibiotics criteria → escalation/ED criteria → follow-up."
-  }
+  },
+  {
+  title: "Hyperthyroidism / Thyrotoxicosis — Click-through",
+  href: "./pathways/hyperthyroidism-thyrotoxicosis/",
+  tags: ["Endocrine", "Thyroid"],
+  summary: "Confirm biochemistry → triage emergencies → determine cause → β-blocker → referral and follow-up."
+}
 ];
 
 const grid = document.getElementById("grid");
