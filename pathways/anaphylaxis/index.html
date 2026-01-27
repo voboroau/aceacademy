@@ -2,148 +2,565 @@
 <html lang="en-AU">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Anaphylaxis — Click-through</title>
 
   <link rel="stylesheet" href="../../assets/ace-core.css">
   <script src="../../assets/pathway-nav.js" defer></script>
+
+  <style>
+    /* Works with ace-core.css; keeps layout tidy */
+    .stepper-top{
+      display:flex; gap:12px; justify-content:space-between; align-items:flex-start; flex-wrap:wrap;
+    }
+    .progress{
+      height:10px; background: rgba(255,255,255,.08);
+      border:1px solid #24314f; border-radius:999px; overflow:hidden;
+      margin-top:12px;
+    }
+    .progress > div{
+      height:100%; width:0%;
+      background: linear-gradient(90deg, rgba(96,165,250,.95), rgba(52,211,153,.95));
+      transition: width .25s ease;
+    }
+    .pill{
+      border:1px solid #24314f; border-radius:999px; padding:6px 10px;
+      background: rgba(0,0,0,.25); color:#9ca3af; font-size:.85rem;
+      display:inline-flex; gap:8px; align-items:center;
+    }
+    .toggle{
+      display:inline-flex; align-items:center; gap:10px;
+      border:1px solid #24314f; border-radius:14px;
+      background: rgba(0,0,0,.25);
+      padding:8px 10px;
+      color:#e5e7eb;
+      font-weight:700;
+      font-size:.9rem;
+    }
+    .toggle input{ width:18px; height:18px; }
+    details{
+      border:1px solid #24314f;
+      border-radius:14px;
+      padding:10px 12px;
+      background: rgba(0,0,0,.18);
+      margin-bottom:10px;
+    }
+    summary{ cursor:pointer; font-weight:800; }
+    .footerNav{
+      display:flex; gap:10px; justify-content:space-between; align-items:center; flex-wrap:wrap;
+      margin-top:16px;
+    }
+    .footerNav .btn{ min-width:120px; justify-content:center; }
+    .hiddenBlock{ display:none; }
+    @media print{
+      .stepper-controls, .footerNav, .toggle, .pill { display:none !important; }
+    }
+  </style>
 </head>
 
 <body>
-
 <main class="wrap">
 
   <div class="card">
-    <h1>Anaphylaxis — Australian GP / Urgent Care Pathway</h1>
-    <p class="muted">
-      Rapid recognition → IM adrenaline → airway/oxygen/IV fluids → repeat adrenaline → transfer & observation
-    </p>
+    <div class="stepper-top">
+      <div>
+        <h1 id="pTitle">Anaphylaxis — Australian GP / Urgent Care Pathway</h1>
+        <p class="muted" id="pSub">Stepwise: recognise → IM adrenaline → support ABC → repeat/adjuvants → transfer & observation.</p>
+        <div class="muted small" id="crumbHint">Use ← / → keys for Back/Next.</div>
+      </div>
+
+      <div class="stepper-controls" style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+        <span class="pill" id="stepNo">Step 1 / 7</span>
+
+        <label class="toggle" title="Hide key doses/details until you click Reveal">
+          <input type="checkbox" id="examMode">
+          Exam mode
+        </label>
+
+        <button class="btn" id="revealBtn" style="display:none">👁️ Reveal</button>
+        <button class="btn" id="restartBtn">⟲ Restart</button>
+      </div>
+    </div>
+
+    <div class="progress" aria-label="Progress">
+      <div id="bar"></div>
+    </div>
   </div>
 
-  <!-- STEP 1 -->
   <div class="card">
-    <h2>Step 1 — Recognise anaphylaxis (treat first, confirm later)</h2>
+    <h2 id="stepTitle">Loading…</h2>
+    <p class="muted" id="stepSubtitle"></p>
 
-    <div class="callout danger">
-      <strong>Anaphylaxis is likely if:</strong>
-      <ul>
-        <li>Acute illness with <b>skin features</b> (urticaria, flushing, angioedema) PLUS
-          <ul>
-            <li>Respiratory compromise (wheeze, stridor, dyspnoea)</li>
-            <li>OR hypotension / collapse</li>
-          </ul>
-        </li>
-        <li>OR hypotension / bronchospasm after exposure to a known allergen</li>
-      </ul>
+    <div class="section">
+      <div class="section-header">Prompt</div>
+      <div class="section-body" id="prompt"></div>
     </div>
 
-    <div class="callout warn">
-      <strong>Do NOT wait</strong> for hypotension or rash to appear — early treatment saves lives.
-    </div>
-  </div>
-
-  <!-- STEP 2 -->
-  <div class="card">
-    <h2>Step 2 — Immediate actions (ABCDE)</h2>
-
-    <ul>
-      <li>Call for help immediately</li>
-      <li>Lay patient flat (or sitting if respiratory distress)</li>
-      <li>Remove trigger if possible (e.g. stop infusion)</li>
-      <li>Call <b>000</b> early — anaphylaxis always requires transfer</li>
-    </ul>
-  </div>
-
-  <!-- STEP 3 -->
-  <div class="card">
-    <h2>Step 3 — IM Adrenaline (first-line, lifesaving)</h2>
-
-    <div class="callout ok">
-      <strong>Give IM adrenaline immediately</strong> — do not delay
+    <div class="section">
+      <div class="section-header">Actions / Checklist</div>
+      <div class="section-body" id="actions"></div>
     </div>
 
-    <ul>
-      <li><b>Adults & children &gt;12 yrs:</b> 0.5 mg IM (0.5 mL of 1:1000)</li>
-      <li><b>Children 6–12 yrs:</b> 0.3 mg IM</li>
-      <li><b>Children &lt;6 yrs:</b> 0.15 mg IM</li>
-      <li>Inject into <b>mid-anterolateral thigh</b></li>
-      <li>Repeat every <b>5 minutes</b> if not improving</li>
-    </ul>
+    <div class="section">
+      <div class="section-header">Decision points</div>
+      <div class="section-body" id="decisions"></div>
+    </div>
 
-    <div class="callout warn">
-      <strong>Key rule:</strong> IM adrenaline is safe. Delay is dangerous.
+    <div class="section">
+      <div class="section-header">Handover essentials</div>
+      <div class="section-body" id="handover"></div>
+    </div>
+
+    <div class="footerNav">
+      <button class="btn" id="backBtn">← Back</button>
+      <div class="muted small" id="tip"></div>
+      <button class="btn" id="nextBtn">Next →</button>
     </div>
   </div>
 
-  <!-- STEP 4 -->
-  <div class="card">
-    <h2>Step 4 — Supportive management</h2>
-
-    <ul>
-      <li><b>Oxygen:</b> high-flow via mask</li>
-      <li><b>IV access</b> (2 large-bore if possible)</li>
-      <li><b>IV fluids:</b> Normal saline 20 mL/kg (adult bolus 1–2 L if hypotensive)</li>
-      <li><b>Salbutamol:</b> for bronchospasm (adjunct only)</li>
-    </ul>
-
-    <div class="callout warn">
-      <strong>Antihistamines and steroids</strong> are adjuncts only — they do NOT treat shock or airway obstruction.
-    </div>
-  </div>
-
-  <!-- STEP 5 -->
-  <div class="card">
-    <h2>Step 5 — Adjunct medications (after adrenaline)</h2>
-
-    <ul>
-      <li>Antihistamine (e.g. cetirizine)</li>
-      <li>Corticosteroid (e.g. prednisolone or IV hydrocortisone)</li>
-      <li>Glucagon IV if patient on beta-blockers and refractory hypotension</li>
-    </ul>
-  </div>
-
-  <!-- STEP 6 -->
-  <div class="card">
-    <h2>Step 6 — Refractory or deteriorating patient</h2>
-
-    <div class="callout danger">
-      <strong>Red flags:</strong>
-      <ul>
-        <li>Persistent hypotension</li>
-        <li>Worsening airway obstruction</li>
-        <li>Multiple adrenaline doses required</li>
-      </ul>
-    </div>
-
-    <ul>
-      <li>Repeat IM adrenaline every 5 minutes</li>
-      <li>Prepare for airway support</li>
-      <li>Early senior / retrieval involvement</li>
-    </ul>
-  </div>
-
-  <!-- STEP 7 -->
-  <div class="card">
-    <h2>Step 7 — Observation, discharge & prevention</h2>
-
-    <div class="callout ok">
-      <strong>All anaphylaxis requires observation</strong>
-    </div>
-
-    <ul>
-      <li>Observe minimum <b>4–6 hours</b> (longer if severe or recurrent)</li>
-      <li>Prescribe <b>adrenaline autoinjector</b> (EpiPen / Anapen)</li>
-      <li>Provide written <b>Anaphylaxis Action Plan</b></li>
-      <li>Educate on trigger avoidance and autoinjector use</li>
-      <li>Refer to immunology/allergy specialist</li>
-    </ul>
-
-    <div class="callout warn">
-      <strong>Biphasic reactions</strong> can occur hours later.
-    </div>
-  </div>
+  <p class="muted small">
+    Safety note: For suspected anaphylaxis, prioritise early IM adrenaline and urgent transfer per local protocols.
+    This is an educational pathway and does not replace clinical judgement, ASCIA guidance, or local emergency policies.
+  </p>
 
 </main>
+
+<script>
+(() => {
+  // -----------------------------
+  // Content
+  // -----------------------------
+  const steps = [
+    {
+      title: "Step 1 — Recognise anaphylaxis (treat first, confirm later)",
+      subtitle: "If in doubt, treat as anaphylaxis. Delay is dangerous.",
+      prompt: `
+        <div class="callout danger">
+          <strong>Anaphylaxis is likely if:</strong>
+          <ul>
+            <li>Acute illness with <b>skin/mucosal features</b> (urticaria, flushing, angioedema) PLUS
+              <ul>
+                <li>Respiratory compromise (wheeze, stridor, dyspnoea)</li>
+                <li>OR hypotension / collapse</li>
+              </ul>
+            </li>
+            <li>OR hypotension / bronchospasm / upper airway obstruction after exposure to a likely allergen</li>
+          </ul>
+        </div>
+        <div class="callout warn">
+          <strong>Do not wait</strong> for hypotension or rash to appear.
+        </div>
+      `,
+      actions: [
+        "Call for help; bring emergency trolley + oxygen + suction + defib",
+        "Lay patient flat (or sitting if severe respiratory distress); avoid standing/walking",
+        "Remove/stop trigger if possible (e.g., stop infusion, remove stinger)"
+      ],
+      decisions: [
+        {
+          q: "Any immediate life threats?",
+          a: `<ul>
+                <li>Airway obstruction/stridor, severe bronchospasm, hypotension/collapse, altered consciousness</li>
+              </ul>
+              <div class="callout danger"><strong>Action:</strong> Call 000 immediately and proceed to IM adrenaline now.</div>`
+        }
+      ],
+      handover: [
+        "Time of onset + suspected trigger/exposure time",
+        "Previous anaphylaxis, asthma, known allergies, autoinjector availability",
+        "Current vitals and primary problems (airway/breathing/circulation)"
+      ],
+      tip: "Document times early: symptom onset, first adrenaline, repeat doses, ambulance call."
+    },
+
+    {
+      title: "Step 2 — Activate emergency response + position",
+      subtitle: "Transfer is required even if symptoms improve.",
+      prompt: `
+        <div class="callout warn">
+          <strong>Immediate:</strong>
+          <ul>
+            <li>Call <b>000</b> (or activate local emergency response)</li>
+            <li>Keep patient <b>flat</b>; if vomiting/unconscious, recovery position</li>
+            <li>Pregnancy: left lateral tilt</li>
+          </ul>
+        </div>
+        <div class="muted small" style="margin-top:10px">
+          Sudden standing can precipitate collapse in anaphylaxis.
+        </div>
+      `,
+      actions: [
+        "Apply monitoring: SpO₂, HR, BP, RR; continuous reassessment",
+        "Prepare IM adrenaline; do not delay for IV access",
+        "Ensure airway equipment available; oxygen ready"
+      ],
+      decisions: [
+        {
+          q: "Should you wait for IV access or antihistamines first?",
+          a: `<div class="callout danger"><strong>No.</strong> IM adrenaline is first-line. Adjuncts do not treat airway obstruction or shock.</div>`
+        }
+      ],
+      handover: [
+        "Positioning used and any collapse episodes",
+        "Response team activation time"
+      ],
+      tip: "If symptoms are evolving rapidly, proceed directly to IM adrenaline."
+    },
+
+    {
+      title: "Step 3 — IM adrenaline now (first-line, lifesaving)",
+      subtitle: "Give immediately. Repeat every 5 minutes if not improving.",
+      prompt: `
+        <div class="callout ok">
+          <strong>Give IM adrenaline immediately.</strong>
+          <div class="muted small">Mid-anterolateral thigh is preferred injection site.</div>
+        </div>
+
+        <div id="doseBlock">
+          <div class="callout warn">
+            <strong>Typical IM doses (confirm local protocol):</strong>
+            <ul>
+              <li><b>Adults / &gt;12 years:</b> 0.5 mg IM (0.5 mL of 1:1000)</li>
+              <li><b>Children 6–12 years:</b> 0.3 mg IM</li>
+              <li><b>Children &lt;6 years:</b> 0.15 mg IM</li>
+            </ul>
+            <div class="muted small">Repeat every <b>5 minutes</b> if persistent or worsening features.</div>
+          </div>
+        </div>
+
+        <div class="callout warn">
+          <strong>Key rule:</strong> IM adrenaline is safe. Delay is dangerous.
+        </div>
+      `,
+      actions: [
+        "Administer IM adrenaline immediately (document time)",
+        "Reassess airway/breathing/circulation every 1–2 minutes",
+        "Prepare next dose if no improvement (every 5 min as needed)"
+      ],
+      decisions: [
+        {
+          q: "Patient improves after first dose — still transfer?",
+          a: `<div class="callout warn"><strong>Yes.</strong> Observation is required due to risk of recurrence/biphasic reaction.</div>`
+        }
+      ],
+      handover: [
+        "Time and dose of adrenaline, number of doses",
+        "Clinical response after each dose (BP, RR, wheeze/stridor, rash)"
+      ],
+      tip: "If you have an autoinjector available, use it immediately rather than delaying."
+    },
+
+    {
+      title: "Step 4 — Airway/oxygen/IV access + fluids",
+      subtitle: "Treat hypoxia and shock aggressively while continuing adrenaline as needed.",
+      prompt: `
+        <div class="callout">
+          <strong>Support ABC:</strong>
+          <ul>
+            <li><b>Oxygen:</b> high-flow (titrate to clinical status)</li>
+            <li><b>IV access:</b> large-bore if possible (do not delay adrenaline)</li>
+            <li><b>IV fluids:</b> rapid bolus for hypotension/shock</li>
+          </ul>
+        </div>
+
+        <div id="fluidBlock">
+          <div class="callout warn">
+            <strong>Fluids (typical guidance):</strong>
+            <ul>
+              <li><b>Adults:</b> 1–2 L normal saline rapidly if hypotensive</li>
+              <li><b>Children:</b> 20 mL/kg bolus, repeat as needed</li>
+            </ul>
+          </div>
+        </div>
+      `,
+      actions: [
+        "High-flow oxygen if respiratory compromise or shock",
+        "IV access; begin rapid crystalloid bolus if hypotensive",
+        "Consider salbutamol for bronchospasm (adjunct only)"
+      ],
+      decisions: [
+        {
+          q: "Antihistamines/steroids instead of adrenaline?",
+          a: `<div class="callout danger"><strong>No.</strong> They are adjuncts only and do not treat airway obstruction or shock.</div>`
+        }
+      ],
+      handover: [
+        "Oxygen delivery and response (SpO₂ trend)",
+        "Fluids given (type/volume/time), BP response"
+      ],
+      tip: "Persistent hypotension usually needs more adrenaline + fluids, not antihistamines."
+    },
+
+    {
+      title: "Step 5 — Adjuncts (after adrenaline)",
+      subtitle: "Treat bronchospasm, itching, and consider special situations.",
+      prompt: `
+        <div class="callout ok">
+          <strong>Adjuncts can help symptoms but do not replace adrenaline.</strong>
+        </div>
+        <ul>
+          <li><b>Salbutamol:</b> for persistent wheeze/bronchospasm (adjunct)</li>
+          <li><b>Antihistamine:</b> for urticaria/itch (symptom relief)</li>
+          <li><b>Corticosteroid:</b> may reduce protracted symptoms (not immediate)</li>
+        </ul>
+
+        <div id="specialBlock">
+          <details>
+            <summary>Special: patient on beta-blocker with refractory hypotension</summary>
+            <div style="margin-top:10px" class="muted small">
+              Consider <b>IV glucagon</b> per local protocol and urgent specialist/retrieval advice.
+            </div>
+          </details>
+        </div>
+      `,
+      actions: [
+        "Continue monitoring and reassessment",
+        "Give adjunct bronchodilator if bronchospasm persists",
+        "Prepare for repeat adrenaline if symptoms recur/worsen"
+      ],
+      decisions: [
+        {
+          q: "Ongoing stridor/airway swelling despite adrenaline?",
+          a: `<div class="callout danger"><strong>Escalate immediately:</strong> call 000/retrieval, prepare airway support, repeat IM adrenaline.</div>`
+        }
+      ],
+      handover: [
+        "Adjunct medications given and timing",
+        "Any beta-blocker use and response issues"
+      ],
+      tip: "Don’t be reassured by resolving rash if breathing/circulation is deteriorating."
+    },
+
+    {
+      title: "Step 6 — Refractory / deteriorating anaphylaxis",
+      subtitle: "Multiple doses, persistent hypotension, or airway compromise = high risk.",
+      prompt: `
+        <div class="callout danger">
+          <strong>High-risk / refractory features:</strong>
+          <ul>
+            <li>Persistent hypotension or collapse</li>
+            <li>Worsening airway obstruction (stridor, swelling)</li>
+            <li>Severe bronchospasm not responding</li>
+            <li>Need for repeated IM adrenaline doses</li>
+          </ul>
+        </div>
+        <div class="callout warn">
+          <strong>Action:</strong> Repeat IM adrenaline every 5 min as needed + aggressive fluids + urgent retrieval/ED support.
+        </div>
+      `,
+      actions: [
+        "Repeat IM adrenaline every 5 minutes if persistent features",
+        "Continue rapid IV fluids; reassess frequently",
+        "Prepare airway support; consider early senior assistance"
+      ],
+      decisions: [
+        {
+          q: "When to consider an adrenaline infusion?",
+          a: `<div class="muted small">Typically in ED/ICU/retrieval contexts with monitoring. Seek urgent specialist advice via local pathways.</div>`
+        }
+      ],
+      handover: [
+        "Total adrenaline doses and timing",
+        "Worst vitals recorded and response to fluids"
+      ],
+      tip: "If the patient is getting tired or ‘quieter’, think impending respiratory failure."
+    },
+
+    {
+      title: "Step 7 — Observation, discharge planning, prevention",
+      subtitle: "Biphasic reactions can occur hours later.",
+      prompt: `
+        <div class="callout ok">
+          <strong>All suspected anaphylaxis requires observation</strong>
+        </div>
+
+        <div id="obsBlock">
+          <div class="callout warn">
+            <strong>Typical observation:</strong>
+            <ul>
+              <li>Minimum <b>4–6 hours</b> for mild/moderate cases</li>
+              <li>Longer / overnight if severe, repeated adrenaline, hypotension, asthma, or late presentation</li>
+            </ul>
+          </div>
+        </div>
+
+        <details>
+          <summary>Discharge checklist (when safe)</summary>
+          <div style="margin-top:10px">
+            <ul>
+              <li>Prescribe <b>adrenaline autoinjector</b> and demonstrate use</li>
+              <li>Provide written <b>Anaphylaxis Action Plan</b></li>
+              <li>Trigger avoidance advice</li>
+              <li>Arrange follow-up and <b>allergy/immunology referral</b></li>
+            </ul>
+          </div>
+        </details>
+      `,
+      actions: [
+        "Ensure appropriate observation/transfer completed",
+        "Provide autoinjector education + action plan",
+        "Arrange follow-up and referral"
+      ],
+      decisions: [
+        {
+          q: "Why observe if the patient looks well?",
+          a: `<div class="callout warn"><strong>Biphasic reaction risk:</strong> symptoms can recur hours later even after improvement.</div>`
+        }
+      ],
+      handover: [
+        "Observation period completed/required",
+        "Discharge plan, autoinjector prescribed, action plan given"
+      ],
+      tip: "Every anaphylaxis episode should end with an action plan + autoinjector training."
+    }
+  ];
+
+  // -----------------------------
+  // State
+  // -----------------------------
+  let idx = 0;
+  let examMode = false;
+  let revealed = true;
+
+  // Elements
+  const bar = document.getElementById("bar");
+  const stepNo = document.getElementById("stepNo");
+  const stepTitle = document.getElementById("stepTitle");
+  const stepSubtitle = document.getElementById("stepSubtitle");
+  const prompt = document.getElementById("prompt");
+  const actions = document.getElementById("actions");
+  const decisions = document.getElementById("decisions");
+  const handover = document.getElementById("handover");
+  const tip = document.getElementById("tip");
+
+  const backBtn = document.getElementById("backBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  const restartBtn = document.getElementById("restartBtn");
+  const examToggle = document.getElementById("examMode");
+  const revealBtn = document.getElementById("revealBtn");
+
+  // Blocks that contain dose/number details to hide in Exam Mode
+  const EXAM_HIDE_IDS = ["doseBlock", "fluidBlock", "obsBlock", "specialBlock"];
+
+  function renderActions(list){
+    actions.innerHTML = "<ul>" + list.map(x => `<li><label style="display:flex;gap:10px;align-items:flex-start;cursor:pointer;">
+      <input type="checkbox" style="margin-top:3px;width:18px;height:18px;">
+      <span>${x}</span>
+    </label></li>`).join("") + "</ul>";
+  }
+
+  function renderDecisions(list){
+    if(!list || !list.length){
+      decisions.innerHTML = `<div class="muted small">No decision points in this step.</div>`;
+      return;
+    }
+    decisions.innerHTML = list.map(d => `
+      <details>
+        <summary>${d.q}</summary>
+        <div style="margin-top:10px">${d.a}</div>
+      </details>
+    `).join("");
+  }
+
+  function renderHandover(list){
+    handover.innerHTML = "<ul>" + list.map(x => `<li>${x}</li>`).join("") + "</ul>";
+  }
+
+  function applyExamHiding(){
+    EXAM_HIDE_IDS.forEach(id => {
+      const el = document.getElementById(id);
+      if(!el) return;
+      el.classList.toggle("hiddenBlock", examMode && !revealed);
+    });
+
+    // Add an exam-mode hint if blocks are hidden
+    const hiddenAny = examMode && !revealed && EXAM_HIDE_IDS.some(id => document.getElementById(id));
+    if(hiddenAny){
+      const hint = document.createElement("div");
+      hint.className = "callout warn";
+      hint.innerHTML = `<strong>Exam mode:</strong> key doses/details hidden. Click <b>Reveal</b> to show.`;
+      // put hint at top of prompt area
+      prompt.prepend(hint);
+    }
+  }
+
+  function render(){
+    const s = steps[idx];
+
+    stepTitle.textContent = s.title;
+    stepSubtitle.textContent = s.subtitle;
+
+    prompt.innerHTML = s.prompt;
+    renderActions(s.actions || []);
+    renderDecisions(s.decisions || []);
+    renderHandover(s.handover || []);
+    tip.textContent = s.tip || "";
+
+    // Progress
+    stepNo.textContent = `Step ${idx+1} / ${steps.length}`;
+    bar.style.width = Math.round(((idx+1)/steps.length)*100) + "%";
+
+    // Buttons
+    backBtn.disabled = idx === 0;
+    nextBtn.textContent = (idx === steps.length - 1) ? "Finish ✓" : "Next →";
+
+    // Exam mode behaviour
+    revealBtn.style.display = examMode ? "inline-flex" : "none";
+    applyExamHiding();
+  }
+
+  function next(){
+    if(idx < steps.length - 1){
+      idx++;
+      if(examMode) revealed = false;
+      window.scrollTo({top:0, behavior:"smooth"});
+      render();
+    } else {
+      window.scrollTo({top:0, behavior:"smooth"});
+      alert("Pathway complete. Use Print to save as PDF or Restart.");
+    }
+  }
+
+  function back(){
+    if(idx > 0){
+      idx--;
+      if(examMode) revealed = false;
+      window.scrollTo({top:0, behavior:"smooth"});
+      render();
+    }
+  }
+
+  // Events
+  backBtn.addEventListener("click", back);
+  nextBtn.addEventListener("click", next);
+
+  restartBtn.addEventListener("click", () => {
+    idx = 0;
+    revealed = !examMode;
+    window.scrollTo({top:0, behavior:"smooth"});
+    render();
+  });
+
+  examToggle.addEventListener("change", () => {
+    examMode = !!examToggle.checked;
+    revealed = !examMode;
+    render();
+  });
+
+  revealBtn.addEventListener("click", () => {
+    revealed = true;
+    render();
+  });
+
+  window.addEventListener("keydown", (e) => {
+    if(e.key === "ArrowRight") next();
+    if(e.key === "ArrowLeft") back();
+  });
+
+  // Init
+  render();
+})();
+</script>
 
 </body>
 </html>
