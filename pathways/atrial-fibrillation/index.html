@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Australian GP Pathway — Atrial Fibrillation</title>
+
+  <!-- Centralised header + breadcrumbs -->
+  <script src="../../assets/pathway-nav.js" defer></script>
+
+  <style>
+    :root{
+      --bg:#0b1220;
+      --text:#eef4ff;
+      --muted:#9db0d0;
+      --border:rgba(255,255,255,.12);
+      --accent:#67e8f9;
+      --accent2:#a78bfa;
+      --danger:#fb7185;
+      --warn:#fbbf24;
+      --ok:#34d399;
+      --radius:18px;
+      --shadow:0 18px 45px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:#0b1220;
+      color:var(--text);
+      padding:96px 24px 24px;
+    }
+    .wrap{max-width:980px;margin:0 auto}
+    .card{
+      background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .cardHead{
+      padding:16px 18px;
+      border-bottom:1px solid var(--border);
+      display:flex;justify-content:space-between;align-items:center;
+    }
+    .stepTitle{font-weight:900;font-size:16px}
+    .progress{font-size:12px;color:var(--muted)}
+    .bar{height:8px;width:160px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden}
+    .bar div{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0%}
+
+    .content{padding:18px}
+    .grid{display:grid;grid-template-columns:1.2fr .8fr;gap:14px}
+    @media(max-width:860px){.grid{grid-template-columns:1fr}}
+    .panel{border:1px solid var(--border);border-radius:14px;padding:14px;background:rgba(0,0,0,.15)}
+    .panel h3{margin:0 0 10px 0;font-size:13px;text-transform:uppercase;color:var(--muted)}
+    ul{margin:0;padding-left:18px}
+    li{margin:6px 0}
+    .note{border-left:4px solid var(--accent);padding:10px;background:rgba(103,232,249,.1);border-radius:10px;font-size:13px}
+    .danger{border-left:4px solid var(--danger);background:rgba(251,113,133,.12)}
+    .cta{display:flex;justify-content:space-between;align-items:center;padding:14px;border-top:1px solid var(--border)}
+    button{
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      padding:10px 14px;
+      border-radius:14px;
+      font-weight:800;
+      cursor:pointer;
+    }
+    button.primary{
+      background:linear-gradient(90deg,rgba(103,232,249,.2),rgba(167,139,250,.18));
+      border-color:rgba(103,232,249,.4);
+    }
+    button:disabled{opacity:.5}
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:6px 10px;border-radius:999px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.04);
+      font-size:12px;
+    }
+    .dot{width:8px;height:8px;border-radius:50%;background:var(--warn)}
+    .dot.danger{background:var(--danger)}
+    .dot.ok{background:var(--ok)}
+  </style>
+</head>
+
+<body>
+<div class="wrap">
+  <div class="card">
+    <div class="cardHead">
+      <div>
+        <div class="stepTitle" id="stepTitle">Step</div>
+        <div class="progress" id="stepCount">1 / 8</div>
+      </div>
+      <div class="bar"><div id="barFill"></div></div>
+    </div>
+
+    <div class="content">
+      <div class="grid">
+        <div class="panel">
+          <h3>Clinical actions</h3>
+          <div id="body"></div>
+        </div>
+
+        <div class="panel">
+          <h3>Urgency check</h3>
+          <div class="pill">
+            <span class="dot" id="urgDot"></span>
+            <span id="urgText">Assess</span>
+          </div>
+          <div class="note" id="sideNote" style="margin-top:10px"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cta">
+      <div>
+        <button id="back">← Back</button>
+        <button class="primary" id="next">Next →</button>
+      </div>
+      <button onclick="window.print()">Print</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const steps = [
+{
+ title:"1) Confirm AF and stability",
+ body:`
+ <ul>
+   <li>12-lead ECG: irregularly irregular rhythm, no P waves</li>
+   <li>Assess haemodynamic stability (BP, chest pain, syncope, HF)</li>
+   <li>Check duration of symptoms if known</li>
+ </ul>
+ <div class="note danger">
+   Unstable (hypotension, pulmonary oedema, ischaemia) → ED for urgent cardioversion
+ </div>`,
+ urg:"danger", urgText:"Escalate if unstable",
+ note:"Unstable AF is an emergency."
+},
+{
+ title:"2) Identify triggers & comorbidities",
+ body:`
+ <ul>
+   <li>Infection, dehydration, alcohol, surgery</li>
+   <li>Hypertension, IHD, heart failure, valvular disease</li>
+   <li>Check thyroid function, electrolytes</li>
+ </ul>`,
+ urg:"warn", urgText:"Look for reversible causes",
+ note:"Treating triggers improves rate control."
+},
+{
+ title:"3) Rate vs rhythm control (GP focus = rate)",
+ body:`
+ <ul>
+   <li>Rate control is first-line for most GPs</li>
+   <li>Rhythm control usually specialist-led</li>
+ </ul>
+ <div class="note">
+   Aim resting HR <110 bpm if asymptomatic (lenient control)
+ </div>`,
+ urg:"ok", urgText:"Rate control first",
+ note:"β-blockers or rate-limiting CCBs commonly used."
+},
+{
+ title:"4) Start rate control",
+ body:`
+ <ul>
+   <li>β-blocker (e.g. metoprolol) if no contraindication</li>
+   <li>Diltiazem/verapamil if β-blocker unsuitable</li>
+   <li>Avoid CCBs in HFrEF</li>
+ </ul>`,
+ urg:"ok", urgText:"Control ventricular rate",
+ note:"Monitor BP, HR, symptoms."
+},
+{
+ title:"5) Assess stroke risk (CHA₂DS₂-VA)",
+ body:`
+ <ul>
+   <li>C: HF/LV dysfunction (1)</li>
+   <li>H: Hypertension (1)</li>
+   <li>A₂: Age ≥75 (2)</li>
+   <li>D: Diabetes (1)</li>
+   <li>S₂: Stroke/TIA (2)</li>
+   <li>V: Vascular disease (1)</li>
+   <li>A: Age 65–74 (1)</li>
+ </ul>
+ <div class="note">
+   Score ≥1 (men) or ≥2 (women) → anticoagulate
+ </div>`,
+ urg:"ok", urgText:"Stroke prevention step",
+ note:"CHA₂DS₂-VA used in Australia."
+},
+{
+ title:"6) Anticoagulation decision",
+ body:`
+ <ul>
+   <li>DOAC preferred in non-valvular AF</li>
+   <li>Warfarin if mechanical valve or moderate-severe MS</li>
+   <li>Assess bleeding risk (HAS-BLED)</li>
+ </ul>
+ <div class="note danger">
+   Aspirin is NOT adequate stroke prevention
+ </div>`,
+ urg:"warn", urgText:"Prevent stroke",
+ note:"Balance stroke vs bleeding risk."
+},
+{
+ title:"7) AF duration & cardioversion rule",
+ body:`
+ <ul>
+   <li>&lt;48 hours: cardioversion may be considered</li>
+   <li>&gt;48 hours or unknown: anticoagulate ≥3 weeks first</li>
+ </ul>`,
+ urg:"warn", urgText:"48-hour rule applies",
+ note:"Usually specialist-directed."
+},
+{
+ title:"8) Follow-up & referral",
+ body:`
+ <ul>
+   <li>Cardiology referral if young, symptomatic, or difficult control</li>
+   <li>Review rate, anticoagulation adherence, bleeding</li>
+   <li>Patient education: stroke signs, medication adherence</li>
+ </ul>
+ <div class="note">
+   AF is chronic — ongoing GP follow-up is essential
+ </div>`,
+ urg:"ok", urgText:"Ongoing care",
+ note:"GP coordination is key."
+}
+];
+
+let i=0;
+const t=document.getElementById("stepTitle"),
+c=document.getElementById("stepCount"),
+b=document.getElementById("body"),
+f=document.getElementById("barFill"),
+d=document.getElementById("urgDot"),
+u=document.getElementById("urgText"),
+n=document.getElementById("sideNote");
+
+function render(){
+ const s=steps[i];
+ t.textContent=s.title;
+ b.innerHTML=s.body;
+ c.textContent=`${i+1} / ${steps.length}`;
+ f.style.width=((i+1)/steps.length*100)+"%";
+ d.className="dot "+(s.urg||"");
+ u.textContent=s.urgText;
+ n.textContent=s.note;
+ document.getElementById("back").disabled=i===0;
+ document.getElementById("next").disabled=i===steps.length-1;
+}
+document.getElementById("back").onclick=()=>{if(i>0){i--;render();}};
+document.getElementById("next").onclick=()=>{if(i<steps.length-1){i++;render();}};
+render();
+</script>
+</body>
+</html>
