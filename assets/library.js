@@ -22,6 +22,12 @@ const pathways = [
   href: "./pathways/acute-diarrhoea-gastroenteritis/",
   tags: ["GI", "Infectious", "Acute"],
   summary: "Triage dehydration and red flags → selective stool testing → supportive care → antibiotics only when indicated → safety-net and public health."
+},
+  {
+  title: "Atrial Fibrillation — Click-through",
+  href: "./pathways/atrial-fibrillation/",
+  tags: ["Cardiology", "AF", "Stroke"],
+  summary: "Confirm AF → assess stability → rate control → CHA₂DS₂-VA → anticoagulation → ongoing follow-up and referral."
 }
 ];
 
