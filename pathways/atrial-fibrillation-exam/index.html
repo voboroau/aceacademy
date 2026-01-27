@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Atrial Fibrillation — Exam Mode</title>
+
+  <!-- Centralised header + breadcrumbs -->
+  <script src="../../assets/pathway-nav.js" defer></script>
+
+  <style>
+    :root{
+      --bg:#0b1220;
+      --text:#eef4ff;
+      --muted:#9db0d0;
+      --border:rgba(255,255,255,.12);
+      --accent:#67e8f9;
+      --accent2:#a78bfa;
+      --danger:#fb7185;
+      --warn:#fbbf24;
+      --ok:#34d399;
+      --radius:18px;
+      --shadow:0 18px 45px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background: radial-gradient(1200px 800px at 20% 10%, rgba(103,232,249,.18), transparent 55%),
+                  radial-gradient(1000px 700px at 85% 20%, rgba(167,139,250,.16), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+      padding:96px 24px 24px; /* room for fixed nav injected by pathway-nav.js */
+    }
+    .wrap{max-width:1020px;margin:0 auto}
+    .top{
+      display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:14px;
+    }
+    .h1{
+      margin:0;
+      font-weight:1000;
+      font-size:22px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip:text;background-clip:text;color:transparent;
+      letter-spacing:.2px;
+    }
+    .sub{margin:6px 0 0 0;color:var(--muted);font-size:14px;line-height:1.4}
+    .chiprow{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .chip{padding:7px 10px;border:1px solid var(--border);border-radius:999px;color:var(--muted);font-size:12px;background:rgba(255,255,255,.04)}
+    .chip strong{color:var(--text);font-weight:900}
+
+    .card{
+      background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .cardHead{
+      padding:16px 18px;
+      border-bottom:1px solid var(--border);
+      display:flex;gap:12px;align-items:center;justify-content:space-between;
+      background: rgba(255,255,255,.03);
+    }
+    .stepTitle{font-weight:1000;font-size:16px;margin:0}
+    .progress{display:flex;align-items:center;gap:10px;justify-content:flex-end;color:var(--muted);font-size:12px}
+    .bar{width:160px;height:8px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;border:1px solid rgba(255,255,255,.10)}
+    .bar>div{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:999px;transition:width .35s ease}
+
+    .content{padding:18px}
+    .grid{display:grid;grid-template-columns:1.05fr .95fr;gap:14px}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}}
+
+    .panel{border:1px solid var(--border);border-radius:16px;padding:14px;background:rgba(0,0,0,.15)}
+    .panel h3{margin:0 0 10px 0;font-size:13px;text-transform:uppercase;color:var(--muted);letter-spacing:.2px}
+    ul{margin:0;padding-left:18px}
+    li{margin:6px 0}
+    .divider{height:1px;background:var(--border);margin:12px 0}
+
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:8px 10px;border-radius:999px;border:1px solid var(--border);
+      background:rgba(255,255,255,.03);
+      font-size:13px;
+      margin-bottom:10px;
+    }
+    .dot{width:9px;height:9px;border-radius:50%;background:var(--warn);box-shadow:0 0 0 4px rgba(251,191,36,.18)}
+    .dot.ok{background:var(--ok);box-shadow:0 0 0 4px rgba(52,211,153,.18)}
+    .dot.danger{background:var(--danger);box-shadow:0 0 0 4px rgba(251,113,133,.18)}
+
+    .note{
+      border-left:4px solid rgba(103,232,249,.55);
+      padding:10px 12px;background:rgba(103,232,249,.08);
+      border-radius:12px;font-size:13px;
+    }
+    .dangerBox{
+      border-left:4px solid rgba(251,113,133,.65);
+      padding:10px 12px;background:rgba(251,113,133,.10);
+      border-radius:12px;font-size:13px;
+    }
+
+    .examBox{
+      border:2px dashed rgba(255,255,255,.22);
+      border-radius:16px;
+      padding:14px;
+      background:rgba(0,0,0,.20);
+    }
+    .examBox strong{display:block;margin-bottom:8px}
+    .choices{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+    .choice{
+      border:1px solid rgba(255,255,255,.16);
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:14px;
+      font-weight:900;
+      cursor:pointer;
+      font-size:13px;
+    }
+    .choice.selected{
+      border-color:rgba(103,232,249,.45);
+      background:rgba(103,232,249,.12);
+    }
+    .revealRow{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    button{
+      cursor:pointer;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:14px;
+      font-weight:900;
+      letter-spacing:.2px;
+    }
+    button.primary{
+      border-color: rgba(103,232,249,.35);
+      background: linear-gradient(90deg, rgba(103,232,249,.18), rgba(167,139,250,.16));
+    }
+    button:disabled{opacity:.5;cursor:not-allowed}
+    .tiny{font-size:12px;color:var(--muted);line-height:1.35}
+    @media print{
+      body{background:#fff;color:#000;padding:0}
+      .card{box-shadow:none;border-radius:0;border:0}
+      .top,.cardHead,.revealRow,.choices{display:none !important}
+      .panel{border:1px solid #ccc;background:#fff}
+      .note,.dangerBox{background:#fff}
+    }
+  </style>
+</head>
+
+<body>
+<div class="wrap">
+  <div class="top">
+    <div>
+      <h1 class="h1">Atrial Fibrillation — Exam Mode (Australian GP)</h1>
+      <p class="sub">Forced-choice decision first → reveal guidance after. Ideal for PESCI / AMC-style rehearsal.</p>
+      <div class="chiprow">
+        <span class="chip"><strong>Core</strong>: ECG confirm + stability</span>
+        <span class="chip"><strong>Rate</strong>: β-blocker / diltiazem (avoid in HFrEF)</span>
+        <span class="chip"><strong>Stroke</strong>: CHA₂DS₂-VA → anticoagulation</span>
+        <span class="chip"><strong>48h</strong>: duration informs cardioversion planning</span>
+      </div>
+    </div>
+    <div class="chiprow" style="justify-content:flex-end">
+      <span class="chip"><strong>Mode</strong>: Exam (always on)</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="cardHead">
+      <div>
+        <div class="stepTitle" id="stepTitle">Step</div>
+        <div class="tiny" id="stepHint"></div>
+      </div>
+      <div class="progress">
+        <span id="stepCount">1 / 9</span>
+        <div class="bar"><div id="barFill"></div></div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="grid">
+        <div class="panel">
+          <h3>Exam prompt</h3>
+          <div class="examBox" id="examBox"></div>
+
+          <div class="divider"></div>
+
+          <h3 id="guidanceHeader" style="display:none;">Guidance (revealed)</h3>
+          <div id="guidance" style="display:none;"></div>
+        </div>
+
+        <div class="panel">
+          <h3>Urgency check</h3>
+          <div class="pill">
+            <span class="dot" id="urgDot"></span>
+            <span><strong>Urgency:</strong> <span id="urgText">Assess</span></span>
+          </div>
+
+          <div id="sideBlock"></div>
+
+          <div class="divider"></div>
+          <div class="tiny">
+            Tip: Treat AF as three jobs — <strong>stability</strong>, <strong>rate/rhythm</strong>, <strong>stroke prevention</strong>.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cardHead" style="border-top:1px solid var(--border);border-bottom:0;">
+      <div class="revealRow">
+        <button id="btnBack">← Back</button>
+        <button class="primary" id="btnNext">Next →</button>
+        <button id="btnResetStep">Reset step</button>
+        <button id="btnRestart">Restart</button>
+      </div>
+      <div class="tiny" id="mini"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const steps = [
+    {
+      title: "1) Confirm AF and stability",
+      hint: "Start with ECG confirmation and haemodynamic stability.",
+      prompt: "What are your immediate next actions and your escalation threshold?",
+      choices: [
+        { key:"ecg", label:"Do ECG + assess stability" },
+        { key:"unstable", label:"If unstable → ED/urgent cardioversion" },
+        { key:"labs", label:"Check triggers (infection, electrolytes, thyroid)" }
+      ],
+      mustPick: ["ecg"],
+      urgency: "danger",
+      urgText: "Escalate if unstable",
+      side: `<div class="dangerBox"><strong>ED now if:</strong> hypotension, pulmonary oedema, ischaemic chest pain, syncope, shock, severe HF.</div>`,
+      guidance: `
+        <ul>
+          <li>Confirm AF on ECG (irregularly irregular, absent P waves).</li>
+          <li>Assess stability: BP, perfusion, chest pain, dyspnoea/HF, syncope.</li>
+          <li>If unstable → urgent ED transfer for cardioversion.</li>
+        </ul>
+      `,
+      mini: "Unstable AF = emergency."
+    },
+    {
+      title: "2) Focused history: duration + symptoms",
+      hint: "Duration matters for cardioversion strategy.",
+      prompt: "What key history points will you prioritise right now?",
+      choices: [
+        { key:"duration", label:"Onset/last known sinus rhythm (48h?)" },
+        { key:"symptoms", label:"Symptoms (CP, dyspnoea, syncope, exercise tolerance)" },
+        { key:"triggers", label:"Triggers (alcohol, infection, dehydration, surgery)" }
+      ],
+      mustPick: ["duration","symptoms"],
+      urgency: "warn",
+      urgText: "Clarify onset & severity",
+      side: `<div class="note"><strong>Duration rule:</strong> <em>&lt;48h</em> vs <em>&gt;48h/unknown</em> informs cardioversion planning and anticoag timing.</div>`,
+      guidance: `
+        <ul>
+          <li>Confirm duration (exact onset/last known normal).</li>
+          <li>Assess symptom severity and red flags.</li>
+          <li>Ask triggers and comorbidities (HF, valve disease, thyroid disease).</li>
+        </ul>
+      `,
+      mini: "Duration drives cardioversion approach."
+    },
+    {
+      title: "3) Examination and immediate tests",
+      hint: "Vitals, volume status, HF signs, ECG already done.",
+      prompt: "What exam/tests do you do today in GP or arrange urgently?",
+      choices: [
+        { key:"vitals", label:"Vitals incl. postural BP" },
+        { key:"hf", label:"HF signs (JVP, crackles, oedema)" },
+        { key:"labs", label:"Bloods: U&E, Mg, TFT, FBC/CRP as indicated" },
+        { key:"echo", label:"Consider echo referral if HF/structural disease" }
+      ],
+      mustPick: ["vitals","hf"],
+      urgency: "ok",
+      urgText: "Assess severity",
+      side: `<div class="note"><strong>Common work-up:</strong> electrolytes, renal function, thyroid, +/- infection screen if suspected.</div>`,
+      guidance: `
+        <ul>
+          <li>Vitals (HR/BP/temp), hydration, HF signs.</li>
+          <li>Bloods: U&E/Mg, TFTs; other labs guided by context.</li>
+          <li>Echo if structural disease/HF suspected (often via cardiology).</li>
+        </ul>
+      `,
+      mini: "Treat triggers and complications."
+    },
+    {
+      title: "4) Rate control: first-line GP strategy",
+      hint: "Most stable AF in GP starts with rate control.",
+      prompt: "What is your initial management strategy in a stable patient?",
+      choices: [
+        { key:"rate", label:"Rate control first" },
+        { key:"rhythm", label:"Rhythm control (specialist-led)" },
+        { key:"educ", label:"Explain AF + plan follow-up" }
+      ],
+      mustPick: ["rate"],
+      urgency: "ok",
+      urgText: "Rate control first",
+      side: `<div class="note"><strong>Aim:</strong> resting HR &lt;110 bpm if asymptomatic (lenient control). Tighter if symptomatic.</div>`,
+      guidance: `
+        <ul>
+          <li>Rate control is first-line for many stable patients.</li>
+          <li>Rhythm control may be considered for selected patients (often cardiology-led).</li>
+          <li>Agree follow-up and safety-netting.</li>
+        </ul>
+      `,
+      mini: "Rate control is the GP default."
+    },
+    {
+      title: "5) Choose rate-control agent safely",
+      hint: "Avoid rate-limiting CCBs in HFrEF.",
+      prompt: "Which rate control choice fits, and what do you avoid?",
+      choices: [
+        { key:"bb", label:"β-blocker (if no contraindication)" },
+        { key:"ccb", label:"Diltiazem/verapamil if suitable" },
+        { key:"avoid_ccb_hf", label:"Avoid CCB if HFrEF" },
+        { key:"monitor", label:"Monitor BP/HR + symptoms" }
+      ],
+      mustPick: ["monitor"],
+      urgency: "ok",
+      urgText: "Start rate control safely",
+      side: `<div class="dangerBox"><strong>Avoid:</strong> verapamil/diltiazem in HFrEF. Escalate if ongoing rapid AF with symptoms/HF.</div>`,
+      guidance: `
+        <ul>
+          <li>β-blocker commonly first choice.</li>
+          <li>Diltiazem/verapamil for rate control if appropriate.</li>
+          <li>Avoid non-DHP CCBs in HFrEF; consider specialist input.</li>
+        </ul>
+      `,
+      mini: "Match agent to comorbidity."
+    },
+    {
+      title: "6) Stroke risk (CHA₂DS₂-VA) and anticoagulation",
+      hint: "Australian practice uses CHA₂DS₂-VA (sex excluded).",
+      prompt: "What is your stroke-prevention step today?",
+      choices: [
+        { key:"score", label:"Calculate CHA₂DS₂-VA" },
+        { key:"anticoag", label:"If indicated → start anticoagulant" },
+        { key:"not_aspirin", label:"Do NOT use aspirin as substitute" }
+      ],
+      mustPick: ["score","anticoag"],
+      urgency: "warn",
+      urgText: "Stroke prevention",
+      side: `<div class="note"><strong>Key point:</strong> DOACs are often preferred in non-valvular AF. Warfarin for mechanical valve / mod-severe MS.</div>`,
+      guidance: `
+        <ul>
+          <li>Calculate CHA₂DS₂-VA and discuss anticoagulation if indicated.</li>
+          <li>Use DOAC in non-valvular AF (if suitable renal function and no contraindication).</li>
+          <li>Warfarin if mechanical valve or moderate–severe mitral stenosis.</li>
+          <li>Aspirin is not adequate stroke prevention.</li>
+        </ul>
+      `,
+      mini: "Prevent stroke early and clearly."
+    },
+    {
+      title: "7) Bleeding risk + practical safety",
+      hint: "Use bleeding risk to modify factors—not to withhold indicated anticoagulation.",
+      prompt: "What safety steps do you take before/after starting anticoagulation?",
+      choices: [
+        { key:"bleed", label:"Assess bleeding risk (e.g., HAS-BLED)" },
+        { key:"renal", label:"Check renal function & interactions" },
+        { key:"mod", label:"Address modifiable risks (BP, alcohol, NSAIDs)" },
+        { key:"educ", label:"Counsel: adherence + bleeding red flags" }
+      ],
+      mustPick: ["renal","educ"],
+      urgency: "ok",
+      urgText: "Safe prescribing",
+      side: `<div class="note"><strong>Practical:</strong> document indication, discuss risks/benefits, ensure follow-up and monitoring plan.</div>`,
+      guidance: `
+        <ul>
+          <li>Assess bleeding risk and address modifiable factors.</li>
+          <li>Check renal function, interactions (e.g., NSAIDs), and dosing.</li>
+          <li>Provide counselling on adherence and bleeding red flags.</li>
+        </ul>
+      `,
+      mini: "Safety + documentation matter."
+    },
+    {
+      title: "8) 48-hour rule and cardioversion planning",
+      hint: "If >48h or unknown, anticoagulation typically precedes cardioversion.",
+      prompt: "How does AF duration change your rhythm-control pathway?",
+      choices: [
+        { key:"lt48", label:"<48h: cardioversion may be considered (selected)" },
+        { key:"gt48", label:">48h/unknown: anticoagulate before cardioversion" },
+        { key:"specialist", label:"Refer/liaise cardiology/ED for rhythm strategy" }
+      ],
+      mustPick: ["gt48","specialist"],
+      urgency: "warn",
+      urgText: "Duration informs rhythm plan",
+      side: `<div class="note"><strong>Reality:</strong> many cardioversion decisions are specialist/ED-led; GP ensures anticoag and safety-netting.</div>`,
+      guidance: `
+        <ul>
+          <li>Duration <48h vs >48h/unknown guides rhythm strategy.</li>
+          <li>Often require anticoagulation prior to elective cardioversion if >48h/unknown.</li>
+          <li>Specialist/ED pathways apply.</li>
+        </ul>
+      `,
+      mini: "Duration changes cardioversion risk."
+    },
+    {
+      title: "9) Follow-up, referrals, and patient education",
+      hint: "AF is chronic care: rate + stroke prevention + triggers.",
+      prompt: "What follow-up plan do you put in place?",
+      choices: [
+        { key:"review", label:"Review symptoms/HR/BP in 1–2 weeks (or sooner)" },
+        { key:"adherence", label:"Check anticoag adherence + bleeding symptoms" },
+        { key:"ref", label:"Refer if young/symptomatic/difficult control/HF/valve disease" },
+        { key:"educ", label:"Education: stroke signs + when to present to ED" }
+      ],
+      mustPick: ["review","educ"],
+      urgency: "ok",
+      urgText: "Ongoing care",
+      side: `<div class="note"><strong>GP role:</strong> coordinate care, prevent stroke, manage comorbidities, ensure continuity.</div>`,
+      guidance: `
+        <ul>
+          <li>Follow-up for rate control, symptoms, BP, adherence and adverse effects.</li>
+          <li>Ensure anticoagulation remains appropriate (renal function/bleeding).</li>
+          <li>Refer when indicated (complex cases, HF, recurrent symptoms).</li>
+          <li>Clear ED safety-netting: chest pain, syncope, severe dyspnoea, neuro deficit.</li>
+        </ul>
+      `,
+      mini: "GP continuity is the “treatment” that prevents complications."
+    }
+  ];
+
+  let stepIndex = 0;
+  let selected = new Set();
+  let revealed = false;
+
+  const elTitle = document.getElementById("stepTitle");
+  const elHint  = document.getElementById("stepHint");
+  const elCount = document.getElementById("stepCount");
+  const elBar   = document.getElementById("barFill");
+
+  const urgDot  = document.getElementById("urgDot");
+  const urgText = document.getElementById("urgText");
+  const sideBlock = document.getElementById("sideBlock");
+
+  const examBox = document.getElementById("examBox");
+  const guidanceHeader = document.getElementById("guidanceHeader");
+  const guidance = document.getElementById("guidance");
+  const mini = document.getElementById("mini");
+
+  const btnBack = document.getElementById("btnBack");
+  const btnNext = document.getElementById("btnNext");
+  const btnResetStep = document.getElementById("btnResetStep");
+  const btnRestart = document.getElementById("btnRestart");
+
+  function setUrgency(level, text){
+    urgDot.classList.remove("ok","danger");
+    if(level === "ok") urgDot.classList.add("ok");
+    if(level === "danger") urgDot.classList.add("danger");
+    urgText.textContent = text;
+  }
+
+  function render(){
+    const s = steps[stepIndex];
+    elTitle.textContent = s.title;
+    elHint.textContent  = s.hint;
+    elCount.textContent = `${stepIndex+1} / ${steps.length}`;
+    elBar.style.width   = Math.round(((stepIndex+1)/steps.length)*100) + "%";
+
+    setUrgency(s.urgency, s.urgText);
+    sideBlock.innerHTML = s.side || "";
+    mini.textContent = s.mini || "";
+
+    // reset per-step state
+    selected = new Set();
+    revealed = false;
+
+    // render exam prompt and choices
+    const choicesHtml = (s.choices || []).map(ch => `
+      <button class="choice" data-key="${ch.key}" type="button">${ch.label}</button>
+    `).join("");
+
+    examBox.innerHTML = `
+      <strong>${s.prompt || "Make your decision"}</strong>
+      <div class="tiny">Select your action(s) below. You must select the required items before you can reveal guidance.</div>
+      <div class="choices" id="choices">${choicesHtml}</div>
+
+      <div class="revealRow">
+        <button class="primary" id="btnReveal" type="button" disabled>Reveal guidance</button>
+      </div>
+
+      <div class="tiny" id="reqText" style="margin-top:6px;"></div>
+    `;
+
+    const reqText = document.getElementById("reqText");
+    const must = s.mustPick || [];
+    reqText.textContent = must.length
+      ? `Required before reveal: ${must.map(x => `"${findLabel(s, x)}"`).join(", ")}`
+      : "No required choices for this step.";
+
+    const choicesWrap = document.getElementById("choices");
+    const revealBtn = document.getElementById("btnReveal");
+
+    choicesWrap.querySelectorAll(".choice").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const key = btn.getAttribute("data-key");
+        if(selected.has(key)){
+          selected.delete(key);
+          btn.classList.remove("selected");
+        }else{
+          selected.add(key);
+          btn.classList.add("selected");
+        }
+        revealBtn.disabled = !meetsRequirement(must);
+      });
+    });
+
+    revealBtn.addEventListener("click", () => {
+      revealed = true;
+      guidanceHeader.style.display = "block";
+      guidance.style.display = "block";
+      guidance.innerHTML = s.guidance || "<div class='note'>No guidance provided.</div>";
+    });
+
+    // hide guidance
+    guidanceHeader.style.display = "none";
+    guidance.style.display = "none";
+    guidance.innerHTML = "";
+
+    btnBack.disabled = (stepIndex === 0);
+    btnNext.disabled = (stepIndex === steps.length - 1);
+  }
+
+  function meetsRequirement(must){
+    if(!must || must.length === 0) return true;
+    return must.every(k => selected.has(k));
+  }
+
+  function findLabel(step, key){
+    const item = (step.choices || []).find(c => c.key === key);
+    return item ? item.label : key;
+  }
+
+  btnBack.addEventListener("click", () => { if(stepIndex>0){ stepIndex--; render(); }});
+  btnNext.addEventListener("click", () => { if(stepIndex<steps.length-1){ stepIndex++; render(); }});
+  btnResetStep.addEventListener("click", () => render());
+  btnRestart.addEventListener("click", () => { stepIndex = 0; render(); });
+
+  render();
+</script>
+</body>
+</html>
