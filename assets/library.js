@@ -34,6 +34,12 @@ const pathways = [
   href: "./pathways/atrial-fibrillation-exam/",
   tags: ["Cardiology", "AF", "Exam"],
   summary: "Exam mode: make a decision first → then reveal guidance. Great for PESCI/AMC-style practice."
+},
+{
+  title: "STEMI (ST-Elevation MI) — Click-through",
+  href: "./pathways/stemi/",
+  tags: ["Cardiology", "Emergency", "ACS"],
+  summary: "Recognise STEMI → activate 000/PCI network → ECG + aspirin → supportive care → reperfusion plan (PCI vs lysis) → structured handover."
 }
 
 ];
