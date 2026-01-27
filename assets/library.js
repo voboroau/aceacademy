@@ -52,6 +52,12 @@ const pathways = [
   href: "./pathways/anaphylaxis/",
   tags: ["Emergency", "Allergy", "Immunology"],
   summary: "Rapid recognition → IM adrenaline early → airway/oxygen/IV fluids → repeat adrenaline if needed → transfer, observation, autoinjector & action plan."
+},
+{
+  title: "Dyspnoea (Shortness of Breath) — Click-through",
+  href: "./pathways/dyspnoea/",
+  tags: ["Respiratory", "Emergency"],
+  summary: "Rapid triage → ABCDE → identify life-threatening causes (PE, ACS, asthma, pneumothorax, oedema) → targeted tests → initial treatment → disposition and handover."
 }
 
 ];
