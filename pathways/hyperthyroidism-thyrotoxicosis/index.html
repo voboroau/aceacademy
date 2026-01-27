@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Australian GP Click-Through Pathway — Hyperthyroidism</title>
+  <style>
+    :root{
+      --bg:#0b1220;
+      --card:#0f1b33;
+      --muted:#9db0d0;
+      --text:#eef4ff;
+      --border:rgba(255,255,255,.12);
+      --accent:#67e8f9;
+      --accent2:#a78bfa;
+      --danger:#fb7185;
+      --ok:#34d399;
+      --warn:#fbbf24;
+      --shadow: 0 18px 45px rgba(0,0,0,.35);
+      --radius: 18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(1200px 800px at 20% 10%, rgba(103,232,249,.18), transparent 55%),
+                  radial-gradient(1000px 700px at 85% 20%, rgba(167,139,250,.16), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+      padding:24px;
+    }
+    .wrap{max-width:980px;margin:0 auto}
+    header{display:flex;gap:14px;align-items:flex-start;justify-content:space-between;margin-bottom:18px}
+    .title{
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip:text;background-clip:text;color:transparent;
+      font-size:22px;font-weight:900;letter-spacing:.2px;margin:0 0 4px 0;
+    }
+    .subtitle{margin:0;color:var(--muted);font-size:14px;line-height:1.4}
+    .chiprow{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .chip{padding:7px 10px;border:1px solid var(--border);border-radius:999px;color:var(--muted);font-size:12px;background:rgba(255,255,255,.04)}
+    .chip strong{color:var(--text);font-weight:800}
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .cardHead{
+      padding:16px 18px;
+      border-bottom:1px solid var(--border);
+      display:flex;gap:12px;align-items:center;justify-content:space-between;
+      background: rgba(255,255,255,.03);
+    }
+    .stepTitle{font-weight:900;font-size:16px;margin:0;display:flex;gap:10px;align-items:center}
+    .badge{padding:4px 10px;border-radius:999px;border:1px solid var(--border);font-size:12px;color:var(--muted);background:rgba(255,255,255,.03)}
+    .progress{display:flex;align-items:center;gap:10px;min-width:240px;justify-content:flex-end;color:var(--muted);font-size:12px}
+    .bar{width:160px;height:8px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;border:1px solid rgba(255,255,255,.10)}
+    .bar > div{height:100%;width:0%;background: linear-gradient(90deg, var(--accent), var(--accent2));border-radius:999px;transition:width .35s ease}
+
+    .content{padding:18px}
+    .grid{display:grid;grid-template-columns: 1.1fr .9fr;gap:14px}
+    @media (max-width:860px){ .grid{grid-template-columns:1fr} .progress{min-width:unset}}
+    .panel{border:1px solid var(--border);border-radius:16px;padding:14px;background: rgba(0,0,0,.15)}
+    .panel h3{margin:0 0 10px 0;font-size:13px;letter-spacing:.2px;text-transform:uppercase;color:var(--muted)}
+    ul{margin:0;padding-left:18px}
+    li{margin:6px 0;color:var(--text)}
+    .muted{color:var(--muted)}
+    .divider{height:1px;background:var(--border);margin:12px 0}
+
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:8px 10px;border-radius:999px;border:1px solid var(--border);
+      background:rgba(255,255,255,.03);
+      font-size:13px;
+    }
+    .pillDot{width:9px;height:9px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 4px rgba(52,211,153,.18)}
+    .pillDot.warn{background:var(--warn);box-shadow:0 0 0 4px rgba(251,191,36,.18)}
+    .pillDot.danger{background:var(--danger);box-shadow:0 0 0 4px rgba(251,113,133,.18)}
+
+    .note{
+      border-left:4px solid rgba(103,232,249,.55);
+      padding:10px 12px;background:rgba(103,232,249,.08);
+      border-radius:12px;color:var(--text);font-size:13px;
+    }
+    .dangerBox{
+      border-left:4px solid rgba(251,113,133,.65);
+      padding:10px 12px;background:rgba(251,113,133,.10);
+      border-radius:12px;color:var(--text);font-size:13px;
+    }
+
+    .checkGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media (max-width:560px){ .checkGrid{grid-template-columns:1fr} }
+    .checkItem{
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:10px 12px;
+      background:rgba(255,255,255,.03);
+      display:flex;gap:10px;align-items:flex-start;
+    }
+    .checkItem input{margin-top:3px;transform:scale(1.1)}
+    .checkItem label{cursor:pointer}
+    .footerMini{color:var(--muted);font-size:12px;line-height:1.35}
+
+    .ctaRow{
+      display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;
+      padding:14px 18px;border-top:1px solid var(--border);background:rgba(255,255,255,.02)
+    }
+    .btns{display:flex;gap:10px;flex-wrap:wrap}
+    button{
+      cursor:pointer;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:14px;
+      font-weight:800;
+      letter-spacing:.2px;
+      transition: transform .05s ease, background .2s ease, border-color .2s ease;
+    }
+    button:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.18)}
+    button:active{transform:translateY(1px)}
+    button.primary{
+      border-color: rgba(103,232,249,.35);
+      background: linear-gradient(90deg, rgba(103,232,249,.18), rgba(167,139,250,.16));
+    }
+    button.ghost{background:transparent}
+    button:disabled{opacity:.5;cursor:not-allowed}
+    .small{font-size:12px;color:var(--muted)}
+    .printOnly{display:none}
+
+    @media print{
+      body{background:#fff;color:#000;padding:0}
+      .wrap{max-width:100%;margin:0}
+      .card{box-shadow:none;border-radius:0;border:0}
+      .cardHead,.ctaRow,header .chiprow,button{display:none !important}
+      .content{padding:0}
+      .panel{break-inside:avoid;border:1px solid #ccc;background:#fff}
+      .printOnly{display:block;margin:10px 0 14px 0}
+      .title{color:#000;-webkit-text-fill-color:#000}
+      .subtitle,.muted,.small,.footerMini{color:#333}
+    }
+    .rowBtns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .choiceBtn{
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.05);
+      padding:9px 10px;border-radius:14px;font-weight:800;font-size:13px;
+    }
+    .choiceBtn.active{
+      border-color: rgba(103,232,249,.35);
+      background: rgba(103,232,249,.12);
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1 class="title">Australian GP Click-Through Pathway: Hyperthyroidism / Thyrotoxicosis</h1>
+      <p class="subtitle">
+        GP-first approach: confirm biochemistry → triage emergencies → determine likely cause → symptomatic control → referral + follow-up.
+      </p>
+      <div class="chiprow">
+        <span class="chip"><strong>Core tests</strong>: TSH, fT4 ± fT3</span>
+        <span class="chip"><strong>Key actions</strong>: β-blocker, pregnancy status, TRAb, ultrasound/RAIU (specialist)</span>
+        <span class="chip"><strong>Safety</strong>: thyroid storm, AF, pregnancy, eye disease</span>
+      </div>
+    </div>
+    <div class="chiprow" style="justify-content:flex-end;">
+      <span class="chip">Back/Next</span>
+      <span class="chip">Checklist notes</span>
+      <span class="chip">Printable</span>
+    </div>
+  </header>
+
+  <div class="card" id="app">
+    <div class="cardHead">
+      <div>
+        <p class="stepTitle" id="stepTitle">Step</p>
+        <div class="small" id="stepHint"></div>
+      </div>
+      <div class="progress">
+        <span id="stepCount">1 / 9</span>
+        <div class="bar" aria-hidden="true"><div id="barFill"></div></div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="printOnly">
+        <div class="note">
+          <strong>Print note:</strong> This printout reflects the current step only. Use the web view for the full click-through algorithm.
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="panel">
+          <h3>What to do now</h3>
+          <div id="mainBody"></div>
+        </div>
+
+        <div class="panel">
+          <h3>Quick triage + checklist</h3>
+
+          <div class="pill" id="rfPill" title="Urgency helper">
+            <span class="pillDot warn" id="rfDot"></span>
+            <span><strong>Urgency:</strong> <span id="rfText">Check</span></span>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="checkGrid" id="checkGrid"></div>
+
+          <div class="divider"></div>
+
+          <div class="footerMini" id="footerMini">
+            Educational resource only. Use clinical judgement and current Australian guidelines. Consider local referral pathways.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ctaRow">
+      <div class="btns">
+        <button class="ghost" id="btnBack">← Back</button>
+        <button class="primary" id="btnNext">Next →</button>
+        <button id="btnRestart">Restart</button>
+        <button id="btnPrint">Print</button>
+      </div>
+      <div class="small">
+        <span id="miniSummary">Start with biochemistry and rule out emergencies.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Persist checklist ticks
+  const state = {
+    stepIndex: 0,
+    checks: JSON.parse(localStorage.getItem("hyperthy_checks") || "{}"),
+    // optional: simple toggles used on some steps
+    toggles: JSON.parse(localStorage.getItem("hyperthy_toggles") || "{}")
+  };
+
+  const steps = [
+    {
+      title: "1) Confirm thyrotoxicosis (biochemistry first)",
+      hint: "Do not label “hyperthyroidism” without thyroid function tests.",
+      body: `
+        <p><strong>Order / review thyroid function tests:</strong></p>
+        <ul>
+          <li><strong>TSH</strong> (screening test)</li>
+          <li><strong>Free T4</strong> (severity)</li>
+          <li><strong>± Free T3</strong> (T3-toxicosis: suppressed TSH with high T3 and normal/near-normal T4)</li>
+        </ul>
+        <div class="divider"></div>
+        <p><strong>Typical patterns:</strong></p>
+        <ul>
+          <li><strong>Overt thyrotoxicosis:</strong> low/suppressed TSH + high fT4 and/or fT3</li>
+          <li><strong>Subclinical:</strong> low TSH + normal fT4/fT3 (recheck; assess risks)</li>
+          <li><strong>Central (rare):</strong> normal/high TSH with high fT4 → urgent endocrine discussion</li>
+        </ul>
+        <div class="note">
+          Also consider non-thyroid illness, biotin interference, recent iodinated contrast/amiodarone, and pregnancy effects on TSH.
+        </div>
+      `,
+      rfState: "warn",
+      rfText: "Confirm & triage",
+      checks: [
+        { id:"c1", text:"Ordered/reviewed TSH + fT4 (± fT3)" },
+        { id:"c2", text:"Reviewed meds: amiodarone, iodine/contrast, thyroid hormone use, biotin" },
+        { id:"c3", text:"Pregnancy status checked (if relevant)" },
+        { id:"c4", text:"Baseline vitals documented (HR, BP, temp, weight)" }
+      ],
+      mini: "Biochemistry defines the problem. Then move immediately to urgency assessment."
+    },
+    {
+      title: "2) Emergency triage (same day / ED?)",
+      hint: "Identify thyroid storm, arrhythmia, severe symptoms, pregnancy complications.",
+      body: `
+        <div class="dangerBox">
+          <strong>Send to ED / urgent same-day escalation if:</strong>
+          <ul>
+            <li>Suspected <strong>thyroid storm</strong>: fever, marked tachycardia, delirium/agitation, vomiting/diarrhoea, heart failure</li>
+            <li><strong>AF</strong> with rapid ventricular response, chest pain, syncope, hypotension</li>
+            <li>Heart failure symptoms, severe dyspnoea, pulmonary oedema</li>
+            <li>Severe dehydration, inability to tolerate oral meds</li>
+            <li>Pregnancy with severe symptoms or concern for complications</li>
+          </ul>
+        </div>
+        <div class="divider"></div>
+        <div class="note">
+          If unstable: ABCs, ECG, IV access, urgent transfer. If stable: start symptomatic control and proceed to cause work-up.
+        </div>
+      `,
+      rfState: "danger",
+      rfText: "Escalate if storm/AF/HF",
+      checks: [
+        { id:"e1", text:"Screened for thyroid storm features (fever, delirium, GI, HF)" },
+        { id:"e2", text:"ECG done (or arranged urgently if palpitations/tachycardia)" },
+        { id:"e3", text:"Assessed for chest pain/syncope/hypotension" },
+        { id:"e4", text:"Pregnancy + trimester considered (if relevant)" }
+      ],
+      mini: "If there’s any doubt about storm or unstable arrhythmia → ED."
+    },
+    {
+      title: "3) Focused history & exam (clues to cause)",
+      hint: "Differentiate Graves vs toxic nodules vs thyroiditis vs exogenous hormone.",
+      body: `
+        <p><strong>Key history:</strong></p>
+        <ul>
+          <li>Symptom onset: weeks–months (Graves), sudden post-viral/postpartum (thyroiditis)</li>
+          <li>Weight loss, heat intolerance, tremor, anxiety, diarrhoea</li>
+          <li>Neck pain/tenderness (subacute thyroiditis)</li>
+          <li>Eye symptoms: gritty eyes, diplopia, proptosis (Graves orbitopathy)</li>
+          <li>Goitre history, nodules, prior thyroid disease, family history</li>
+          <li>Drug exposures: amiodarone, iodine/contrast, interferon, lithium</li>
+        </ul>
+        <div class="divider"></div>
+        <p><strong>Examination:</strong></p>
+        <ul>
+          <li>Vitals: HR, BP, temp; weight</li>
+          <li>Thyroid: diffuse goitre + bruit (Graves) vs nodular (toxic multinodular/adenoma)</li>
+          <li>Eyes/skin: orbitopathy, pretibial myxoedema (rare)</li>
+          <li>Neuro: tremor, hyperreflexia</li>
+          <li>CV: AF, murmurs, HF signs</li>
+        </ul>
+      `,
+      rfState: "warn",
+      rfText: "Look for Graves/thyroiditis",
+      checks: [
+        { id:"h1", text:"Asked about neck pain/tenderness and recent viral illness/postpartum" },
+        { id:"h2", text:"Asked about eye symptoms (gritty eyes, diplopia) and smoking" },
+        { id:"h3", text:"Examined thyroid (diffuse vs nodular), checked for bruit" },
+        { id:"h4", text:"Cardiac exam + signs of HF" }
+      ],
+      mini: "Cause matters: thyroiditis is usually supportive care; Graves often needs antithyroid therapy."
+    },
+    {
+      title: "4) Initial GP investigations (before definitive therapy decisions)",
+      hint: "Confirm cause and assess complications.",
+      body: `
+        <p><strong>Recommended tests (typical GP work-up):</strong></p>
+        <ul>
+          <li><strong>TRAb</strong> (TSH receptor antibodies): supports Graves (especially useful in pregnancy)</li>
+          <li><strong>TPOAb</strong>: supports autoimmune thyroid disease (not specific for cause of thyrotoxicosis)</li>
+          <li>FBC, LFTs (baseline if antithyroid drugs may be used)</li>
+          <li>ESR/CRP if painful thyroiditis suspected</li>
+          <li>Pregnancy test if any possibility of pregnancy</li>
+          <li>ECG; consider echo if HF symptoms or persistent tachycardia</li>
+        </ul>
+        <div class="divider"></div>
+        <div class="note">
+          Imaging choices vary: thyroid <strong>ultrasound</strong> is useful if nodules/goitre; radionuclide uptake scan is usually specialist-directed
+          (contraindicated in pregnancy/breastfeeding).
+        </div>
+      `,
+      rfState: "ok",
+      rfText: "Safe work-up",
+      checks: [
+        { id:"i1", text:"Ordered TRAb (if Graves suspected) ± TPOAb" },
+        { id:"i2", text:"Baseline FBC + LFTs (if considering antithyroid drugs)" },
+        { id:"i3", text:"ECG done/arranged" },
+        { id:"i4", text:"Pregnancy test arranged if relevant" }
+      ],
+      mini: "Baseline labs are essential if you may start carbimazole/PTU."
+    },
+    {
+      title: "5) Start symptomatic control (most patients)",
+      hint: "β-blocker relieves adrenergic symptoms while cause is clarified.",
+      body: `
+        <p><strong>Symptom control (if no contraindications):</strong></p>
+        <ul>
+          <li><strong>β-blocker</strong> (e.g., propranolol or cardioselective options) for tremor, palpitations, anxiety</li>
+          <li>Advise: avoid excess caffeine; hydration; rest; manage heat intolerance</li>
+        </ul>
+        <div class="divider"></div>
+        <div class="dangerBox">
+          <strong>Caution / alternatives:</strong>
+          <ul>
+            <li>Asthma/COPD: consider careful use of cardioselective β-blocker or seek advice; avoid if severe bronchospasm</li>
+            <li>Bradycardia, heart block, decompensated HF: avoid or specialist advice</li>
+          </ul>
+        </div>
+        <div class="note">
+          If AF present: treat as per AF pathway (rate control, stroke risk assessment) and consider urgent review.
+        </div>
+      `,
+      rfState: "ok",
+      rfText: "Start β-blocker if suitable",
+      checks: [
+        { id:"s1", text:"β-blocker considered/started for symptom control" },
+        { id:"s2", text:"Contraindications checked (asthma, bradycardia, heart block, decomp HF)" },
+        { id:"s3", text:"AF screened (pulse/ECG) and managed if present" },
+        { id:"s4", text:"Provided lifestyle advice and red-flag return advice" }
+      ],
+      mini: "β-blockers buy you time safely while investigating cause."
+    },
+    {
+      title: "6) Decide likely cause (branching logic)",
+      hint: "Use clinical + antibodies ± imaging to classify the thyrotoxicosis.",
+      body: `
+        <p><strong>Select the most likely pattern:</strong></p>
+        <div class="rowBtns">
+          <button class="choiceBtn" data-toggle="cause" data-value="graves">Graves disease</button>
+          <button class="choiceBtn" data-toggle="cause" data-value="nodular">Toxic nodular disease</button>
+          <button class="choiceBtn" data-toggle="cause" data-value="thyroiditis">Thyroiditis</button>
+          <button class="choiceBtn" data-toggle="cause" data-value="exogenous">Exogenous/Drug-related</button>
+        </div>
+        <div class="divider"></div>
+        <div id="causeBox" class="note">Choose an option above to see GP-appropriate next steps.</div>
+      `,
+      rfState: "warn",
+      rfText: "Classify cause",
+      checks: [
+        { id:"d1", text:"Considered Graves (diffuse goitre/bruit, TRAb+, orbitopathy)" },
+        { id:"d2", text:"Considered toxic nodules (nodular thyroid, older age, uptake scan often helpful)" },
+        { id:"d3", text:"Considered thyroiditis (painful/post-viral/postpartum, low uptake, ESR/CRP high)" },
+        { id:"d4", text:"Considered exogenous/drug causes (thyroxine, amiodarone, iodine)" }
+      ],
+      mini: "Correct classification prevents mis-treatment (e.g., antithyroid drugs don’t help thyroiditis)."
+    },
+    {
+      title: "7) Disease-specific management (GP + referral)",
+      hint: "Start safe GP steps; arrange endocrine/ENT/ophthalmology pathways as needed.",
+      body: `
+        <div class="note"><strong>General:</strong> continue β-blocker if symptomatic. Arrange timely follow-up and referral based on cause/severity.</div>
+        <div class="divider"></div>
+        <p><strong>Graves (common):</strong></p>
+        <ul>
+          <li>Refer to endocrinology (routine-urgent depending on severity, pregnancy, eye disease)</li>
+          <li>Antithyroid drug initiation can be GP-initiated in some settings, but ensure baseline <strong>FBC/LFT</strong> and clear safety-netting.</li>
+          <li>Assess for <strong>Graves eye disease</strong>; advise smoking cessation; consider ophthalmology if eye involvement.</li>
+        </ul>
+        <div class="divider"></div>
+        <p><strong>Toxic nodular disease:</strong></p>
+        <ul>
+          <li>Often needs specialist-directed definitive therapy (radioiodine or surgery)</li>
+          <li>Ultrasound if nodules; consider uptake scan (specialist)</li>
+        </ul>
+        <div class="divider"></div>
+        <p><strong>Thyroiditis:</strong></p>
+        <ul>
+          <li>Usually supportive: β-blocker for symptoms; NSAIDs for pain; consider steroids for severe subacute thyroiditis (specialist advice)</li>
+          <li>Antithyroid drugs are generally <strong>not effective</strong> (hormone release, not overproduction)</li>
+        </ul>
+        <div class="divider"></div>
+        <p><strong>Exogenous/drug-related:</strong></p>
+        <ul>
+          <li>Identify and stop/reduce offending agent if possible (in consultation with prescriber)</li>
+          <li>Specialist advice if amiodarone-related thyrotoxicosis suspected</li>
+        </ul>
+      `,
+      rfState: "warn",
+      rfText: "Treat + refer appropriately",
+      checks: [
+        { id:"m1", text:"Referral pathway chosen (endo ± ENT ± ophthal)" },
+        { id:"m2", text:"If considering antithyroid drugs: baseline FBC/LFT done and patient counselled" },
+        { id:"m3", text:"If thyroiditis suspected: avoided unnecessary antithyroid drugs" },
+        { id:"m4", text:"Smoking cessation advice given if Graves/eye symptoms" }
+      ],
+      mini: "Many cases can start with β-blocker + referral; avoid antithyroid drugs in thyroiditis."
+    },
+    {
+      title: "8) Antithyroid drugs — safety counselling (if used)",
+      hint: "Critical GP safety-net: agranulocytosis and hepatitis warnings.",
+      body: `
+        <div class="dangerBox">
+          <strong>Urgent patient warning (must give clearly):</strong>
+          <ul>
+            <li>If on antithyroid drugs (e.g., carbimazole/PTU) and develops <strong>sore throat, fever, mouth ulcers</strong> → <strong>STOP the drug</strong> and get urgent FBC (possible agranulocytosis).</li>
+            <li>If <strong>jaundice, dark urine, pale stools, RUQ pain</strong> → stop drug and urgent LFT review (hepatitis risk).</li>
+          </ul>
+        </div>
+        <div class="divider"></div>
+        <p><strong>Monitoring (typical):</strong></p>
+        <ul>
+          <li>Repeat TFTs every ~4–6 weeks initially until stable, then space out</li>
+          <li>Adjust dose to keep fT4/fT3 in range; TSH may lag</li>
+        </ul>
+        <div class="note">
+          Pregnancy: management differs by trimester (specialist input). Avoid radioiodine; check breastfeeding considerations.
+        </div>
+      `,
+      rfState: "warn",
+      rfText: "High-safety step",
+      checks: [
+        { id:"a1", text:"Provided agranulocytosis safety advice (fever/sore throat → stop & FBC)" },
+        { id:"a2", text:"Provided hepatitis safety advice (jaundice/dark urine → stop & LFT)" },
+        { id:"a3", text:"Arranged TFT monitoring schedule (4–6 weekly initially)" },
+        { id:"a4", text:"Pregnancy/breastfeeding status considered; specialist input arranged if relevant" }
+      ],
+      mini: "If you start antithyroid drugs, safety counselling is non-negotiable."
+    },
+    {
+      title: "9) Follow-up, complications, and long-term plan",
+      hint: "Prevent harm: AF/stroke risk, osteoporosis, eye disease, relapse.",
+      body: `
+        <p><strong>Follow-up priorities:</strong></p>
+        <ul>
+          <li>Symptom control + vitals (HR/BP/weight)</li>
+          <li>AF screening and stroke risk assessment where relevant</li>
+          <li>Bone health in prolonged untreated thyrotoxicosis (risk of osteoporosis)</li>
+          <li>Eye disease monitoring in Graves; urgent review if vision changes</li>
+          <li>Discuss definitive options with specialist (radioiodine/surgery/ATD course) depending on cause</li>
+        </ul>
+        <div class="divider"></div>
+        <div class="dangerBox">
+          <strong>Return urgently if:</strong> worsening tachycardia, chest pain, dyspnoea, confusion, fever, severe diarrhoea/vomiting, eye pain/vision change.
+        </div>
+        <div class="divider"></div>
+        <div class="note">
+          Consider documenting: diagnosis label (overt vs subclinical), cause, treatment started, monitoring plan, and referral details.
+        </div>
+      `,
+      rfState: "ok",
+      rfText: "Ongoing care",
+      checks: [
+        { id:"f1", text:"Follow-up booked (1–2 weeks if symptomatic; sooner if severe)" },
+        { id:"f2", text:"AF/stroke risk considered where appropriate" },
+        { id:"f3", text:"Eye red flags discussed if Graves suspected" },
+        { id:"f4", text:"Documented long-term plan and referral" }
+      ],
+      mini: "The GP role is ongoing monitoring + complication prevention + coordinating definitive care."
+    }
+  ];
+
+  // Elements
+  const elTitle = document.getElementById("stepTitle");
+  const elHint  = document.getElementById("stepHint");
+  const elCount = document.getElementById("stepCount");
+  const elBar   = document.getElementById("barFill");
+  const elBody  = document.getElementById("mainBody");
+  const elGrid  = document.getElementById("checkGrid");
+  const elMini  = document.getElementById("miniSummary");
+  const rfDot   = document.getElementById("rfDot");
+  const rfText  = document.getElementById("rfText");
+
+  const btnBack = document.getElementById("btnBack");
+  const btnNext = document.getElementById("btnNext");
+  const btnRestart = document.getElementById("btnRestart");
+  const btnPrint = document.getElementById("btnPrint");
+
+  function setPill(stateName, text){
+    rfDot.classList.remove("warn","danger");
+    if(stateName === "ok"){ rfDot.className = "pillDot"; }
+    else if(stateName === "warn"){ rfDot.className = "pillDot warn"; }
+    else { rfDot.className = "pillDot danger"; }
+    rfText.textContent = text;
+  }
+
+  function renderChecks(step){
+    elGrid.innerHTML = "";
+    (step.checks || []).forEach(item => {
+      const key = `${state.stepIndex}:${item.id}`;
+      const checked = !!state.checks[key];
+
+      const wrap = document.createElement("div");
+      wrap.className = "checkItem";
+
+      const input = document.createElement("input");
+      input.type = "checkbox";
+      input.id = key;
+      input.checked = checked;
+
+      input.addEventListener("change", () => {
+        state.checks[key] = input.checked;
+        localStorage.setItem("hyperthy_checks", JSON.stringify(state.checks));
+      });
+
+      const label = document.createElement("label");
+      label.htmlFor = key;
+      label.innerHTML = `<strong class="muted">Task</strong><div>${item.text}</div>`;
+
+      wrap.appendChild(input);
+      wrap.appendChild(label);
+      elGrid.appendChild(wrap);
+    });
+  }
+
+  function highlightChoiceButtons(){
+    document.querySelectorAll("[data-toggle]").forEach(btn => {
+      const t = btn.getAttribute("data-toggle");
+      const v = btn.getAttribute("data-value");
+      const active = state.toggles[t] === v;
+      btn.classList.toggle("active", active);
+    });
+  }
+
+  function renderCauseBox(){
+    const box = document.getElementById("causeBox");
+    if(!box) return;
+
+    const v = state.toggles["cause"];
+    if(!v){
+      box.className = "note";
+      box.innerHTML = "Choose an option above to see GP-appropriate next steps.";
+      return;
+    }
+
+    const map = {
+      graves: `
+        <strong>Likely Graves:</strong>
+        <ul>
+          <li>Clues: diffuse goitre ± bruit, TRAb+, eye signs, younger age</li>
+          <li>GP: β-blocker; baseline FBC/LFT if starting antithyroid meds; refer endocrinology</li>
+          <li>Eye disease: advise smoking cessation; ophthalmology if symptomatic</li>
+        </ul>
+      `,
+      nodular: `
+        <strong>Likely toxic nodular disease:</strong>
+        <ul>
+          <li>Clues: nodular thyroid, older patient, may have milder symptoms</li>
+          <li>GP: β-blocker; thyroid ultrasound if nodules; refer endocrinology/ENT</li>
+          <li>Definitive therapy often radioiodine or surgery (specialist-directed)</li>
+        </ul>
+      `,
+      thyroiditis: `
+        <strong>Likely thyroiditis:</strong>
+        <ul>
+          <li>Clues: painful/tender thyroid (subacute), post-viral, postpartum; ESR/CRP may be raised</li>
+          <li>GP: β-blocker for symptoms; NSAIDs for pain; consider specialist advice if severe</li>
+          <li><strong>Avoid antithyroid drugs</strong> in most cases (release, not overproduction)</li>
+        </ul>
+      `,
+      exogenous: `
+        <strong>Likely exogenous/drug-related:</strong>
+        <ul>
+          <li>Clues: thyroxine use, weight-loss preparations, recent iodine/contrast, amiodarone</li>
+          <li>GP: stop/review offending agent with prescriber; β-blocker if symptomatic</li>
+          <li>Amiodarone-related thyrotoxicosis can be complex → endocrine advice</li>
+        </ul>
+      `
+    };
+
+    box.className = "note";
+    box.innerHTML = map[v] || "Choose an option above.";
+  }
+
+  function bindChoiceButtons(){
+    document.querySelectorAll("[data-toggle]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const t = btn.getAttribute("data-toggle");
+        const v = btn.getAttribute("data-value");
+        state.toggles[t] = (state.toggles[t] === v) ? null : v;
+        localStorage.setItem("hyperthy_toggles", JSON.stringify(state.toggles));
+        highlightChoiceButtons();
+        renderCauseBox();
+      });
+    });
+  }
+
+  function render(){
+    const i = state.stepIndex;
+    const step = steps[i];
+
+    elTitle.textContent = step.title;
+    elHint.textContent  = step.hint;
+    elBody.innerHTML    = step.body;
+    elCount.textContent = `${i+1} / ${steps.length}`;
+
+    const pct = Math.round(((i+1)/steps.length)*100);
+    elBar.style.width = pct + "%";
+
+    elMini.textContent = step.mini || "";
+    setPill(step.rfState || "warn", step.rfText || "Check");
+    renderChecks(step);
+
+    btnBack.disabled = (i === 0);
+    btnNext.disabled = (i === steps.length - 1);
+
+    // bind branching buttons if present on this step
+    bindChoiceButtons();
+    highlightChoiceButtons();
+    renderCauseBox();
+  }
+
+  btnBack.addEventListener("click", () => { if(state.stepIndex > 0){ state.stepIndex--; render(); } });
+  btnNext.addEventListener("click", () => { if(state.stepIndex < steps.length - 1){ state.stepIndex++; render(); } });
+  btnRestart.addEventListener("click", () => { state.stepIndex = 0; render(); });
+  btnPrint.addEventListener("click", () => window.print());
+
+  document.addEventListener("keydown", (e) => {
+    if(e.key === "ArrowLeft") btnBack.click();
+    if(e.key === "ArrowRight") btnNext.click();
+  });
+
+  render();
+</script>
+</body>
+</html>
