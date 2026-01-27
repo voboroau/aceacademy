@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Australian GP Click-Through Pathway — Acute Diarrhoea / Gastroenteritis</title>
+  <style>
+    :root{
+      --bg:#0b1220;
+      --muted:#9db0d0;
+      --text:#eef4ff;
+      --border:rgba(255,255,255,.12);
+      --accent:#67e8f9;
+      --accent2:#a78bfa;
+      --danger:#fb7185;
+      --ok:#34d399;
+      --warn:#fbbf24;
+      --shadow: 0 18px 45px rgba(0,0,0,.35);
+      --radius: 18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(1200px 800px at 20% 10%, rgba(103,232,249,.18), transparent 55%),
+                  radial-gradient(1000px 700px at 85% 20%, rgba(167,139,250,.16), transparent 55%),
+                  #0b1220;
+      color:var(--text);
+      padding:24px;
+    }
+    .wrap{max-width:980px;margin:0 auto}
+    header{display:flex;gap:14px;align-items:flex-start;justify-content:space-between;margin-bottom:18px}
+    .title{
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip:text;background-clip:text;color:transparent;
+      font-size:22px;font-weight:900;letter-spacing:.2px;margin:0 0 4px 0;
+    }
+    .subtitle{margin:0;color:var(--muted);font-size:14px;line-height:1.4}
+    .chiprow{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .chip{padding:7px 10px;border:1px solid var(--border);border-radius:999px;color:var(--muted);font-size:12px;background:rgba(255,255,255,.04)}
+    .chip strong{color:var(--text);font-weight:800}
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .cardHead{
+      padding:16px 18px;
+      border-bottom:1px solid var(--border);
+      display:flex;gap:12px;align-items:center;justify-content:space-between;
+      background: rgba(255,255,255,.03);
+    }
+    .stepTitle{font-weight:900;font-size:16px;margin:0;display:flex;gap:10px;align-items:center}
+    .progress{display:flex;align-items:center;gap:10px;min-width:240px;justify-content:flex-end;color:var(--muted);font-size:12px}
+    .bar{width:160px;height:8px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;border:1px solid rgba(255,255,255,.10)}
+    .bar > div{height:100%;width:0%;background: linear-gradient(90deg, var(--accent), var(--accent2));border-radius:999px;transition:width .35s ease}
+
+    .content{padding:18px}
+    .grid{display:grid;grid-template-columns: 1.1fr .9fr;gap:14px}
+    @media (max-width:860px){ .grid{grid-template-columns:1fr} .progress{min-width:unset}}
+    .panel{border:1px solid var(--border);border-radius:16px;padding:14px;background: rgba(0,0,0,.15)}
+    .panel h3{margin:0 0 10px 0;font-size:13px;letter-spacing:.2px;text-transform:uppercase;color:var(--muted)}
+    ul{margin:0;padding-left:18px}
+    li{margin:6px 0;color:var(--text)}
+    .divider{height:1px;background:var(--border);margin:12px 0}
+    .muted{color:var(--muted)}
+    .note{
+      border-left:4px solid rgba(103,232,249,.55);
+      padding:10px 12px;background:rgba(103,232,249,.08);
+      border-radius:12px;color:var(--text);font-size:13px;
+    }
+    .dangerBox{
+      border-left:4px solid rgba(251,113,133,.65);
+      padding:10px 12px;background:rgba(251,113,133,.10);
+      border-radius:12px;color:var(--text);font-size:13px;
+    }
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:8px 10px;border-radius:999px;border:1px solid var(--border);
+      background:rgba(255,255,255,.03);
+      font-size:13px;
+    }
+    .pillDot{width:9px;height:9px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 4px rgba(52,211,153,.18)}
+    .pillDot.warn{background:var(--warn);box-shadow:0 0 0 4px rgba(251,191,36,.18)}
+    .pillDot.danger{background:var(--danger);box-shadow:0 0 0 4px rgba(251,113,133,.18)}
+
+    .checkGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media (max-width:560px){ .checkGrid{grid-template-columns:1fr} }
+    .checkItem{
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:10px 12px;
+      background:rgba(255,255,255,.03);
+      display:flex;gap:10px;align-items:flex-start;
+    }
+    .checkItem input{margin-top:3px;transform:scale(1.1)}
+    .checkItem label{cursor:pointer}
+    .footerMini{color:var(--muted);font-size:12px;line-height:1.35}
+
+    .ctaRow{
+      display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;
+      padding:14px 18px;border-top:1px solid var(--border);background:rgba(255,255,255,.02)
+    }
+    .btns{display:flex;gap:10px;flex-wrap:wrap}
+    button{
+      cursor:pointer;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:14px;
+      font-weight:800;
+      letter-spacing:.2px;
+      transition: transform .05s ease, background .2s ease, border-color .2s ease;
+    }
+    button:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.18)}
+    button:active{transform:translateY(1px)}
+    button.primary{
+      border-color: rgba(103,232,249,.35);
+      background: linear-gradient(90deg, rgba(103,232,249,.18), rgba(167,139,250,.16));
+    }
+    button.ghost{background:transparent}
+    button:disabled{opacity:.5;cursor:not-allowed}
+    .small{font-size:12px;color:var(--muted)}
+    .rowBtns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .choiceBtn{
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.05);
+      padding:9px 10px;border-radius:14px;font-weight:800;font-size:13px;
+    }
+    .choiceBtn.active{
+      border-color: rgba(103,232,249,.35);
+      background: rgba(103,232,249,.12);
+    }
+    @media print{
+      body{background:#fff;color:#000;padding:0}
+      .wrap{max-width:100%;margin:0}
+      .card{box-shadow:none;border-radius:0;border:0}
+      .cardHead,.ctaRow,header .chiprow,button{display:none !important}
+      .content{padding:0}
+      .panel{break-inside:avoid;border:1px solid #ccc;background:#fff}
+      .title{color:#000;-webkit-text-fill-color:#000}
+      .subtitle,.muted,.small,.footerMini{color:#333}
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1 class="title">Australian GP Click-Through Pathway: Acute Diarrhoea / Gastroenteritis</h1>
+      <p class="subtitle">
+        GP-first approach: triage dehydration/red flags → targeted stool tests → supportive care → when to use antibiotics → follow-up & public health.
+      </p>
+      <div class="chiprow">
+        <span class="chip"><strong>Most cases</strong>: viral/self-limited → ORS + supportive care</span>
+        <span class="chip"><strong>Test</strong>: only if severe/persistent/bloody/immunocompromised/outbreak/travel</span>
+        <span class="chip"><strong>Avoid</strong>: routine antibiotics & antimotility in dysentery</span>
+      </div>
+    </div>
+    <div class="chiprow" style="justify-content:flex-end;">
+      <span class="chip">Back/Next</span>
+      <span class="chip">Checklist notes</span>
+      <span class="chip">Printable</span>
+    </div>
+  </header>
+
+  <div class="card">
+    <div class="cardHead">
+      <div>
+        <p class="stepTitle" id="stepTitle">Step</p>
+        <div class="small" id="stepHint"></div>
+      </div>
+      <div class="progress">
+        <span id="stepCount">1 / 9</span>
+        <div class="bar"><div id="barFill"></div></div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="grid">
+        <div class="panel">
+          <h3>What to do now</h3>
+          <div id="mainBody"></div>
+        </div>
+
+        <div class="panel">
+          <h3>Quick triage + checklist</h3>
+
+          <div class="pill">
+            <span class="pillDot warn" id="rfDot"></span>
+            <span><strong>Urgency:</strong> <span id="rfText">Check</span></span>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="checkGrid" id="checkGrid"></div>
+
+          <div class="divider"></div>
+
+          <div class="footerMini">
+            Educational resource only. Use clinical judgement and current Australian guidelines. Consider local outbreak/public health advice.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ctaRow">
+      <div class="btns">
+        <button class="ghost" id="btnBack">← Back</button>
+        <button class="primary" id="btnNext">Next →</button>
+        <button id="btnRestart">Restart</button>
+        <button id="btnPrint">Print</button>
+      </div>
+      <div class="small" id="miniSummary">Start with dehydration and red flags.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const state = {
+    stepIndex: 0,
+    checks: JSON.parse(localStorage.getItem("gastro_checks") || "{}"),
+    toggles: JSON.parse(localStorage.getItem("gastro_toggles") || "{}")
+  };
+
+  const steps = [
+    {
+      title: "1) Immediate triage (dehydration + red flags)",
+      hint: "Decide: home care vs same-day review vs ED.",
+      body: `
+        <div class="dangerBox">
+          <strong>Send to ED / urgent same-day escalation if:</strong>
+          <ul>
+            <li><strong>Severe dehydration</strong>: confusion, hypotension, syncope, oliguria, unable to keep fluids down</li>
+            <li>Marked tachycardia, shock, severe weakness</li>
+            <li><strong>Severe abdominal pain</strong>, peritonism, persistent vomiting, suspected surgical abdomen</li>
+            <li><strong>Blood in stool</strong> with systemic toxicity/high fever</li>
+            <li>High-risk patient: frail elderly, significant comorbidity, <strong>immunocompromised</strong></li>
+            <li>Suspected <strong>cholera</strong> / severe travel-associated watery diarrhoea with dehydration</li>
+          </ul>
+        </div>
+        <div class="divider"></div>
+        <div class="note">
+          If stable: proceed to focused assessment. Most acute gastroenteritis in Australia is self-limited and managed with oral rehydration.
+        </div>
+      `,
+      urgency: "danger",
+      urgencyText: "Escalate if severe dehydration/red flags",
+      checks: [
+        { id:"t1", text:"Assessed hydration (pulse, BP incl postural, mucous membranes, urine output)" },
+        { id:"t2", text:"Checked red flags: blood, severe pain, high fever, persistent vomiting" },
+        { id:"t3", text:"Identified high-risk groups (elderly, pregnancy, immunocompromised, CKD)" },
+        { id:"t4", text:"Medication review: diuretics/ACEi/ARB/NSAIDs, metformin, anticoagulants" }
+      ],
+      mini: "If severe dehydration or systemic toxicity → same-day escalation/ED."
+    },
+    {
+      title: "2) Focused history (cause + exposure)",
+      hint: "Differentiate viral vs bacterial dysentery vs protozoal vs toxin vs C. difficile.",
+      body: `
+        <p><strong>Key history:</strong></p>
+        <ul>
+          <li>Onset & duration (acute &lt;14 days vs persistent)</li>
+          <li>Stool frequency/volume; watery vs bloody; mucus</li>
+          <li>Fever, rigors, severe cramps/tenesmus</li>
+          <li>Vomiting predominance (often viral/toxin)</li>
+          <li>Travel, camping, untreated water, cruise/hostel</li>
+          <li>Food: undercooked poultry/eggs/seafood, unpasteurised dairy</li>
+          <li>Sick contacts, childcare, aged care, outbreak setting</li>
+          <li>Recent antibiotics / hospitalisation (consider <strong>C. difficile</strong>)</li>
+        </ul>
+        <div class="note">
+          Persistent diarrhoea (&gt;7–14 days), weight loss, nocturnal symptoms or recurrent episodes → broaden differential (IBD, malabsorption, endocrine, meds).
+        </div>
+      `,
+      urgency: "warn",
+      urgencyText: "Assess exposures and risks",
+      checks: [
+        { id:"h1", text:"Documented duration + stool characteristics (watery vs bloody)" },
+        { id:"h2", text:"Assessed fever, severe cramps/tenesmus" },
+        { id:"h3", text:"Reviewed travel, food, water, contacts/outbreak setting" },
+        { id:"h4", text:"Asked about recent antibiotics/hospitalisation (C. difficile risk)" }
+      ],
+      mini: "Exposure history guides whether to test and whether antibiotics are appropriate."
+    },
+    {
+      title: "3) Examination (severity + differentials)",
+      hint: "Look for dehydration, systemic toxicity, abdominal signs.",
+      body: `
+        <p><strong>Examination essentials:</strong></p>
+        <ul>
+          <li>Vitals: HR, BP (incl postural), temp, RR</li>
+          <li>Hydration: mucous membranes, capillary refill, skin turgor, urine output</li>
+          <li>Abdomen: tenderness, guarding, distension, bowel sounds</li>
+          <li>Consider PR exam if severe/bloody diarrhoea or concern for colitis</li>
+        </ul>
+        <div class="divider"></div>
+        <div class="note">
+          If severe abdominal tenderness, peritonism, marked distension, or toxic appearance → urgent escalation.
+        </div>
+      `,
+      urgency: "warn",
+      urgencyText: "Assess severity",
+      checks: [
+        { id:"e1", text:"Vitals incl postural BP documented" },
+        { id:"e2", text:"Hydration status assessed and recorded" },
+        { id:"e3", text:"Abdominal exam for peritonism/distension" },
+        { id:"e4", text:"Considered PR exam if indicated" }
+      ],
+      mini: "Severity assessment determines investigations and need for IV fluids/admission."
+    },
+    {
+      title: "4) Who needs tests in GP?",
+      hint: "Most do not. Test selectively.",
+      body: `
+        <p><strong>Usually NO tests if:</strong></p>
+        <ul>
+          <li>Mild–moderate watery diarrhoea &lt;3–5 days</li>
+          <li>No blood, no high fever, patient well hydrated</li>
+        </ul>
+        <div class="divider"></div>
+        <p><strong>Consider stool testing if:</strong></p>
+        <ul>
+          <li><strong>Blood in stool</strong> or severe disease/high fever</li>
+          <li>Persistent diarrhoea (&gt;7 days) or not improving</li>
+          <li>Immunocompromised, significant comorbidity, pregnancy (case-by-case)</li>
+          <li>Outbreak / food handler / childcare / aged care resident or staff</li>
+          <li>Recent antibiotics/hospitalisation → test for <strong>C. difficile</strong></li>
+          <li>Recent travel/camping/untreated water (consider ova/parasites if persistent)</li>
+        </ul>
+        <div class="note">
+          Typical tests: stool PCR/culture (local lab panels), and C. difficile toxin/PCR when indicated.
+        </div>
+      `,
+      urgency: "ok",
+      urgencyText: "Selective testing",
+      checks: [
+        { id:"x1", text:"Identified whether stool testing is indicated" },
+        { id:"x2", text:"If indicated: ordered stool PCR/culture (per local lab)" },
+        { id:"x3", text:"If antibiotic exposure/hospitalisation: ordered C. difficile testing" },
+        { id:"x4", text:"Considered blood tests (U&E, FBC) if dehydrated/elderly/ongoing" }
+      ],
+      mini: "Testing is for severe, bloody, persistent, high-risk, or outbreak-associated cases."
+    },
+    {
+      title: "5) Supportive management (default pathway)",
+      hint: "Oral rehydration is the cornerstone.",
+      body: `
+        <p><strong>Core management:</strong></p>
+        <ul>
+          <li><strong>Oral rehydration solution (ORS)</strong> (small frequent sips)</li>
+          <li>Continue light diet as tolerated; avoid alcohol</li>
+          <li>Antiemetic if needed (e.g., to tolerate fluids) per local practice</li>
+          <li>Review medications: consider temporary hold of dehydration-risk meds (case-by-case)</li>
+        </ul>
+        <div class="divider"></div>
+        <p><strong>Antidiarrhoeals:</strong></p>
+        <ul>
+          <li>May be considered for <strong>non-bloody</strong> watery diarrhoea in well adults</li>
+          <li><strong>Avoid</strong> in dysentery (bloody stool), high fever, suspected C. difficile, or severe abdominal pain</li>
+        </ul>
+        <div class="note">
+          Give clear return advice and plan follow-up if symptoms persist beyond 48–72 hours or worsen.
+        </div>
+      `,
+      urgency: "ok",
+      urgencyText: "Supportive care",
+      checks: [
+        { id:"m1", text:"ORS advice given (small frequent sips, aim adequate urine output)" },
+        { id:"m2", text:"Diet advice: resume as tolerated; avoid irritants if needed" },
+        { id:"m3", text:"Medication review for dehydration risk (diuretics/ACEi/ARB/NSAIDs/metformin)" },
+        { id:"m4", text:"Antimotility use considered only if appropriate (no blood/fever)" }
+      ],
+      mini: "Most cases improve with ORS and time. Avoid unnecessary antibiotics."
+    },
+    {
+      title: "6) Antibiotics: when to consider (branching)",
+      hint: "Not routine. Use for selected severe bacterial disease and specific scenarios.",
+      body: `
+        <p><strong>Select the scenario:</strong></p>
+        <div class="rowBtns">
+          <button class="choiceBtn" data-toggle="abx" data-value="none">Most cases (no antibiotics)</button>
+          <button class="choiceBtn" data-toggle="abx" data-value="dysentery">Dysentery / severe febrile diarrhoea</button>
+          <button class="choiceBtn" data-toggle="abx" data-value="traveller">Traveller's diarrhoea (moderate–severe)</button>
+          <button class="choiceBtn" data-toggle="abx" data-value="cdiff">Suspected/confirmed C. difficile</button>
+        </div>
+        <div class="divider"></div>
+        <div id="abxBox" class="note">Choose an option above to see a GP-appropriate approach.</div>
+      `,
+      urgency: "warn",
+      urgencyText: "Antibiotics are selective",
+      checks: [
+        { id:"a1", text:"Avoided routine antibiotics in mild watery gastroenteritis" },
+        { id:"a2", text:"If severe/bloody/systemic: stool testing arranged and escalation considered" },
+        { id:"a3", text:"Considered local resistance/pregnancy/allergies before prescribing" },
+        { id:"a4", text:"Avoided antimotility agents in dysentery/high fever" }
+      ],
+      mini: "If you treat empirically, document why and ensure follow-up."
+    },
+    {
+      title: "7) Special groups",
+      hint: "Children, elderly, pregnancy, immunocompromised need lower threshold for review/testing.",
+      body: `
+        <p><strong>Children:</strong></p>
+        <ul>
+          <li>Focus on hydration (urine output, tears, alertness)</li>
+          <li>ORS; avoid high-sugar drinks; continue breastfeeding/normal diet as tolerated</li>
+          <li>Lower threshold for ED if dehydration or inability to maintain fluids</li>
+        </ul>
+        <div class="divider"></div>
+        <p><strong>Elderly / frail / comorbid:</strong></p>
+        <ul>
+          <li>Lower threshold for U&E, IV fluids, and admission</li>
+          <li>Medication review is critical (AKI risk)</li>
+        </ul>
+        <div class="divider"></div>
+        <p><strong>Pregnancy / immunocompromised:</strong></p>
+        <ul>
+          <li>Lower threshold for review/testing and specialist advice</li>
+        </ul>
+      `,
+      urgency: "warn",
+      urgencyText: "Lower threshold in high-risk",
+      checks: [
+        { id:"s1", text:"Adjusted threshold for testing/ED in elderly/frail/immunocompromised" },
+        { id:"s2", text:"Paediatric hydration assessment documented if child" },
+        { id:"s3", text:"Pregnancy considered and medication safety reviewed if relevant" },
+        { id:"s4", text:"Outbreak setting flagged (aged care/childcare) if relevant" }
+      ],
+      mini: "Hydration risk drives decision-making in vulnerable groups."
+    },
+    {
+      title: "8) Public health, exclusion and prevention",
+      hint: "Outbreaks and certain infections may need notification/exclusion advice.",
+      body: `
+        <p><strong>GP actions:</strong></p>
+        <ul>
+          <li>Hand hygiene advice; avoid preparing food for others while symptomatic</li>
+          <li>Discuss exclusion from work/school/childcare depending on local policy and risk role (e.g., food handlers)</li>
+          <li>If outbreak suspected: advise stool testing and consider contacting local public health unit for guidance</li>
+        </ul>
+        <div class="note">
+          Notification requirements vary by organism and jurisdiction in Australia. If a specific pathogen is identified (e.g., Salmonella, Shigella),
+          follow local public health advice for notification and exclusion.
+        </div>
+      `,
+      urgency: "ok",
+      urgencyText: "Consider outbreak controls",
+      checks: [
+        { id:"p1", text:"Provided hygiene and transmission prevention advice" },
+        { id:"p2", text:"Assessed for outbreak setting / food handler risk role" },
+        { id:"p3", text:"If organism identified: followed local notification/exclusion advice" },
+        { id:"p4", text:"Provided household advice (separate towels, surface cleaning)" }
+      ],
+      mini: "Prevention reduces spread—especially in childcare/aged care."
+    },
+    {
+      title: "9) Follow-up and safety-netting",
+      hint: "Clear return advice prevents missed sepsis/colitis/AKI.",
+      body: `
+        <p><strong>Arrange follow-up if:</strong></p>
+        <ul>
+          <li>Symptoms persist &gt;48–72 hours without improvement</li>
+          <li>Ongoing dehydration risk, elderly/comorbid, or uncertain diagnosis</li>
+          <li>Blood in stool, high fever, severe pain, or abnormal tests</li>
+        </ul>
+        <div class="divider"></div>
+        <div class="dangerBox">
+          <strong>Return urgently / ED if:</strong>
+          <ul>
+            <li>Unable to keep fluids down; reduced urine output</li>
+            <li>Increasing weakness, dizziness, syncope</li>
+            <li>Worsening abdominal pain, distension, peritonism</li>
+            <li>Confusion, high fever, blood in stool with systemic toxicity</li>
+          </ul>
+        </div>
+        <div class="note">
+          Consider alternate diagnoses if recurrent/prolonged: IBD, IBS, medication-related, endocrine causes, malabsorption.
+        </div>
+      `,
+      urgency: "ok",
+      urgencyText: "Provide safety net",
+      checks: [
+        { id:"f1", text:"Safety-net advice given (dehydration, blood, worsening pain, fever)" },
+        { id:"f2", text:"Follow-up plan documented" },
+        { id:"f3", text:"If tests ordered: results follow-up system in place" },
+        { id:"f4", text:"Considered alternate diagnoses if persistent/recurrent" }
+      ],
+      mini: "Most cases settle quickly. Persistent, bloody, or severe illness needs reassessment."
+    }
+  ];
+
+  // Elements
+  const elTitle = document.getElementById("stepTitle");
+  const elHint  = document.getElementById("stepHint");
+  const elCount = document.getElementById("stepCount");
+  const elBar   = document.getElementById("barFill");
+  const elBody  = document.getElementById("mainBody");
+  const elGrid  = document.getElementById("checkGrid");
+  const elMini  = document.getElementById("miniSummary");
+  const rfDot   = document.getElementById("rfDot");
+  const rfText  = document.getElementById("rfText");
+
+  const btnBack = document.getElementById("btnBack");
+  const btnNext = document.getElementById("btnNext");
+  const btnRestart = document.getElementById("btnRestart");
+  const btnPrint = document.getElementById("btnPrint");
+
+  function setUrgency(level, text){
+    rfDot.classList.remove("warn","danger");
+    if(level === "ok"){ rfDot.className = "pillDot"; }
+    else if(level === "warn"){ rfDot.className = "pillDot warn"; }
+    else { rfDot.className = "pillDot danger"; }
+    rfText.textContent = text;
+  }
+
+  function renderChecks(step){
+    elGrid.innerHTML = "";
+    (step.checks || []).forEach(item => {
+      const key = `${state.stepIndex}:${item.id}`;
+      const checked = !!state.checks[key];
+
+      const wrap = document.createElement("div");
+      wrap.className = "checkItem";
+
+      const input = document.createElement("input");
+      input.type = "checkbox";
+      input.id = key;
+      input.checked = checked;
+
+      input.addEventListener("change", () => {
+        state.checks[key] = input.checked;
+        localStorage.setItem("gastro_checks", JSON.stringify(state.checks));
+      });
+
+      const label = document.createElement("label");
+      label.htmlFor = key;
+      label.innerHTML = `<strong class="muted">Task</strong><div>${item.text}</div>`;
+
+      wrap.appendChild(input);
+      wrap.appendChild(label);
+      elGrid.appendChild(wrap);
+    });
+  }
+
+  function highlightChoiceButtons(){
+    document.querySelectorAll("[data-toggle]").forEach(btn => {
+      const t = btn.getAttribute("data-toggle");
+      const v = btn.getAttribute("data-value");
+      btn.classList.toggle("active", state.toggles[t] === v);
+    });
+  }
+
+  function renderAbxBox(){
+    const box = document.getElementById("abxBox");
+    if(!box) return;
+
+    const v = state.toggles["abx"];
+    if(!v){
+      box.className = "note";
+      box.textContent = "Choose an option above to see a GP-appropriate approach.";
+      return;
+    }
+
+    const map = {
+      none: `
+        <strong>Most cases:</strong>
+        <ul>
+          <li>Supportive care only (ORS, diet as tolerated)</li>
+          <li>No antibiotics for uncomplicated watery diarrhoea</li>
+          <li>Consider loperamide only in well adults with non-bloody diarrhoea</li>
+        </ul>
+      `,
+      dysentery: `
+        <strong>Dysentery / severe febrile diarrhoea:</strong>
+        <ul>
+          <li>Arrange stool testing (PCR/culture) and assess hydration</li>
+          <li>Consider empiric antibiotics only if severe disease/high risk, after weighing local advice/resistance</li>
+          <li><strong>Avoid antimotility agents</strong></li>
+          <li>Escalate if systemic toxicity or dehydration</li>
+        </ul>
+      `,
+      traveller: `
+        <strong>Traveller's diarrhoea (moderate–severe):</strong>
+        <ul>
+          <li>ORS + supportive care first</li>
+          <li>Antibiotics may be considered in selected moderate–severe cases (especially with fever/blood)</li>
+          <li>Consider stool testing if severe, persistent, or dysentery</li>
+        </ul>
+      `,
+      cdiff: `
+        <strong>Suspected/confirmed C. difficile:</strong>
+        <ul>
+          <li>Test for C. difficile (per lab)</li>
+          <li>Stop non-essential antibiotics if possible</li>
+          <li>Avoid antimotility agents</li>
+          <li>Treatment choice/setting should follow local Australian guidance; consider specialist/ED if severe</li>
+        </ul>
+      `
+    };
+
+    box.className = (v === "dysentery" || v === "cdiff") ? "dangerBox" : "note";
+    box.innerHTML = map[v] || "Choose an option above.";
+  }
+
+  function bindChoiceButtons(){
+    document.querySelectorAll("[data-toggle]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const t = btn.getAttribute("data-toggle");
+        const v = btn.getAttribute("data-value");
+        state.toggles[t] = (state.toggles[t] === v) ? null : v;
+        localStorage.setItem("gastro_toggles", JSON.stringify(state.toggles));
+        highlightChoiceButtons();
+        renderAbxBox();
+      });
+    });
+  }
+
+  function render(){
+    const i = state.stepIndex;
+    const step = steps[i];
+
+    elTitle.textContent = step.title;
+    elHint.textContent = step.hint;
+    elBody.innerHTML = step.body;
+    elCount.textContent = `${i+1} / ${steps.length}`;
+
+    const pct = Math.round(((i+1)/steps.length)*100);
+    elBar.style.width = pct + "%";
+
+    elMini.textContent = step.mini || "";
+    setUrgency(step.urgency || "warn", step.urgencyText || "Check");
+    renderChecks(step);
+
+    btnBack.disabled = (i === 0);
+    btnNext.disabled = (i === steps.length - 1);
+
+    bindChoiceButtons();
+    highlightChoiceButtons();
+    renderAbxBox();
+  }
+
+  btnBack.addEventListener("click", () => { if(state.stepIndex > 0){ state.stepIndex--; render(); } });
+  btnNext.addEventListener("click", () => { if(state.stepIndex < steps.length - 1){ state.stepIndex++; render(); } });
+  btnRestart.addEventListener("click", () => { state.stepIndex = 0; render(); });
+  btnPrint.addEventListener("click", () => window.print());
+
+  document.addEventListener("keydown", (e) => {
+    if(e.key === "ArrowLeft") btnBack.click();
+    if(e.key === "ArrowRight") btnNext.click();
+  });
+
+  render();
+</script>
+</body>
+</html>
