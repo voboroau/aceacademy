@@ -28,7 +28,14 @@ const pathways = [
   href: "./pathways/atrial-fibrillation/",
   tags: ["Cardiology", "AF", "Stroke"],
   summary: "Confirm AF → assess stability → rate control → CHA₂DS₂-VA → anticoagulation → ongoing follow-up and referral."
+},
+  {
+  title: "Atrial Fibrillation — Exam Mode (Click-through)",
+  href: "./pathways/atrial-fibrillation-exam/",
+  tags: ["Cardiology", "AF", "Exam"],
+  summary: "Exam mode: make a decision first → then reveal guidance. Great for PESCI/AMC-style practice."
 }
+
 ];
 
 const grid = document.getElementById("grid");
