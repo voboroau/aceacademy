@@ -58,6 +58,12 @@ const pathways = [
   href: "./pathways/dyspnoea/",
   tags: ["Respiratory", "Emergency"],
   summary: "Rapid triage → ABCDE → identify life-threatening causes (PE, ACS, asthma, pneumothorax, oedema) → targeted tests → initial treatment → disposition and handover."
+},
+{
+  title: "Acute Angina / Suspected ACS — Click-through",
+  href: "./pathways/acute-angina/",
+  tags: ["Cardiology", "Emergency", "ACS"],
+  summary: "Assess chest pain → ECG within 10 minutes → aspirin + GTN → reassess → risk stratify → urgent ED transfer or cardiology review."
 }
 
 ];
