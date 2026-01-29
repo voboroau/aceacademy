@@ -64,6 +64,12 @@ const pathways = [
   href: "./pathways/acute-angina/",
   tags: ["Cardiology", "Emergency", "ACS"],
   summary: "Assess chest pain → ECG within 10 minutes → aspirin + GTN → reassess → risk stratify → urgent ED transfer or cardiology review."
+},
+{
+  title: "Stable Angina — Click-through",
+  href: "./pathways/stable-angina/",
+  tags: ["Cardio", "Angina", "Chest Pain", "Chronic"],
+  summary: "Rule out ACS → angina pattern & risk factors → baseline tests → anti-anginal therapy → secondary prevention → referral & follow-up → GP note."
 }
 
 ];
