@@ -1,0 +1,990 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Australian GP Click-Through Pathway — Stable Angina</title>
+  <style>
+    :root{
+      --bg:#0b1220;
+      --card:#111a2e;
+      --muted:#97a3b6;
+      --text:#e8eefc;
+      --line:#22304c;
+      --accent:#7dd3fc;
+      --accent2:#a7f3d0;
+      --danger:#fb7185;
+      --warn:#fbbf24;
+      --ok:#34d399;
+      --btn:#1f2b46;
+      --btn2:#233457;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 16px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      background: radial-gradient(1200px 700px at 10% 10%, rgba(125,211,252,.12), transparent 55%),
+                  radial-gradient(900px 600px at 90% 20%, rgba(167,243,208,.10), transparent 50%),
+                  var(--bg);
+      color:var(--text);
+      line-height:1.45;
+    }
+    a{color:inherit}
+    .wrap{max-width:1100px;margin:28px auto;padding:0 16px 40px}
+    .topbar{
+      display:flex; gap:12px; align-items:center; justify-content:space-between;
+      margin-bottom:14px;
+    }
+    .brand{
+      display:flex; flex-direction:column; gap:4px;
+    }
+    .brand h1{font-size:20px;margin:0}
+    .brand .sub{color:var(--muted);font-size:13px}
+    .actions{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+    .btn{
+      border:1px solid var(--line);
+      background:linear-gradient(180deg,var(--btn2),var(--btn));
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:600;
+      font-size:14px;
+      box-shadow: 0 8px 18px rgba(0,0,0,.25);
+    }
+    .btn:hover{filter:brightness(1.05)}
+    .btn:active{transform:translateY(1px)}
+    .btn.primary{border-color:rgba(125,211,252,.45)}
+    .btn.good{border-color:rgba(52,211,153,.45)}
+    .btn.warn{border-color:rgba(251,191,36,.55)}
+    .btn.danger{border-color:rgba(251,113,133,.55)}
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:7px 10px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      background:rgba(255,255,255,.03);
+      color:var(--muted);
+      font-size:13px;
+      user-select:none;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:14px;
+    }
+    @media (max-width: 980px){
+      .grid{grid-template-columns:1fr}
+    }
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:16px;
+    }
+    .card h2{margin:0 0 8px;font-size:18px}
+    .muted{color:var(--muted)}
+    .breadcrumbs{
+      display:flex; flex-wrap:wrap; gap:8px;
+      align-items:center;
+      color:var(--muted);
+      font-size:13px;
+      margin:10px 0 0;
+    }
+    .crumb{
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.02);
+    }
+    .crumb.active{border-color:rgba(125,211,252,.55); color:var(--text)}
+    .progress{
+      height:10px; border-radius:999px;
+      background:rgba(255,255,255,.05);
+      border:1px solid var(--line);
+      overflow:hidden;
+      margin-top:10px;
+    }
+    .bar{height:100%; width:0%; background:linear-gradient(90deg,var(--accent),var(--accent2))}
+    .stepTitle{
+      display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+      margin-bottom:10px;
+    }
+    .tag{
+      font-size:12px; font-weight:800; letter-spacing:.03em;
+      padding:6px 10px; border-radius:999px; border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+    }
+    .tag.danger{border-color:rgba(251,113,133,.55); color:#ffd1da}
+    .tag.warn{border-color:rgba(251,191,36,.55); color:#ffe7b3}
+    .tag.good{border-color:rgba(52,211,153,.45); color:#c9ffe9}
+    .box{
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px;
+      background:rgba(0,0,0,.14);
+      margin:10px 0;
+    }
+    .box h3{margin:0 0 8px;font-size:15px}
+    ul{margin:8px 0 0 18px}
+    li{margin:6px 0}
+    .checks{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px}
+    @media (max-width: 680px){ .checks{grid-template-columns:1fr} }
+    .check{
+      display:flex; gap:10px; align-items:flex-start;
+      padding:10px;
+      border:1px solid var(--line);
+      border-radius:12px;
+      background:rgba(255,255,255,.02);
+    }
+    .check input{margin-top:3px; transform:scale(1.1)}
+    .check b{display:block}
+    .fields{
+      display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px
+    }
+    @media (max-width: 680px){ .fields{grid-template-columns:1fr} }
+    label{display:block; font-size:12px; color:var(--muted); margin-bottom:6px}
+    input[type="text"], input[type="date"], textarea, select{
+      width:100%;
+      padding:10px 11px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      color:var(--text);
+      outline:none;
+    }
+    textarea{min-height:110px; resize:vertical}
+    .nav{
+      display:flex; gap:10px; justify-content:space-between; align-items:center;
+      margin-top:12px; flex-wrap:wrap;
+    }
+    .nav .left, .nav .right{display:flex; gap:10px; flex-wrap:wrap}
+    .note{
+      white-space:pre-wrap;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size:13px;
+      line-height:1.4;
+      background:rgba(0,0,0,.25);
+    }
+    .small{font-size:12px}
+    .divider{height:1px;background:var(--line);margin:12px 0}
+    .foot{color:var(--muted);font-size:12px;margin-top:12px}
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      padding:2px 7px;border:1px solid var(--line); border-bottom-width:2px;
+      border-radius:8px;background:rgba(255,255,255,.03); color:var(--text)
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <h1>Australian GP Click-Through Pathway — Stable Angina (Suspected/Confirmed)</h1>
+        <div class="sub">Interactive checklist → summary note. For education/support; apply local protocols and clinical judgement.</div>
+      </div>
+      <div class="actions">
+        <a class="btn primary" id="libraryBtn" href="https://voboroau.github.io/index.html/" target="_blank" rel="noopener">🏠 Library Home</a>
+        <button class="btn" id="saveStateBtn" type="button">💾 Save</button>
+        <button class="btn" id="loadStateBtn" type="button">📥 Load</button>
+        <button class="btn good" id="printBtn" type="button">🖨️ Print / Save as PDF</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="pill">
+        <span>Navigation:</span>
+        <span class="small">Use <span class="kbd">Next</span> / <span class="kbd">Back</span>. Tick items as you go.</span>
+      </div>
+
+      <div class="breadcrumbs" id="crumbs"></div>
+      <div class="progress"><div class="bar" id="bar"></div></div>
+    </div>
+
+    <div class="grid" style="margin-top:14px;">
+      <div class="card">
+        <div class="stepTitle">
+          <div>
+            <h2 id="stepHeading">Step</h2>
+            <div class="muted" id="stepSub">—</div>
+          </div>
+          <div class="tag" id="stepTag">—</div>
+        </div>
+
+        <div id="stepBody"></div>
+
+        <div class="nav">
+          <div class="left">
+            <button class="btn" id="backBtn" type="button">← Back</button>
+          </div>
+          <div class="right">
+            <button class="btn warn" id="resetBtn" type="button">↺ Reset</button>
+            <button class="btn primary" id="nextBtn" type="button">Next →</button>
+          </div>
+        </div>
+
+        <div class="foot" id="footerHint"></div>
+      </div>
+
+      <div class="card">
+        <h2>Quick Capture (Optional)</h2>
+        <div class="muted small">These fields feed into the generated GP note at the end.</div>
+
+        <div class="fields">
+          <div>
+            <label>Patient name</label>
+            <input id="ptName" type="text" placeholder="e.g., Mr John Smith" />
+          </div>
+          <div>
+            <label>DOB</label>
+            <input id="ptDob" type="text" placeholder="e.g., 01/01/1960" />
+          </div>
+          <div>
+            <label>Date of visit</label>
+            <input id="visitDate" type="date" />
+          </div>
+          <div>
+            <label>Reason for presentation</label>
+            <input id="reason" type="text" placeholder="e.g., Exertional chest tightness" />
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="fields">
+          <div>
+            <label>Vitals / key exam</label>
+            <input id="vitals" type="text" placeholder="BP, HR, SpO2, weight/BMI, heart/lung findings" />
+          </div>
+          <div>
+            <label>Known history (brief)</label>
+            <input id="hx" type="text" placeholder="CAD risk factors, DM, HTN, CKD, smoking etc." />
+          </div>
+        </div>
+
+        <div class="box">
+          <h3>Medication / Allergy Notes</h3>
+          <div class="fields">
+            <div>
+              <label>Current meds (brief)</label>
+              <textarea id="meds" placeholder="List current regular meds"></textarea>
+            </div>
+            <div>
+              <label>Allergies / adverse reactions</label>
+              <textarea id="allergies" placeholder="e.g., NKDA"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="box">
+          <h3>One-line working impression</h3>
+          <input id="impression" type="text" placeholder="e.g., Suspected stable angina (effort-related), low ACS concern today" />
+        </div>
+
+        <div class="foot">
+          Tip: keep the note defensible — document red flags ruled out, safety-net advice, and follow-up timeframes.
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* -----------------------------
+   CONFIG
+------------------------------ */
+const LIBRARY_HOME_URL = "https://voboroau.github.io/index.html/"; // change if needed
+document.getElementById("libraryBtn").href = LIBRARY_HOME_URL;
+
+const steps = [
+  {
+    id: "start",
+    title: "Step 0 — Safety First: Exclude ACS / Unstable Features",
+    tag: { text: "RED FLAGS", cls: "danger" },
+    sub: "If red flags are present → treat as possible ACS and escalate urgently.",
+    body: `
+      <div class="box">
+        <h3>Immediate escalation triggers (any = urgent ED/000)</h3>
+        <ul>
+          <li>Chest pain at rest or crescendo / rapidly worsening pattern</li>
+          <li>Ongoing pain >10–15 minutes, diaphoresis, vomiting, marked dyspnoea</li>
+          <li>Syncope, haemodynamic instability, new heart failure, serious arrhythmia</li>
+          <li>New ischaemic ECG changes (if ECG available) or high clinical concern</li>
+        </ul>
+        <div class="checks" data-group="redflags">
+          ${check("rf_rest","Pain at rest / prolonged / crescendo")}
+          ${check("rf_dysp","Severe dyspnoea / pulmonary oedema / hypoxia")}
+          ${check("rf_syncope","Syncope / haemodynamic compromise")}
+          ${check("rf_ecg","Ischaemic ECG changes / very high suspicion")}
+          ${check("rf_other","Other high-risk features (clinician judgement)")}
+        </div>
+      </div>
+
+      <div class="box">
+        <h3>Minimum today (even if likely stable)</h3>
+        <ul>
+          <li>Vitals + focused cardio/resp exam</li>
+          <li>Resting ECG if available</li>
+          <li>Clear safety-net: call 000 if pain at rest / persistent / worsening</li>
+        </ul>
+        <div class="checks" data-group="todaymins">
+          ${check("t_vitals","Vitals recorded and stable")}
+          ${check("t_ecg","Resting ECG obtained/ordered (where available)")}
+          ${check("t_safetynet","Safety-net advice documented")}
+        </div>
+      </div>
+
+      <div class="box">
+        <h3>If ANY red flag ticked…</h3>
+        <p class="muted">This pathway is for stable angina. If you ticked a red flag above, do not continue as “stable” — manage as possible ACS and escalate.</p>
+      </div>
+    `,
+    hint: "If you tick any red flag, consider stopping here and escalating.",
+  },
+
+  {
+    id: "hx",
+    title: "Step 1 — Typical Angina Pattern + Risk Factors",
+    tag: { text: "HISTORY", cls: "warn" },
+    sub: "Characterise symptoms and likelihood of coronary disease.",
+    body: `
+      <div class="box">
+        <h3>Angina pattern (classic)</h3>
+        <ul>
+          <li>Constricting discomfort (chest/arm/jaw/epigastrium)</li>
+          <li>Provoked by exertion/emotion</li>
+          <li>Relieved by rest and/or GTN within minutes</li>
+        </ul>
+        <div class="checks" data-group="angina3">
+          ${check("a_constrict","Constricting discomfort")}
+          ${check("a_exertion","Provoked by exertion/emotion")}
+          ${check("a_relief","Relieved by rest/GTN")}
+        </div>
+      </div>
+
+      <div class="box">
+        <h3>Risk factor checklist</h3>
+        <div class="checks" data-group="rfactors">
+          ${check("r_smoke","Smoking (current/recent)")}
+          ${check("r_htn","Hypertension")}
+          ${check("r_dm","Diabetes")}
+          ${check("r_dyslip","Dyslipidaemia")}
+          ${check("r_ckd","CKD / albuminuria")}
+          ${check("r_fhx","Strong family history (premature CAD)")}
+          ${check("r_age","Age/sex risk (e.g., men >45, women >55)")}
+          ${check("r_other","Other: obesity, OSA, inflammatory disease, etc.")}
+        </div>
+      </div>
+
+      <div class="box">
+        <h3>Important differentials to consider</h3>
+        <ul>
+          <li>GORD/oesophageal spasm, musculoskeletal pain, anxiety/panic</li>
+          <li>Pericarditis, myocarditis, PE, pneumonia (if suggestive features)</li>
+          <li>Aortic stenosis / hypertrophic cardiomyopathy (exertional symptoms + murmur)</li>
+        </ul>
+        <div class="checks" data-group="diffs">
+          ${check("d_resp","Resp/infective features assessed")}
+          ${check("d_gi","GI / reflux features assessed")}
+          ${check("d_msk","MSK reproducibility assessed")}
+          ${check("d_murmur","Murmur/structural red flags assessed")}
+        </div>
+      </div>
+    `,
+    hint: "Tick the classic triad — it helps your pre-test probability and referral justification."
+  },
+
+  {
+    id: "tests",
+    title: "Step 2 — Baseline Tests in General Practice",
+    tag: { text: "INVESTIGATIONS", cls: "warn" },
+    sub: "Document baseline risk and exclude key mimics; plan objective testing when indicated.",
+    body: `
+      <div class="box">
+        <h3>Baseline tests (typical)</h3>
+        <ul>
+          <li>Resting ECG (compare with prior if available)</li>
+          <li>FBC, UEC/eGFR, LFTs (before statins if needed), fasting lipids</li>
+          <li>HbA1c (or fasting glucose), TSH if clinically indicated</li>
+          <li>Consider CXR if alternative diagnosis suspected</li>
+        </ul>
+        <div class="checks" data-group="basetests">
+          ${check("b_ecg","ECG done/ordered")}
+          ${check("b_fbc","FBC")}
+          ${check("b_uec","UEC/eGFR")}
+          ${check("b_lip","Fasting lipids")}
+          ${check("b_hba1c","HbA1c / glucose")}
+          ${check("b_other","Other targeted tests as indicated")}
+        </div>
+      </div>
+
+      <div class="box">
+        <h3>Objective ischaemia/anatomy testing (plan/referral)</h3>
+        <ul>
+          <li>Choice depends on availability and patient factors (exercise capacity, baseline ECG, CKD, etc.)</li>
+          <li>Discuss/arrange stress test / stress imaging / CT coronary angiography via local pathways</li>
+          <li>Cardiology referral if moderate–high suspicion, persistent symptoms, or abnormal tests</li>
+        </ul>
+        <div class="checks" data-group="objtests">
+          ${check("o_stress","Objective testing planned (stress test / imaging / CTCA)")}
+          ${check("o_cardiology","Cardiology referral initiated/considered")}
+          ${check("o_pretest","Pre-test likelihood documented (low/mod/high)")}
+        </div>
+      </div>
+
+      <div class="box">
+        <h3>Safety-net while awaiting testing</h3>
+        <ul>
+          <li>Return urgently / call 000 if pain at rest, prolonged, worsening, or with dyspnoea/syncope</li>
+          <li>Provide written advice if possible</li>
+        </ul>
+        <div class="checks" data-group="safetynet2">
+          ${check("s_written","Written safety-net advice provided")}
+          ${check("s_follow","Follow-up booked within appropriate timeframe")}
+        </div>
+      </div>
+    `,
+    hint: "RACGP chest pain guidance emphasises triage first; low-risk stable chest pain may not need urgent testing, but document your risk rationale. (See references in your local resources.)"
+  },
+
+  {
+    id: "symptom",
+    title: "Step 3 — Symptom Relief Plan (Anti-anginal)",
+    tag: { text: "TREAT SYMPTOMS", cls: "good" },
+    sub: "Start a safe, practical regimen while arranging objective assessment as needed.",
+    body: `
+      <div class="box">
+        <h3>Rapid relief</h3>
+        <ul>
+          <li>Short-acting nitrate (GTN spray/tablet) for episodes</li>
+          <li>Explain use, storage, common adverse effects (headache, hypotension)</li>
+        </ul>
+        <div class="checks" data-group="gtn">
+          ${check("g_rx","GTN prescribed / confirmed available")}
+          ${check("g_edu","GTN use + adverse effects counselled")}
+          ${check("g_plan","Clear plan for non-response (e.g., call 000 if ongoing pain)")}
+        </div>
+      </div>
+
+      <div class="box">
+        <h3>First-line ongoing anti-anginal options (choose based on comorbidity)</h3>
+        <ul>
+          <li>Beta blocker <span class="muted">(often first-line, especially post-MI or tachycardic)</span></li>
+          <li>OR calcium channel blocker (rate-limiting or dihydropyridine depending on need)</li>
+          <li>Consider add-on therapy if persistent symptoms (e.g., long-acting nitrates) per specialist/local guidance</li>
+        </ul>
+        <div class="checks" data-group="antiang">
+          ${check("aa_bb","Beta blocker started/optimised (if appropriate)")}
+          ${check("aa_ccb","CCB started/optimised (if appropriate)")}
+          ${check("aa_addon","Add-on considered for persistent symptoms")}
+          ${check("aa_contra","Contraindications checked (asthma, bradycardia, heart block, hypotension, etc.)")}
+        </div>
+      </div>
+
+      <div class="box">
+        <h3>Monitoring</h3>
+        <ul>
+          <li>Review symptom frequency, exercise tolerance, BP/HR, adverse effects</li>
+          <li>Escalate if symptoms worsen or become unstable</li>
+        </ul>
+        <div class="checks" data-group="monitor">
+          ${check("m_review","Review planned (timeframe documented)")}
+          ${check("m_params","BP/HR targets or monitoring instructions documented")}
+        </div>
+      </div>
+
+      <div class="foot">
+        Note: First-line anti-anginals commonly include beta blockers and calcium channel blockers; short-acting nitrates are used for symptom relief. :contentReference[oaicite:1]{index=1}
+      </div>
+    `,
+    hint: "Keep it simple: GTN PRN + one controller agent, then reassess."
+  },
+
+  {
+    id: "prevention",
+    title: "Step 4 — Event Prevention (Secondary Prevention / Risk Reduction)",
+    tag: { text: "PREVENT EVENTS", cls: "good" },
+    sub: "Reduce MI/stroke risk with lifestyle and evidence-based medicines (if no contraindications).",
+    body: `
+      <div class="box">
+        <h3>Lifestyle + risk factor management</h3>
+        <ul>
+          <li>Smoking cessation support (NRT/varenicline as appropriate), exercise plan, weight, diet</li>
+          <li>BP optimisation, diabetes optimisation, sleep apnoea screening if indicated</li>
+          <li>Vaccinations per routine (e.g., influenza) based on patient factors</li>
+        </ul>
+        <div class="checks" data-group="lifestyle">
+          ${check("l_smoke","Smoking cessation advice/support offered")}
+          ${check("l_ex","Exercise/rehab advice (graded)")}
+          ${check("l_diet","Diet/weight counselling")}
+          ${check("l_bp","BP management plan")}
+          ${check("l_dm","Diabetes plan (if relevant)")}
+        </div>
+      </div>
+
+      <div class="box">
+        <h3>Pharmacologic prevention (typical)</h3>
+        <ul>
+          <li>Antiplatelet (e.g., low-dose aspirin) if no contraindication</li>
+          <li>Statin (moderate–high intensity depending on risk/targets)</li>
+          <li>Consider ACE-i/ARB particularly with HTN/DM/CKD or other indications</li>
+          <li>Review drug interactions and bleeding risk</li>
+        </ul>
+        <div class="checks" data-group="prevmx">
+          ${check("p_asa","Antiplatelet considered/commenced or contraindication documented")}
+          ${check("p_statin","Statin considered/commenced")}
+          ${check("p_ace","ACE-i/ARB considered if indicated")}
+          ${check("p_bleed","Bleeding risk / contraindications checked")}
+        </div>
+      </div>
+
+      <div class="box">
+        <h3>Patient education</h3>
+        <ul>
+          <li>What angina is, when to use GTN, when to call 000</li>
+          <li>Driving/work advice tailored to symptoms and local rules</li>
+        </ul>
+        <div class="checks" data-group="edu">
+          ${check("e_explain","Condition explained in plain language")}
+          ${check("e_gtn","GTN plan reinforced")}
+          ${check("e_000","Emergency advice reinforced")}
+        </div>
+      </div>
+
+      <div class="foot">
+        Australian Prescriber review summarises the typical approach: treat symptoms (beta blockers/CCBs, nitrates) and prevent events (aspirin, statins) with risk stratification guiding who needs revascularisation assessment. :contentReference[oaicite:2]{index=2}
+      </div>
+    `,
+    hint: "In your note: document “contraindications checked” — it matters medico-legally."
+  },
+
+  {
+    id: "refer",
+    title: "Step 5 — When to Refer / Escalate",
+    tag: { text: "DECISION", cls: "warn" },
+    sub: "Identify patients needing cardiology review or urgent assessment.",
+    body: `
+      <div class="box">
+        <h3>Same-day / urgent escalation (do not treat as stable)</h3>
+        <ul>
+          <li>Rest pain, crescendo pattern, syncope, HF signs, serious arrhythmia</li>
+          <li>New ischaemic ECG changes, very high clinical concern</li>
+        </ul>
+        <div class="checks" data-group="urgent">
+          ${check("u_any","Urgent criteria assessed (and absent)")}
+          ${check("u_action","If present → escalation action taken/documented")}
+        </div>
+      </div>
+
+      <div class="box">
+        <h3>Cardiology referral (common reasons)</h3>
+        <ul>
+          <li>Moderate–high probability stable angina needing objective testing strategy</li>
+          <li>Symptoms limiting daily activities despite initial therapy</li>
+          <li>Abnormal baseline ECG/echo (if done) or concerning test results</li>
+          <li>Multiple risk factors / significant comorbidity</li>
+        </ul>
+        <div class="checks" data-group="cardref">
+          ${check("c_prob","Moderate–high suspicion documented")}
+          ${check("c_persist","Persistent symptoms despite therapy")}
+          ${check("c_abn","Abnormal tests / high risk features")}
+          ${check("c_sent","Referral sent / plan documented")}
+        </div>
+      </div>
+
+      <div class="box">
+        <h3>Follow-up timeframe</h3>
+        <ul>
+          <li>Earlier review if starting/changing anti-anginals</li>
+          <li>Ensure results reviewed and patient notified</li>
+        </ul>
+        <div class="checks" data-group="fu">
+          ${check("f_booked","Follow-up booked")}
+          ${check("f_results","Results tracking plan documented")}
+        </div>
+      </div>
+    `,
+    hint: "Your referral letter should include: symptom pattern + risk factors + ECG + what you’ve started + what you’re requesting (stress test/CTCA/cardiology review)."
+  },
+
+  {
+    id: "note",
+    title: "Step 6 — Generate Summary + Sample GP Note",
+    tag: { text: "OUTPUT", cls: "good" },
+    sub: "Produces a paste-ready note and an optional patient instruction snippet.",
+    body: `
+      <div class="box">
+        <h3>Generate</h3>
+        <div class="checks" data-group="final">
+          ${check("x_confirm","All red flags reviewed and safety-net advice provided")}
+          ${check("x_tests","Baseline tests ordered/arranged")}
+          ${check("x_meds","Symptom + prevention meds addressed (or contraindications documented)")}
+          ${check("x_fu","Follow-up booked and/or referral arranged")}
+        </div>
+        <div class="nav" style="margin-top:10px">
+          <div class="left">
+            <button class="btn good" type="button" id="genNoteBtn">🧾 Generate GP Note</button>
+            <button class="btn" type="button" id="copyNoteBtn">📋 Copy</button>
+          </div>
+          <div class="right">
+            <button class="btn good" type="button" id="genPtBtn">🧠 Generate Patient Instructions</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="box">
+        <h3>GP Note (sample – edit as needed)</h3>
+        <textarea class="note" id="gpNote" placeholder="Click 'Generate GP Note'..."></textarea>
+      </div>
+
+      <div class="box">
+        <h3>Patient instructions (optional)</h3>
+        <textarea class="note" id="ptInstr" placeholder="Click 'Generate Patient Instructions'..."></textarea>
+      </div>
+
+      <div class="foot">
+        Reminder: If symptoms become <b>rest pain</b>, <b>prolonged</b>, or <b>worsening</b>, treat as possible ACS and seek urgent care.
+      </div>
+    `,
+    hint: "Click Generate, then Print / Save as PDF if you want a hard copy."
+  }
+];
+
+/* -----------------------------
+   UI BUILDERS
+------------------------------ */
+function check(id, label){
+  return `
+    <div class="check">
+      <input type="checkbox" id="${id}" />
+      <div>
+        <b>${escapeHtml(label)}</b>
+        <div class="muted small">${escapeHtml(helperText(id))}</div>
+      </div>
+    </div>
+  `;
+}
+
+function helperText(id){
+  const map = {
+    rf_rest:"Not stable angina if ongoing/rest pain or crescendo pattern.",
+    rf_dysp:"Consider HF/PE/ACS—urgent.",
+    rf_syncope:"High risk — escalate.",
+    rf_ecg:"Treat as possible ACS.",
+    rf_other:"Use judgement; safety first.",
+    t_vitals:"Record BP/HR/SpO₂, look unwell?",
+    t_ecg:"If available in clinic/urgent access.",
+    t_safetynet:"Document clear ‘call 000’ triggers.",
+    a_constrict:"Pressure/tightness/heaviness.",
+    a_exertion:"Predictable with exertion/emotion.",
+    a_relief:"Settles with rest/GTN in minutes.",
+    o_pretest:"Low/moderate/high likelihood.",
+    aa_contra:"e.g., asthma, bradycardia, block, hypotension.",
+    p_bleed:"GI bleed history, anticoagulants, etc.",
+    f_results:"How you will chase & communicate results."
+  };
+  return map[id] || " ";
+}
+
+function escapeHtml(s){
+  return String(s)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;");
+}
+
+/* -----------------------------
+   STATE + NAV
+------------------------------ */
+let idx = 0;
+
+const stepHeading = document.getElementById("stepHeading");
+const stepSub = document.getElementById("stepSub");
+const stepTag = document.getElementById("stepTag");
+const stepBody = document.getElementById("stepBody");
+const crumbs = document.getElementById("crumbs");
+const bar = document.getElementById("bar");
+const footerHint = document.getElementById("footerHint");
+
+function renderCrumbs(){
+  crumbs.innerHTML = "";
+  steps.forEach((s, i) => {
+    const el = document.createElement("div");
+    el.className = "crumb" + (i === idx ? " active":"");
+    el.textContent = `${i+1}. ${s.title.replace("Step ","")}`;
+    el.style.cursor = "pointer";
+    el.onclick = () => { idx = i; render(); };
+    crumbs.appendChild(el);
+  });
+}
+
+function render(){
+  const s = steps[idx];
+  stepHeading.textContent = s.title;
+  stepSub.textContent = s.sub;
+  stepTag.textContent = s.tag.text;
+  stepTag.className = "tag " + s.tag.cls;
+  stepBody.innerHTML = s.body;
+  footerHint.textContent = s.hint || "";
+
+  document.getElementById("backBtn").disabled = (idx === 0);
+  document.getElementById("nextBtn").disabled = (idx === steps.length - 1);
+
+  renderCrumbs();
+  bar.style.width = Math.round((idx/(steps.length-1))*100) + "%";
+
+  // Attach special buttons on final step
+  const gen = document.getElementById("genNoteBtn");
+  if(gen){
+    gen.addEventListener("click", generateGpNote);
+    document.getElementById("copyNoteBtn").addEventListener("click", copyGpNote);
+    document.getElementById("genPtBtn").addEventListener("click", generatePatientInstructions);
+  }
+}
+
+document.getElementById("backBtn").addEventListener("click", () => { if(idx>0){ idx--; render(); }});
+document.getElementById("nextBtn").addEventListener("click", () => { if(idx<steps.length-1){ idx++; render(); }});
+document.getElementById("resetBtn").addEventListener("click", resetAll);
+document.getElementById("printBtn").addEventListener("click", () => window.print());
+
+/* -----------------------------
+   SAVE / LOAD
+------------------------------ */
+document.getElementById("saveStateBtn").addEventListener("click", () => {
+  const data = collectState();
+  localStorage.setItem("stableAnginaPathwayState_v1", JSON.stringify(data));
+  toast("Saved to this browser.");
+});
+document.getElementById("loadStateBtn").addEventListener("click", () => {
+  const raw = localStorage.getItem("stableAnginaPathwayState_v1");
+  if(!raw){ toast("No saved state found."); return; }
+  const data = JSON.parse(raw);
+  applyState(data);
+  toast("Loaded.");
+});
+
+function collectState(){
+  const inputs = {};
+  document.querySelectorAll("input, textarea, select").forEach(el => {
+    if(el.type === "checkbox") inputs[el.id] = el.checked;
+    else inputs[el.id] = el.value;
+  });
+  return { idx, inputs, ts: new Date().toISOString() };
+}
+
+function applyState(state){
+  idx = Math.min(Math.max(state.idx ?? 0, 0), steps.length-1);
+  // First render to recreate step DOM
+  render();
+  // Apply inputs (including off-step capture fields)
+  if(state.inputs){
+    Object.entries(state.inputs).forEach(([id, val]) => {
+      const el = document.getElementById(id);
+      if(!el) return;
+      if(el.type === "checkbox") el.checked = !!val;
+      else el.value = val ?? "";
+    });
+  }
+}
+
+/* -----------------------------
+   RESET
+------------------------------ */
+function resetAll(){
+  if(!confirm("Reset all ticks and text?")) return;
+  // clear localStorage state
+  localStorage.removeItem("stableAnginaPathwayState_v1");
+  // clear capture fields (exist outside step body)
+  ["ptName","ptDob","visitDate","reason","vitals","hx","meds","allergies","impression"].forEach(id=>{
+    const el = document.getElementById(id); if(el) el.value = "";
+  });
+  idx = 0;
+  render();
+  // also clear any checkboxes on current step
+  document.querySelectorAll("input[type='checkbox']").forEach(cb => cb.checked = false);
+  toast("Reset complete.");
+}
+
+/* -----------------------------
+   NOTE GENERATION
+------------------------------ */
+function isAnyRedFlagTicked(){
+  const ids = ["rf_rest","rf_dysp","rf_syncope","rf_ecg","rf_other"];
+  return ids.some(id => document.getElementById(id)?.checked);
+}
+
+function triadCount(){
+  const ids = ["a_constrict","a_exertion","a_relief"];
+  return ids.reduce((n,id)=> n + (document.getElementById(id)?.checked ? 1 : 0), 0);
+}
+
+function checkedList(ids){
+  return ids.filter(id => document.getElementById(id)?.checked);
+}
+
+function generateGpNote(){
+  const name = val("ptName") || "[Patient]";
+  const dob = val("ptDob") || "[DOB]";
+  const date = val("visitDate") || new Date().toISOString().slice(0,10);
+  const reason = val("reason") || "Chest discomfort on exertion";
+  const vitals = val("vitals") || "Vitals stable.";
+  const hx = val("hx") || "Risk factors reviewed.";
+  const meds = val("meds") || "See medication list.";
+  const allergies = val("allergies") || "NKDA (if applicable).";
+  const impression = val("impression") || "Suspected stable angina (effort-related), low concern for ACS today.";
+
+  const redFlag = isAnyRedFlagTicked();
+  const triad = triadCount();
+  const triadLabel = triad === 3 ? "Typical angina (3/3 features)" : triad === 2 ? "Atypical angina (2/3 features)" : "Non-anginal / low specificity (≤1/3 features)";
+
+  const baselineOrdered = [];
+  if(isChecked("b_ecg")) baselineOrdered.push("ECG");
+  if(isChecked("b_fbc")) baselineOrdered.push("FBC");
+  if(isChecked("b_uec")) baselineOrdered.push("UEC/eGFR");
+  if(isChecked("b_lip")) baselineOrdered.push("Fasting lipids");
+  if(isChecked("b_hba1c")) baselineOrdered.push("HbA1c/glucose");
+  if(isChecked("b_other")) baselineOrdered.push("Other targeted tests");
+
+  const planMeds = [];
+  if(isChecked("g_rx")) planMeds.push("GTN PRN for episodes");
+  if(isChecked("aa_bb")) planMeds.push("Beta blocker commenced/optimised (if appropriate)");
+  if(isChecked("aa_ccb")) planMeds.push("Calcium channel blocker commenced/optimised (if appropriate)");
+  if(isChecked("p_asa")) planMeds.push("Antiplatelet considered/commenced or contraindication documented");
+  if(isChecked("p_statin")) planMeds.push("Statin considered/commenced");
+  if(isChecked("p_ace")) planMeds.push("ACE-i/ARB considered if indicated");
+
+  const referrals = [];
+  if(isChecked("o_stress")) referrals.push("Objective CAD testing planned (stress test/imaging/CTCA via local pathway)");
+  if(isChecked("o_cardiology") || isChecked("c_sent")) referrals.push("Cardiology referral arranged/considered");
+
+  const lifestyle = [];
+  if(isChecked("l_smoke")) lifestyle.push("Smoking cessation support");
+  if(isChecked("l_ex")) lifestyle.push("Graded exercise / rehab advice");
+  if(isChecked("l_diet")) lifestyle.push("Diet/weight counselling");
+  if(isChecked("l_bp")) lifestyle.push("BP optimisation plan");
+  if(isChecked("l_dm")) lifestyle.push("Diabetes optimisation plan");
+
+  const safety = [];
+  if(isChecked("t_safetynet") || isChecked("s_written") || isChecked("e_000")) safety.push("Safety-net: call 000 if chest pain at rest, prolonged, worsening, or with dyspnoea/syncope.");
+  if(isChecked("f_booked") || isChecked("s_follow")) safety.push("Follow-up booked to review symptoms and results.");
+  if(isChecked("f_results")) safety.push("Results tracking plan documented.");
+
+  const note =
+`CLINICAL NOTE — CHEST PAIN / SUSPECTED STABLE ANGINA
+
+Patient: ${name}   DOB: ${dob}   Date: ${date}
+
+CC/Reason:
+- ${reason}
+
+History (summary):
+- Pattern assessed: ${triadLabel}
+- Risk factors / PMHx: ${hx}
+
+Red flags / ACS screen today:
+- ${redFlag ? "One or more red flags ticked — this is NOT stable angina; urgent escalation required/arranged." : "No features suggesting ACS/unstable angina today (as documented)."}
+
+Examination:
+- ${vitals}
+
+Medications / Allergies:
+- Current meds: ${meds}
+- Allergies: ${allergies}
+
+Investigations:
+- Baseline tests: ${baselineOrdered.length ? baselineOrdered.join(", ") : "Discussed / planned as clinically indicated."}
+- ECG: ${isChecked("b_ecg") ? "Obtained/ordered." : "Not available today / planned."}
+- Objective testing / referral plan: ${referrals.length ? referrals.join("; ") : "Discussed; plan based on risk and local access."}
+
+Assessment:
+- ${impression}
+
+Plan:
+- Symptom relief: ${planMeds.length ? planMeds.join("; ") : "Discussed anti-anginal options and provided interim plan."}
+- Risk reduction: ${lifestyle.length ? lifestyle.join("; ") : "Lifestyle and risk factor optimisation counselled."}
+- Safety net / follow-up: ${safety.length ? safety.join(" ") : "Safety-net advice given; follow-up arranged."}
+
+Patient advice documented:
+- GTN use discussed and when to seek urgent care.
+`;
+
+  const gpNoteEl = document.getElementById("gpNote");
+  gpNoteEl.value = note;
+  toast("GP note generated.");
+}
+
+function generatePatientInstructions(){
+  const name = val("ptName") || "you";
+  const instr =
+`PATIENT INSTRUCTIONS — POSSIBLE STABLE ANGINA
+
+1) What this means
+- Your symptoms suggest your heart may not be getting enough blood flow during exertion.
+
+2) What to do if you get chest discomfort
+- STOP activity, sit down, and rest.
+- Use your GTN spray/tablet if prescribed (as explained in clinic).
+
+3) Call an ambulance (000) immediately if:
+- Chest pain happens at rest, lasts >10 minutes, is worsening, or keeps coming back
+- You feel faint, very short of breath, sweaty, or unwell
+
+4) Next steps
+- We are arranging tests to check your heart and reviewing risk factors (blood pressure, cholesterol, diabetes, smoking).
+- Please attend your booked follow-up so we can review results and adjust treatment.
+
+(If you are unsure at any time, choose safety: call 000.)`;
+  document.getElementById("ptInstr").value = instr;
+  toast("Patient instructions generated.");
+}
+
+function copyGpNote(){
+  const el = document.getElementById("gpNote");
+  if(!el || !el.value){ toast("Nothing to copy yet."); return; }
+  el.select();
+  document.execCommand("copy");
+  toast("Copied.");
+}
+
+function val(id){ return (document.getElementById(id)?.value || "").trim(); }
+function isChecked(id){ return !!document.getElementById(id)?.checked; }
+
+/* -----------------------------
+   TOAST
+------------------------------ */
+let tmr=null;
+function toast(msg){
+  let el = document.getElementById("toast");
+  if(!el){
+    el = document.createElement("div");
+    el.id = "toast";
+    el.style.position="fixed";
+    el.style.bottom="18px";
+    el.style.left="50%";
+    el.style.transform="translateX(-50%)";
+    el.style.padding="10px 12px";
+    el.style.border="1px solid var(--line)";
+    el.style.borderRadius="12px";
+    el.style.background="rgba(0,0,0,.55)";
+    el.style.color="var(--text)";
+    el.style.boxShadow="0 12px 26px rgba(0,0,0,.35)";
+    el.style.zIndex="9999";
+    el.style.fontWeight="700";
+    document.body.appendChild(el);
+  }
+  el.textContent = msg;
+  el.style.opacity="1";
+  if(tmr) clearTimeout(tmr);
+  tmr = setTimeout(()=>{ el.style.opacity="0"; }, 1700);
+}
+
+/* -----------------------------
+   INIT
+------------------------------ */
+render();
+</script>
+</body>
+</html>
