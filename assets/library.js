@@ -82,7 +82,14 @@ const pathways = [
   href: "./pathways/premenstrual-syndrome/",
   tags: ["Gynae", "Women’s Health", "Mental Health", "Exam Mode"],
   summary: "Confirm cyclic pattern → assess severity/PMDD + safety → lifestyle/diary → SSRIs/CHC options → review/escalation + patient handout + Best Practice note generator."
+},
+{
+  title: "Erectile Dysfunction — Click-through (Exam Mode + IIEF-5 + Note Generator)",
+  href: "./pathways/erectile-dysfunction/",
+  tags: ["Men’s Health", "CardioMetabolic", "Urology", "Exam Mode"],
+  summary: "History → red flags/CV risk → exam + baseline labs → lifestyle/med review → PDE5 safety + counselling → review/referral + IIEF-5 + patient handout + Best Practice note generator."
 }
+
 
 ];
 
