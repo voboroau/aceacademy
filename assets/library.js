@@ -76,6 +76,12 @@ const pathways = [
   href: "./pathways/primary-dysmenorrhoea/",
   tags: ["Gynae", "Women’s Health", "Pain"],
   summary: "Diagnosis → red flags → non-pharmacological measures → NSAIDs → hormonal therapy → escalation."
+},
+  {
+  title: "Premenstrual Syndrome — Click-through (Exam Mode + Note Generator)",
+  href: "./pathways/premenstrual-syndrome/",
+  tags: ["Gynae", "Women’s Health", "Mental Health", "Exam Mode"],
+  summary: "Confirm cyclic pattern → assess severity/PMDD + safety → lifestyle/diary → SSRIs/CHC options → review/escalation + patient handout + Best Practice note generator."
 }
 
 ];
