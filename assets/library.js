@@ -70,6 +70,12 @@ const pathways = [
   href: "./pathways/stable-angina/",
   tags: ["Cardio", "Angina", "Chest Pain", "Chronic"],
   summary: "Rule out ACS → angina pattern & risk factors → baseline tests → anti-anginal therapy → secondary prevention → referral & follow-up → GP note."
+},
+  {
+  title: "Primary Dysmenorrhoea — Click-through",
+  href: "./pathways/primary-dysmenorrhoea/",
+  tags: ["Gynae", "Women’s Health", "Pain"],
+  summary: "Diagnosis → red flags → non-pharmacological measures → NSAIDs → hormonal therapy → escalation."
 }
 
 ];
