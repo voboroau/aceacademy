@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Primary Dysmenorrhoea – Australian GP Pathway</title>
+<style>
+  body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    max-width: 900px;
+    margin: auto;
+    padding: 24px;
+    background: #f7f9fb;
+  }
+  h1 { color: #2c3e50; }
+  .card {
+    background: #fff;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  }
+  .next-btn {
+    background: #0077cc;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 15px;
+  }
+  .next-btn:hover { background: #005fa3; }
+  .hidden { display: none; }
+  ul { margin-left: 20px; }
+  .alert {
+    background: #fff3cd;
+    border-left: 6px solid #ffcc00;
+    padding: 15px;
+    border-radius: 6px;
+  }
+</style>
+</head>
+
+<body>
+
+<h1>Primary Dysmenorrhoea – Australian GP Click-Through Pathway</h1>
+
+<div class="card">
+  <h3>Initial Presentation</h3>
+  <p>Patient presents with recurrent lower abdominal pain associated with menstruation.</p>
+  <button class="next-btn" onclick="nextStep(1)">Next →</button>
+</div>
+
+<div id="step1" class="card hidden">
+  <h3>Step 1 – Is this likely Primary Dysmenorrhoea?</h3>
+  <ul>
+    <li>Onset within 6–12 months of menarche</li>
+    <li>Cyclic crampy lower abdominal pain</li>
+    <li>Pain starts just before or at onset of menses</li>
+    <li>No pelvic pathology symptoms</li>
+  </ul>
+  <button class="next-btn" onclick="nextStep(2)">Next →</button>
+</div>
+
+<div id="step2" class="card hidden">
+  <h3>Step 2 – Screen for Red Flags (Secondary Causes)</h3>
+  <div class="alert">
+    <ul>
+      <li>Onset after age 25</li>
+      <li>Progressively worsening pain</li>
+      <li>Pain outside menstruation</li>
+      <li>Dyspareunia</li>
+      <li>Heavy or irregular bleeding</li>
+      <li>Infertility</li>
+      <li>Poor response to NSAIDs + hormonal therapy</li>
+    </ul>
+  </div>
+  <p><strong>If red flags present → investigate / refer.</strong></p>
+  <button class="next-btn" onclick="nextStep(3)">Next →</button>
+</div>
+
+<div id="step3" class="card hidden">
+  <h3>Step 3 – First-Line Non-Pharmacological Management</h3>
+  <ul>
+    <li>Heat therapy (heat pack / hot water bottle)</li>
+    <li>Regular aerobic exercise</li>
+    <li>Stretching, yoga, relaxation techniques</li>
+    <li>Lifestyle advice: sleep, stress, reduce caffeine/smoking</li>
+    <li>TENS therapy (if available)</li>
+  </ul>
+  <button class="next-btn" onclick="nextStep(4)">Next →</button>
+</div>
+
+<div id="step4" class="card hidden">
+  <h3>Step 4 – First-Line Pharmacological Treatment</h3>
+  <ul>
+    <li><strong>NSAIDs (first line)</strong>
+      <ul>
+        <li>Ibuprofen</li>
+        <li>Naproxen</li>
+        <li>Mefenamic acid</li>
+      </ul>
+    </li>
+    <li>Start 1–2 days before menses or at onset of pain</li>
+    <li>Paracetamol if NSAIDs contraindicated</li>
+  </ul>
+  <button class="next-btn" onclick="nextStep(5)">Next →</button>
+</div>
+
+<div id="step5" class="card hidden">
+  <h3>Step 5 – Hormonal Therapy (If NSAIDs Inadequate)</h3>
+  <ul>
+    <li>Combined oral contraceptive pill (cyclic or continuous)</li>
+    <li>Progestogen-only pill</li>
+    <li>Levonorgestrel IUD (e.g. Mirena)</li>
+    <li>Depot medroxyprogesterone (selected cases)</li>
+  </ul>
+  <button class="next-btn" onclick="nextStep(6)">Next →</button>
+</div>
+
+<div id="step6" class="card hidden">
+  <h3>Step 6 – Review & Escalation</h3>
+  <ul>
+    <li>Assess response after 2–3 cycles</li>
+    <li>If inadequate response → consider pelvic exam</li>
+    <li>Pelvic ultrasound if indicated</li>
+    <li>Refer to gynaecology if refractory or red flags</li>
+  </ul>
+  <p><strong>Consider endometriosis if persistent symptoms.</strong></p>
+</div>
+
+<script>
+function nextStep(step) {
+  document.getElementById("step" + step).classList.remove("hidden");
+}
+</script>
+
+</body>
+</html>
