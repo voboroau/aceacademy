@@ -94,10 +94,13 @@ const pathways = [
   href: "./pathways/erectile-dysfunction-assistant/",
   tags: ["Men’s Health", "Urology", "CardioMetabolic", "Decision Support"],
   summary: "Collects history/exam/investigations; shows significance per input; generates management plan + Best Practice note + printable summary."
+},
+  {
+  title: "Acute Angle-Closure Glaucoma — Wizard",
+  href: "./pathways/acute-angle-closure-glaucoma-wizard/",
+  tags: ["Eyes", "Emergency", "Glaucoma"],
+  summary: "Symptoms → risks → exam → mimics → urgent transfer → GP actions checklist → copyable handover + Best Practice note."
 }
-
-
-
 ];
 
 const grid = document.getElementById("grid");
