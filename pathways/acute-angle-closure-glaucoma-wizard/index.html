@@ -1,0 +1,1042 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Acute Angle-Closure Glaucoma — Wizard (Australian GP)</title>
+<style>
+  :root{
+    --bg:#f7f9fb; --card:#fff; --text:#1f2a37; --muted:#6b7280;
+    --brand:#0b74de; --brand2:#075fb7;
+    --ok:#0a7; --warn:#b45309; --danger:#b91c1c; --line:rgba(0,0,0,.08);
+  }
+  *{box-sizing:border-box}
+  body{margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; background:var(--bg); color:var(--text);}
+  header{
+    position:sticky; top:0; z-index:30;
+    background:rgba(247,249,251,.92); backdrop-filter: blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .wrap{max-width:1180px; margin:0 auto; padding:14px 18px;}
+  .topbar{display:flex; gap:12px; align-items:flex-start; justify-content:space-between; flex-wrap:wrap;}
+  h1{margin:0; font-size:18px;}
+  .sub{color:var(--muted); font-size:12px; margin-top:4px; max-width:900px}
+  .actions{display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
+  .btn{
+    border:1px solid var(--line); background:#fff; color:var(--text);
+    padding:9px 12px; border-radius:10px; cursor:pointer; font-size:13px;
+  }
+  .btn.primary{background:var(--brand); color:#fff; border-color:transparent;}
+  .btn.primary:hover{background:var(--brand2);}
+  .btn:disabled{opacity:.55; cursor:not-allowed;}
+  .btn:hover{filter:brightness(.98)}
+  main{max-width:1180px; margin:18px auto 80px; padding:0 18px;}
+  .grid{display:grid; grid-template-columns: 1.25fr .95fr; gap:14px;}
+  @media (max-width:1020px){ .grid{grid-template-columns:1fr;} }
+  .card{
+    background:var(--card); border:1px solid var(--line);
+    border-radius:16px; padding:16px;
+    box-shadow:0 10px 18px rgba(0,0,0,.04);
+    height:auto;
+    overflow:visible;
+  }
+  .card h2{margin:0 0 10px; font-size:15px;}
+  .card h3{margin:14px 0 8px; font-size:13px;}
+  .muted{color:var(--muted)}
+  .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
+  .pill{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:6px 10px; border-radius:999px; font-size:12px;
+    border:1px solid var(--line); background:#fff;
+  }
+  .pill.ok{border-color:rgba(0,170,119,.3); background:rgba(0,170,119,.08); color:var(--ok);}
+  .pill.warn{border-color:rgba(180,83,9,.3); background:rgba(180,83,9,.08); color:var(--warn);}
+  .pill.danger{border-color:rgba(185,28,28,.3); background:rgba(185,28,28,.08); color:var(--danger);}
+  .section{border-top:1px solid var(--line); padding-top:12px; margin-top:12px;}
+  label{display:block; font-size:12px; color:var(--muted); margin:10px 0 6px;}
+  input[type="text"], input[type="number"], select, textarea{
+    width:100%; padding:10px 12px; border-radius:12px;
+    border:1px solid var(--line); background:#fff; font-size:13px;
+  }
+  textarea{
+    min-height:90px;
+    height:auto;
+    resize:vertical;
+    overflow:visible;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:12.5px; line-height:1.35;
+  }
+  .help{
+    margin-top:6px; padding:10px 12px; border-radius:12px;
+    border:1px dashed rgba(0,0,0,.14); background:rgba(0,0,0,.02);
+    font-size:12.5px; color:#334155;
+  }
+  .help small{color:var(--muted)}
+  .kpi{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  @media (max-width:620px){ .kpi{grid-template-columns:1fr;} }
+  .hr{height:1px; background:var(--line); margin:12px 0;}
+  .list{margin:8px 0 0 18px;}
+  .stickyOut{ position:relative; } /* allow full-height growth */
+  .tiny{font-size:11px}
+  .twoCol{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  @media (max-width:780px){ .twoCol{grid-template-columns:1fr;} }
+
+  .stepper{
+    display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+    padding:10px 12px; border-radius:14px; border:1px solid var(--line); background:#fff;
+  }
+  .stepDot{
+    width:10px; height:10px; border-radius:999px; border:1px solid var(--line);
+    background:#fff;
+  }
+  .stepDot.active{background:var(--brand); border-color:transparent;}
+  .stepDot.done{background:rgba(0,170,119,.3); border-color:rgba(0,170,119,.45);}
+  .stepName{font-size:12px; color:var(--muted)}
+  .stepName strong{color:var(--text)}
+  .navRow{display:flex; justify-content:space-between; gap:10px; margin-top:14px; flex-wrap:wrap;}
+  .warnBox{
+    border:1px solid rgba(180,83,9,.25);
+    background:rgba(180,83,9,.07);
+    color:#7c2d12;
+    padding:10px 12px; border-radius:14px;
+    font-size:12.5px;
+  }
+  .dangerBox{
+    border:1px solid rgba(185,28,28,.25);
+    background:rgba(185,28,28,.07);
+    color:#7f1d1d;
+    padding:10px 12px; border-radius:14px;
+    font-size:12.5px;
+  }
+
+  .stepPanel{display:none;} /* JS shows current step only */
+
+  @media print{
+    header, .actions, .btn {display:none !important;}
+    body{background:#fff;}
+    .card{box-shadow:none;}
+    .stepper,.navRow,.warnBox,.dangerBox{display:none !important;}
+  }
+</style>
+</head>
+
+<body>
+<header>
+  <div class="wrap">
+    <div class="topbar">
+      <div>
+        <h1>Suspected Acute Angle-Closure Glaucoma — Wizard (Australian GP)</h1>
+        <div class="sub">
+          Rapid recognition + urgent escalation tool. Each field shows <strong>Why this matters</strong>. Outputs include: emergency triage,
+          working diagnosis likelihood, immediate GP actions checklist, medication considerations, patient advice, clinician summary, and Best Practice GP note.
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn" onclick="resetAll()">↻ Reset</button>
+        <button class="btn" onclick="jumpToStep(0)">Start</button>
+        <button class="btn" onclick="jumpToStep(7)">Step 8</button>
+        <button class="btn primary" onclick="window.print()">🖨️ Print</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="grid">
+
+  <!-- WIZARD -->
+  <div class="card">
+    <div class="stepper" id="stepper"></div>
+    <div class="row" id="headlinePills" style="margin-top:10px;"></div>
+
+    <div id="stepDanger" class="dangerBox" style="display:none; margin-top:10px;"></div>
+    <div id="stepWarning" class="warnBox" style="display:none; margin-top:10px;"></div>
+
+    <div id="steps">
+
+      <!-- 0 Basics -->
+      <div class="stepPanel" data-step="0">
+        <h2>Step 1 — Patient basics</h2>
+
+        <div class="twoCol">
+          <div>
+            <label>Patient name (optional)</label>
+            <input id="ptName" type="text" placeholder="e.g., Jane Smith" oninput="updateAll()"/>
+            <div class="help" id="sig_ptName"></div>
+          </div>
+          <div>
+            <label>Age</label>
+            <input id="age" type="number" min="0" placeholder="e.g., 63" oninput="updateAll()"/>
+            <div class="help" id="sig_age"></div>
+          </div>
+        </div>
+
+        <label>Which eye?</label>
+        <select id="eye" onchange="updateAll()">
+          <option value="">Select…</option>
+          <option value="right">Right</option>
+          <option value="left">Left</option>
+          <option value="both">Both / unclear</option>
+        </select>
+        <div class="help" id="sig_eye"></div>
+
+        <label>Time of onset</label>
+        <select id="onsetTime" onchange="updateAll()">
+          <option value="">Select…</option>
+          <option value="sudden_hours">Sudden (hours)</option>
+          <option value="today">Today (within 24h)</option>
+          <option value="1_3d">1–3 days</option>
+          <option value=">3d">&gt;3 days / unclear</option>
+        </select>
+        <div class="help" id="sig_onsetTime"></div>
+      </div>
+
+      <!-- 1 Symptoms -->
+      <div class="stepPanel" data-step="1">
+        <h2>Step 2 — Symptoms</h2>
+
+        <label>Severe eye pain?</label>
+        <select id="pain" onchange="updateAll()">
+          <option value="">Select…</option>
+          <option value="no">No / mild</option>
+          <option value="yes">Yes (moderate–severe)</option>
+        </select>
+        <div class="help" id="sig_pain"></div>
+
+        <label>Reduced vision / blurred vision?</label>
+        <select id="visionLoss" onchange="updateAll()">
+          <option value="">Select…</option>
+          <option value="no">No / minimal</option>
+          <option value="yes">Yes</option>
+        </select>
+        <div class="help" id="sig_visionLoss"></div>
+
+        <label>Halos around lights?</label>
+        <select id="halos" onchange="updateAll()">
+          <option value="">Select…</option>
+          <option value="no">No</option>
+          <option value="yes">Yes</option>
+        </select>
+        <div class="help" id="sig_halos"></div>
+
+        <label>Nausea/vomiting?</label>
+        <select id="nv" onchange="updateAll()">
+          <option value="">Select…</option>
+          <option value="no">No</option>
+          <option value="yes">Yes</option>
+        </select>
+        <div class="help" id="sig_nv"></div>
+
+        <label>Headache on same side?</label>
+        <select id="headache" onchange="updateAll()">
+          <option value="">Select…</option>
+          <option value="no">No</option>
+          <option value="yes">Yes</option>
+        </select>
+        <div class="help" id="sig_headache"></div>
+
+        <label>Contact lens wear?</label>
+        <select id="contacts" onchange="updateAll()">
+          <option value="">Select…</option>
+          <option value="no">No</option>
+          <option value="yes">Yes</option>
+        </select>
+        <div class="help" id="sig_contacts"></div>
+      </div>
+
+      <!-- 2 Risk factors / triggers -->
+      <div class="stepPanel" data-step="2">
+        <h2>Step 3 — Risk factors & triggers</h2>
+
+        <label>Known glaucoma / narrow angles / prior similar episode?</label>
+        <select id="historyGlaucoma" onchange="updateAll()">
+          <option value="">Select…</option>
+          <option value="no">No / unknown</option>
+          <option value="yes">Yes</option>
+        </select>
+        <div class="help" id="sig_historyGlaucoma"></div>
+
+        <label>Recent pupil dilation / dark environment / stress trigger?</label>
+        <select id="dilationTrigger" onchange="updateAll()">
+          <option value="">Select…</option>
+          <option value="no">No / unknown</option>
+          <option value="yes">Yes</option>
+        </select>
+        <div class="help" id="sig_dilationTrigger"></div>
+
+        <label>Recent meds that may dilate pupils? (e.g., anticholinergics, some antihistamines/decongestants, TCAs, some antipsychotics)</label>
+        <select id="mydriaticMeds" onchange="updateAll()">
+          <option value="">Select…</option>
+          <option value="no">No / unknown</option>
+          <option value="yes">Yes / possible</option>
+        </select>
+        <div class="help" id="sig_mydriaticMeds"></div>
+
+        <label>Ethnicity (risk framing only)</label>
+        <select id="ethnicity" onchange="updateAll()">
+          <option value="">Select…</option>
+          <option value="not_specified">Not specified</option>
+          <option value="asian">East/Southeast Asian background</option>
+          <option value="other">Other</option>
+        </select>
+        <div class="help" id="sig_ethnicity"></div>
+      </div>
+
+      <!-- 3 Examination -->
+      <div class="stepPanel" data-step="3">
+        <h2>Step 4 — Examination (GP)</h2>
+
+        <label>Visual acuity reduced compared to baseline?</label>
+        <select id="vaReduced" onchange="updateAll()">
+          <option value="">Select…</option>
+          <option value="no">No / not checked</option>
+          <option value="yes">Yes</option>
+        </select>
+        <div class="help" id="sig_vaReduced"></div>
+
+        <label>Red eye (ciliary injection) on affected side?</label>
+        <select id="redEye" onchange="updateAll()">
+          <option value="">Select…</option>
+          <option value="no">No / not obvious</option>
+          <option value="yes">Yes</option>
+        </select>
+        <div class="help" id="sig_redEye"></div>
+
+        <label>Corneal haze / “steamy” cornea?</label>
+        <select id="corneaHaze" onchange="updateAll()">
+          <option value="">Select…</option>
+          <option value="no">No / not checked</option>
+          <option value="yes">Yes</option>
+        </select>
+        <div class="help" id="sig_corneaHaze"></div>
+
+        <label>Pupil mid-dilated and/or poorly reactive?</label>
+        <select id="pupil" onchange="updateAll()">
+          <option value="">Select…</option>
+          <option value="no">No / normal</option>
+          <option value="yes">Yes / abnormal</option>
+        </select>
+        <div class="help" id="sig_pupil"></div>
+
+        <label>Globe feels “hard” on gentle palpation (compare with other eye)?</label>
+        <select id="hardEye" onchange="updateAll()">
+          <option value="">Select…</option>
+          <option value="no">No / unsure</option>
+          <option value="yes">Yes</option>
+        </select>
+        <div class="help" id="sig_hardEye"></div>
+
+        <label>IOP measured? (if you have tonometry)</label>
+        <select id="iopMeasured" onchange="updateAll()">
+          <option value="">Select…</option>
+          <option value="no">Not measured</option>
+          <option value="yes">Measured</option>
+        </select>
+        <div class="help" id="sig_iopMeasured"></div>
+
+        <label>If measured: IOP (mmHg)</label>
+        <input id="iop" type="number" min="0" placeholder="e.g., 48" oninput="updateAll()"/>
+        <div class="help" id="sig_iop"></div>
+      </div>
+
+      <!-- 4 Exclude dangerous mimics -->
+      <div class="stepPanel" data-step="4">
+        <h2>Step 5 — Dangerous mimics / extra red flags</h2>
+
+        <label>Corneal ulcer/keratitis features? (contact lens wearer + focal corneal opacity, severe photophobia)</label>
+        <select id="keratitis" onchange="updateAll()">
+          <option value="">Select…</option>
+          <option value="no">No / unlikely</option>
+          <option value="yes">Yes / possible</option>
+        </select>
+        <div class="help" id="sig_keratitis"></div>
+
+        <label>Anterior uveitis features? (photophobia, small irregular pupil, consensual pain)</label>
+        <select id="uveitis" onchange="updateAll()">
+          <option value="">Select…</option>
+          <option value="no">No / unlikely</option>
+          <option value="yes">Yes / possible</option>
+        </select>
+        <div class="help" id="sig_uveitis"></div>
+
+        <label>Trauma/chemical exposure?</label>
+        <select id="trauma" onchange="updateAll()">
+          <option value="">Select…</option>
+          <option value="no">No</option>
+          <option value="yes">Yes</option>
+        </select>
+        <div class="help" id="sig_trauma"></div>
+
+        <label>New neurological deficit / worst headache / thunderclap?</label>
+        <select id="neuroRed" onchange="updateAll()">
+          <option value="">Select…</option>
+          <option value="no">No</option>
+          <option value="yes">Yes</option>
+        </select>
+        <div class="help" id="sig_neuroRed"></div>
+      </div>
+
+      <!-- 5 Immediate GP actions -->
+      <div class="stepPanel" data-step="5">
+        <h2>Step 6 — Immediate GP actions (do not delay referral)</h2>
+
+        <label>Is urgent ophthalmology / ED transfer arranged NOW?</label>
+        <select id="transfer" onchange="updateAll()">
+          <option value="">Select…</option>
+          <option value="yes">Yes — underway</option>
+          <option value="no">Not yet</option>
+        </select>
+        <div class="help" id="sig_transfer"></div>
+
+        <label>Any contraindication to beta-blocker eye drops? (asthma/COPD with bronchospasm, bradycardia, heart block)</label>
+        <select id="bbContra" onchange="updateAll()">
+          <option value="">Select…</option>
+          <option value="no">No / unknown</option>
+          <option value="yes">Yes</option>
+        </select>
+        <div class="help" id="sig_bbContra"></div>
+
+        <label>Any contraindication to acetazolamide? (severe sulfonamide allergy, severe renal failure, significant acidosis, pregnancy caution)</label>
+        <select id="acetaContra" onchange="updateAll()">
+          <option value="">Select…</option>
+          <option value="no">No / unknown</option>
+          <option value="yes">Yes</option>
+        </select>
+        <div class="help" id="sig_acetaContra"></div>
+
+        <label>Severe nausea/vomiting needing antiemetic?</label>
+        <select id="needAntiemetic" onchange="updateAll()">
+          <option value="">Select…</option>
+          <option value="no">No / tolerable</option>
+          <option value="yes">Yes</option>
+        </select>
+        <div class="help" id="sig_needAntiemetic"></div>
+
+        <label>Pain needs analgesia?</label>
+        <select id="needAnalgesia" onchange="updateAll()">
+          <option value="">Select…</option>
+          <option value="no">No / mild</option>
+          <option value="yes">Yes</option>
+        </select>
+        <div class="help" id="sig_needAnalgesia"></div>
+
+        <label>Exam mode (optional): hide management suggestions until reveal?</label>
+        <select id="examMode" onchange="updateAll()">
+          <option value="off">Off</option>
+          <option value="on">On</option>
+        </select>
+        <div class="help" id="sig_examMode"></div>
+
+        <label style="display:none" id="revealLabel">Reveal management suggestions (Exam mode)</label>
+        <button class="btn primary" id="revealBtn" style="display:none" onclick="revealExam()">Reveal</button>
+      </div>
+
+      <!-- 6 Transfer / documentation -->
+      <div class="stepPanel" data-step="6">
+        <h2>Step 7 — Transfer details & documentation prompts</h2>
+
+        <label>Who are you sending to?</label>
+        <select id="destination" onchange="updateAll()">
+          <option value="">Select…</option>
+          <option value="ed">Emergency Department (preferred if no immediate ophthal)</option>
+          <option value="ophthal">Same-day ophthalmology / eye casualty</option>
+          <option value="both">Eye service + ED</option>
+        </select>
+        <div class="help" id="sig_destination"></div>
+
+        <label>Transport mode</label>
+        <select id="transport" onchange="updateAll()">
+          <option value="">Select…</option>
+          <option value="ambulance">Ambulance</option>
+          <option value="carer">Carer/escort (if stable)</option>
+          <option value="self">Self (not ideal)</option>
+        </select>
+        <div class="help" id="sig_transport"></div>
+
+        <label>Time called / arrangements (free text)</label>
+        <input id="arrangements" type="text" placeholder="e.g., Called ED, spoke to Dr X, ETA 30 min..." oninput="updateAll()"/>
+        <div class="help" id="sig_arrangements"></div>
+      </div>
+
+      <!-- 7 Outputs step -->
+      <div class="stepPanel" data-step="7">
+        <h2>Step 8 — Review & Outputs</h2>
+        <div class="muted tiny">Outputs populate live. Copy buttons on the right.</div>
+
+        <div class="section">
+          <h3>Quick review</h3>
+          <div id="review" class="help"></div>
+        </div>
+
+        <div class="section">
+          <h3>Key message</h3>
+          <div class="dangerBox">
+            <strong>Acute angle-closure glaucoma is an emergency.</strong>
+            If suspected, urgent ophthalmology/ED transfer is required. Treatment aims to rapidly lower IOP and relieve pupillary block; definitive management is specialist (often laser iridotomy).
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Navigation -->
+    <div class="navRow">
+      <button class="btn" id="backBtn" onclick="prevStep()">← Back</button>
+      <div class="row">
+        <button class="btn" onclick="jumpToStep(7)">Go to Step 8</button>
+        <button class="btn primary" id="nextBtn" onclick="nextStep()">Next →</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- OUTPUTS (HARD HIDDEN UNTIL STEP 8) -->
+  <div class="stickyOut" id="outputsPanel">
+    <div class="card">
+      <h2>Outputs</h2>
+
+      <h3>Triage</h3>
+      <div id="triage" class="help"></div>
+
+      <h3>Likelihood: acute angle-closure glaucoma</h3>
+      <div id="likelihood" class="help"></div>
+
+      <h3>Immediate actions checklist (GP)</h3>
+      <div id="actionsOut" class="help"></div>
+
+      <h3>Medication considerations (do not delay transfer)</h3>
+      <div id="medsOut" class="help"></div>
+
+      <h3>Referral / transfer wording</h3>
+      <div id="handoverOut" class="help"></div>
+
+      <div class="hr"></div>
+
+      <h3>Clinician summary (copyable)</h3>
+      <textarea id="summaryOut" readonly></textarea>
+      <div class="row" style="margin-top:8px;">
+        <button class="btn" onclick="copyText('summaryOut','Summary copied.')">Copy Summary</button>
+      </div>
+
+      <h3>Patient advice (copyable)</h3>
+      <textarea id="patientOut" readonly></textarea>
+      <div class="row" style="margin-top:8px;">
+        <button class="btn" onclick="copyText('patientOut','Patient advice copied.')">Copy Advice</button>
+      </div>
+
+      <h3>Best Practice GP note (copyable)</h3>
+      <textarea id="noteOut" readonly></textarea>
+      <div class="row" style="margin-top:8px;">
+        <button class="btn primary" onclick="copyText('noteOut','GP note copied.')">Copy GP Note</button>
+      </div>
+
+      <div class="muted small" id="copyMsg" style="margin-top:8px;"></div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  // ---------- Utilities ----------
+  const $ = (id)=>document.getElementById(id);
+  function esc(s){ return (s||"").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+  function setHelp(id, html){
+    const el=$(id); if(!el) return;
+    el.innerHTML = html || "<small class='muted'>Enter/select a value to see why this matters.</small>";
+  }
+  function sel(id){ return $(id).value; }
+  function num(id){ const v=parseFloat($(id).value); return isNaN(v)? null : v; }
+  function stripTags(html){ return (html||"").replace(/<[^>]*>/g,""); }
+
+  async function copyToClipboard(text){
+    try{ await navigator.clipboard.writeText(text); return true; }
+    catch(e){
+      const ta=document.createElement("textarea");
+      ta.value=text; document.body.appendChild(ta);
+      ta.select();
+      try{ document.execCommand("copy"); }
+      catch(err){ document.body.removeChild(ta); return false; }
+      document.body.removeChild(ta); return true;
+    }
+  }
+  async function copyText(id, msg){
+    const ok = await copyToClipboard($(id).value || "");
+    $("copyMsg").textContent = ok ? msg : "Copy failed (browser restriction).";
+    setTimeout(()=>{$("copyMsg").textContent="";}, 1500);
+  }
+
+  function autoGrow(el){
+    if(!el) return;
+    el.style.height = "auto";
+    el.style.height = el.scrollHeight + "px";
+  }
+
+  // ---------- Wizard state ----------
+  const STEP_TITLES = ["Basics","Symptoms","Risks","Exam","Mimics","Immediate actions","Transfer","Outputs"];
+  let currentStep = 0;
+
+  // Exam mode reveal gating (ONLY affects med suggestions text)
+  let examRevealed = false;
+  function revealExam(){ examRevealed = true; updateAll(); }
+
+  function toggleOutputsVisibility(){
+    const panel = document.getElementById("outputsPanel");
+    if(!panel) return;
+    panel.style.display = (currentStep === 7) ? "block" : "none";
+  }
+
+  function stepRequirements(step){
+    // Safety-first gating: at minimum, transfer must be set by Step 6 to proceed.
+    if(step===0){
+      return {ok:true, danger:"", warn:"Tip: Time of onset + which eye helps triage and handover."};
+    }
+    if(step===1){
+      return {ok:true, danger:"", warn:"Tip: Pain + blurred vision + halos + nausea strongly raises suspicion."};
+    }
+    if(step===3){
+      // if IOP measured, allow any; but warn if missing key exam signs
+      return {ok:true, danger:"", warn:"Tip: Mid-dilated poorly reactive pupil + corneal haze + hard globe are classic."};
+    }
+    if(step===5){
+      const transfer = sel("transfer");
+      if(transfer===""){
+        return {ok:false, danger:"Acute angle-closure glaucoma is an emergency. Please confirm transfer/ophthalmology escalation arrangements now.", warn:""};
+      }
+      if(transfer==="no"){
+        return {ok:false, danger:"Do not delay. Arrange urgent ophthalmology/ED transfer now before continuing.", warn:""};
+      }
+      return {ok:true, danger:"", warn:"Good: escalation underway. Use outputs to structure immediate actions + handover."};
+    }
+    return {ok:true, danger:"", warn:""};
+  }
+
+  function renderStepper(){
+    const s = $("stepper");
+    s.innerHTML = "";
+    STEP_TITLES.forEach((t,i)=>{
+      const dot = document.createElement("div");
+      dot.className = "stepDot " + (i===currentStep ? "active" : (i<currentStep ? "done" : ""));
+      dot.title = `Step ${i+1}: ${t}`;
+      dot.style.cursor="pointer";
+      dot.onclick = ()=>jumpToStep(i);
+      s.appendChild(dot);
+
+      const name = document.createElement("div");
+      name.className = "stepName";
+      name.innerHTML = (i===currentStep) ? `<strong>${i+1}. ${t}</strong>` : `${i+1}. ${t}`;
+      name.style.cursor="pointer";
+      name.onclick = ()=>jumpToStep(i);
+      s.appendChild(name);
+
+      if(i < STEP_TITLES.length-1){
+        const spacer = document.createElement("div");
+        spacer.style.flex="1";
+        spacer.style.height="1px";
+        spacer.style.background="rgba(0,0,0,.06)";
+        spacer.style.maxWidth="28px";
+        s.appendChild(spacer);
+      }
+    });
+  }
+
+  function renderContinueState(){
+    const req = stepRequirements(currentStep);
+    const danger = $("stepDanger");
+    const warn = $("stepWarning");
+
+    if(req.danger){
+      danger.style.display="block";
+      danger.textContent=req.danger;
+    } else {
+      danger.style.display="none";
+      danger.textContent="";
+    }
+    if(req.warn){
+      warn.style.display="block";
+      warn.textContent=req.warn;
+    } else {
+      warn.style.display="none";
+      warn.textContent="";
+    }
+
+    $("nextBtn").disabled = (!req.ok && currentStep!==7);
+  }
+
+  function showStep(step){
+    currentStep = Math.max(0, Math.min(7, step));
+    document.querySelectorAll(".stepPanel").forEach(p=>{
+      p.style.display = (parseInt(p.dataset.step,10)===currentStep) ? "block" : "none";
+    });
+
+    $("backBtn").disabled = (currentStep===0);
+    $("nextBtn").textContent = (currentStep===7) ? "Done ✓" : "Next →";
+
+    renderStepper();
+    renderContinueState();
+
+    toggleOutputsVisibility(); // HARD HIDE OUTPUTS UNTIL STEP 8
+
+    updateAll();
+    window.scrollTo({top:0, behavior:"smooth"});
+  }
+
+  function nextStep(){
+    if(currentStep===7){ return; }
+    const req = stepRequirements(currentStep);
+    if(!req.ok) { renderContinueState(); return; }
+    showStep(currentStep+1);
+  }
+  function prevStep(){ showStep(currentStep-1); }
+  function jumpToStep(step){ showStep(step); }
+
+  // ---------- Significance ("Why this matters") ----------
+  function significance(){
+    setHelp("sig_ptName", $("ptName").value.trim() ? "<strong>Why this matters:</strong> Auto-fills handover and documentation." : "");
+    const age = num("age");
+    setHelp("sig_age", age===null ? "" : "<strong>Why this matters:</strong> Risk increases with age and anatomical predisposition (narrow angles).");
+
+    setHelp("sig_eye", !sel("eye") ? "" : "<strong>Why this matters:</strong> Affects handover; the fellow eye is often anatomically at risk too.");
+    setHelp("sig_onsetTime", !sel("onsetTime") ? "" : "<strong>Why this matters:</strong> Acute onset supports an emergency mechanism; delays increase risk of permanent vision loss.");
+
+    setHelp("sig_pain", !sel("pain") ? "" : (sel("pain")==="yes" ? "<strong>Why this matters:</strong> Severe eye pain is classic in acute angle closure." : "<strong>Why this matters:</strong> Minimal pain makes acute angle-closure less typical (still possible)."));
+    setHelp("sig_visionLoss", !sel("visionLoss") ? "" : (sel("visionLoss")==="yes" ? "<strong>Why this matters:</strong> Vision drop is a major red flag." : "<strong>Why this matters:</strong> Preserved vision lowers probability but doesn’t exclude early angle closure."));
+    setHelp("sig_halos", !sel("halos") ? "" : (sel("halos")==="yes" ? "<strong>Why this matters:</strong> Halos suggest corneal oedema from raised IOP." : "<strong>Why this matters:</strong> No halos is less typical but not exclusionary."));
+    setHelp("sig_nv", !sel("nv") ? "" : (sel("nv")==="yes" ? "<strong>Why this matters:</strong> Nausea/vomiting can occur due to very high IOP and vagal response." : "<strong>Why this matters:</strong> No N/V doesn’t exclude."));
+    setHelp("sig_headache", !sel("headache") ? "" : (sel("headache")==="yes" ? "<strong>Why this matters:</strong> Ipsilateral headache is common; can mimic migraine." : "<strong>Why this matters:</strong> No headache doesn’t exclude."));
+    setHelp("sig_contacts", !sel("contacts") ? "" : (sel("contacts")==="yes" ? "<strong>Why this matters:</strong> Raises suspicion for keratitis/corneal ulcer as a mimic; check cornea carefully." : "<strong>Why this matters:</strong> Lower risk of contact lens keratitis mimic."));
+
+    setHelp("sig_historyGlaucoma", !sel("historyGlaucoma") ? "" : (sel("historyGlaucoma")==="yes" ? "<strong>Why this matters:</strong> Prior narrow angles/episodes increase likelihood; recurrence risk is high." : "<strong>Why this matters:</strong> History may be unknown; absence doesn’t exclude."));
+    setHelp("sig_dilationTrigger", !sel("dilationTrigger") ? "" : (sel("dilationTrigger")==="yes" ? "<strong>Why this matters:</strong> Pupil dilation can precipitate pupillary block in anatomically narrow angles." : "<strong>Why this matters:</strong> No clear trigger doesn’t exclude."));
+    setHelp("sig_mydriaticMeds", !sel("mydriaticMeds") ? "" : (sel("mydriaticMeds")==="yes" ? "<strong>Why this matters:</strong> Anticholinergic/sympathomimetic effects may trigger angle closure; note in handover." : "<strong>Why this matters:</strong> No trigger meds identified."));
+    setHelp("sig_ethnicity", !sel("ethnicity") ? "" : (sel("ethnicity")==="asian" ? "<strong>Why this matters:</strong> Population risk is higher due to anatomical angle predisposition (risk framing only)." : "<strong>Why this matters:</strong> Ethnicity helps risk framing but is not diagnostic."));
+
+    setHelp("sig_vaReduced", !sel("vaReduced") ? "" : (sel("vaReduced")==="yes" ? "<strong>Why this matters:</strong> Reduced VA supports significant ocular pathology and urgency." : "<strong>Why this matters:</strong> Not checked/normal VA doesn’t exclude."));
+    setHelp("sig_redEye", !sel("redEye") ? "" : (sel("redEye")==="yes" ? "<strong>Why this matters:</strong> Ciliary injection is common in angle closure." : "<strong>Why this matters:</strong> Lack of redness lowers likelihood but doesn’t exclude."));
+    setHelp("sig_corneaHaze", !sel("corneaHaze") ? "" : (sel("corneaHaze")==="yes" ? "<strong>Why this matters:</strong> Corneal haze suggests oedema from raised IOP." : "<strong>Why this matters:</strong> Clear cornea may occur early."));
+    setHelp("sig_pupil", !sel("pupil") ? "" : (sel("pupil")==="yes" ? "<strong>Why this matters:</strong> Mid-dilated poorly reactive pupil is a classic sign." : "<strong>Why this matters:</strong> Normal pupil lowers likelihood but doesn’t exclude early angle closure."));
+    setHelp("sig_hardEye", !sel("hardEye") ? "" : (sel("hardEye")==="yes" ? "<strong>Why this matters:</strong> A firm globe suggests elevated IOP (compare to other eye)." : "<strong>Why this matters:</strong> Uncertain palpation is common; rely on overall picture."));
+    setHelp("sig_iopMeasured", !sel("iopMeasured") ? "" : (sel("iopMeasured")==="yes" ? "<strong>Why this matters:</strong> Elevated IOP strongly supports diagnosis and guides urgency." : "<strong>Why this matters:</strong> Lack of tonometry must not delay transfer if suspected."));
+    const iop = num("iop");
+    setHelp("sig_iop", iop===null ? "" :
+      (iop >= 40 ? "<strong>Why this matters:</strong> Very high IOP is typical in acute angle closure — emergency."
+       : (iop >= 25 ? "<strong>Why this matters:</strong> Elevated IOP supports glaucoma; needs urgent specialist review."
+       : "<strong>Why this matters:</strong> Normal IOP makes acute angle closure less likely (check timing/measurement)."))
+    );
+
+    setHelp("sig_keratitis", !sel("keratitis") ? "" : (sel("keratitis")==="yes" ? "<strong>Why this matters:</strong> Corneal ulcer/keratitis can rapidly threaten vision and needs urgent ophthalmology; management differs." : "<strong>Why this matters:</strong> Mimic less likely."));
+    setHelp("sig_uveitis", !sel("uveitis") ? "" : (sel("uveitis")==="yes" ? "<strong>Why this matters:</strong> Uveitis needs different treatment (often steroids under ophthalmology); pupil tends to be small/irregular." : "<strong>Why this matters:</strong> Mimic less likely."));
+    setHelp("sig_trauma", !sel("trauma") ? "" : (sel("trauma")==="yes" ? "<strong>Why this matters:</strong> Trauma/chemical injuries are time-critical; follow trauma protocols + urgent ophthalmology." : "<strong>Why this matters:</strong> No trauma helps narrow differential."));
+    setHelp("sig_neuroRed", !sel("neuroRed") ? "" : (sel("neuroRed")==="yes" ? "<strong>Why this matters:</strong> Consider intracranial emergency or SAH mimic — ED urgently." : "<strong>Why this matters:</strong> No neuro red flags noted."));
+
+    setHelp("sig_transfer", !sel("transfer") ? "" : (sel("transfer")==="yes" ? "<strong>Why this matters:</strong> Immediate transfer is essential to prevent irreversible vision loss." : "<strong>Why this matters:</strong> Delay risks permanent optic nerve damage — arrange transfer now."));
+    setHelp("sig_bbContra", !sel("bbContra") ? "" : (sel("bbContra")==="yes" ? "<strong>Why this matters:</strong> Timolol may cause bronchospasm/bradycardia — avoid if contraindicated." : "<strong>Why this matters:</strong> No clear beta-blocker contraindication."));
+    setHelp("sig_acetaContra", !sel("acetaContra") ? "" : (sel("acetaContra")==="yes" ? "<strong>Why this matters:</strong> Acetazolamide may be unsafe in severe renal failure or severe sulfonamide allergy — seek specialist advice." : "<strong>Why this matters:</strong> No obvious acetazolamide contraindication."));
+    setHelp("sig_needAntiemetic", !sel("needAntiemetic") ? "" : (sel("needAntiemetic")==="yes" ? "<strong>Why this matters:</strong> Controlling vomiting reduces distress and helps transfer/medication tolerance." : "<strong>Why this matters:</strong> Supportive care still important."));
+    setHelp("sig_needAnalgesia", !sel("needAnalgesia") ? "" : (sel("needAnalgesia")==="yes" ? "<strong>Why this matters:</strong> Pain can be severe; treat while arranging urgent transfer." : "<strong>Why this matters:</strong> Still provide comfort measures."));
+
+    setHelp("sig_examMode", sel("examMode")==="on"
+      ? "<strong>Why this matters:</strong> Exam Mode hides management suggestions until you click Reveal."
+      : "<strong>Why this matters:</strong> Off shows management suggestions normally."
+    );
+
+    setHelp("sig_destination", !sel("destination") ? "" : "<strong>Why this matters:</strong> If no same-day ophthalmology is guaranteed, ED is safest.");
+    setHelp("sig_transport", !sel("transport") ? "" : (sel("transport")==="ambulance" ? "<strong>Why this matters:</strong> Appropriate for severe pain, vomiting, uncertain diagnosis, or high risk." : "<strong>Why this matters:</strong> Escort is preferred; avoid patient driving."));
+    setHelp("sig_arrangements", $("arrangements").value.trim() ? "<strong>Why this matters:</strong> Clear handover reduces delays in definitive care." : "");
+  }
+
+  // ---------- Decision engine ----------
+  function compute(){
+    const pts = [];
+
+    // Symptom cluster scoring
+    let score = 0;
+    if(sel("pain")==="yes") score += 2;
+    if(sel("visionLoss")==="yes") score += 2;
+    if(sel("halos")==="yes") score += 1;
+    if(sel("nv")==="yes") score += 1;
+    if(sel("headache")==="yes") score += 1;
+
+    // Exam cluster
+    if(sel("pupil")==="yes") score += 3;
+    if(sel("corneaHaze")==="yes") score += 2;
+    if(sel("hardEye")==="yes") score += 2;
+    if(sel("redEye")==="yes") score += 1;
+    if(sel("vaReduced")==="yes") score += 1;
+
+    // IOP
+    const iop = num("iop");
+    if(sel("iopMeasured")==="yes" && iop!==null){
+      if(iop >= 40) score += 4;
+      else if(iop >= 25) score += 2;
+      else score -= 1;
+    }
+
+    // Mimics
+    const mimicFlags = [];
+    if(sel("keratitis")==="yes") mimicFlags.push("Possible keratitis/corneal ulcer (especially with contact lens wear).");
+    if(sel("uveitis")==="yes") mimicFlags.push("Possible anterior uveitis.");
+    if(sel("trauma")==="yes") mimicFlags.push("Trauma/chemical exposure present.");
+    if(sel("neuroRed")==="yes") mimicFlags.push("Neurological red flags present.");
+
+    // Likelihood band (clinical-support, not diagnostic)
+    let band = "Unclear";
+    let bandClass = "warn";
+    if(score >= 11){ band="High suspicion"; bandClass="danger"; }
+    else if(score >= 7){ band="Moderate suspicion"; bandClass="warn"; }
+    else { band="Lower suspicion (still consider urgent eye pathology)"; bandClass="ok"; }
+
+    // Headline pills
+    const pills = [];
+    pills.push({cls: bandClass, txt:`Suspicion: ${band}`});
+    if(sel("transfer")==="yes") pills.push({cls:"ok", txt:"Transfer arranged"});
+    else if(sel("transfer")==="no") pills.push({cls:"danger", txt:"Transfer NOT arranged"});
+    else pills.push({cls:"warn", txt:"Transfer not confirmed"});
+
+    // Triage
+    const triage = [];
+    triage.push("• Treat as an <strong>eye emergency</strong>: urgent ophthalmology/ED transfer is required if suspected.");
+    if(sel("transfer")==="no") triage.push("• <strong>Do not delay</strong>: arrange ED/ophthalmology transfer now.");
+    if(iop!==null && iop >= 40) triage.push("• IOP very high → emergency.");
+    if(mimicFlags.length) triage.push("• Mimic flags noted: ensure ED/ophthalmology aware and avoid inappropriate drops.");
+
+    // Immediate actions checklist (GP)
+    const actions = [];
+    actions.push("1) Call ED/ophthalmology NOW; document time and clinician spoken to.");
+    actions.push("2) Avoid mydriatics; keep patient fasting if transfer likely.");
+    actions.push("3) Remove contact lens (if present).");
+    actions.push("4) Provide analgesia + antiemetic if needed.");
+    actions.push("5) If within scope and no contraindications, consider pressure-lowering measures <em>while</em> arranging transfer (do not delay).");
+    actions.push("6) Safety: escort patient; avoid driving; urgent review if worsening symptoms.");
+
+    // Medication considerations (keep conservative, safety-first)
+    // NOTE: In AU, definitive therapy is specialist; these are typical ED/ophthal regimens. Encourage calling ophthalmology/ED.
+    const bbContra = (sel("bbContra")==="yes");
+    const acContra = (sel("acetaContra")==="yes");
+
+    const showMeds = (sel("examMode")==="off") || (sel("examMode")==="on" && examRevealed);
+
+    const meds = [];
+    if(!showMeds){
+      meds.push("<em>Exam Mode ON:</em> click <strong>Reveal</strong> to show medication considerations.");
+    } else {
+      meds.push("<strong>Do not delay transfer.</strong> If you have immediate specialist/ED guidance, follow that.");
+      meds.push("• <strong>Timolol 0.5% 1 drop</strong> affected eye (avoid if asthma/COPD bronchospasm, bradycardia, heart block).");
+      meds.push("• <strong>Acetazolamide 500 mg</strong> (oral/IV depending on setting) if no contraindications (renal failure/severe sulfonamide allergy; pregnancy caution).");
+      meds.push("• <strong>Apraclonidine 0.5–1% 1 drop</strong> or <strong>brimonidine 0.2% 1 drop</strong> may be used in some protocols (if available).");
+      meds.push("• <strong>Pilocarpine</strong> is typically used <em>after IOP starts to fall</em> (very high IOP can cause iris ischaemia → poor response). Use only with specialist/ED advice.");
+      meds.push("• Definitive treatment is specialist (often <strong>laser peripheral iridotomy</strong>); fellow eye often needs assessment/prophylaxis.");
+    }
+
+    // Handover wording
+    const eye = sel("eye") || "—";
+    const onset = sel("onsetTime") || "—";
+    const arr = $("arrangements").value.trim();
+    const dest = sel("destination") || "—";
+    const trans = sel("transport") || "—";
+
+    const handover = [];
+    handover.push(`• Suspected acute angle-closure glaucoma: ${band}.`);
+    handover.push(`• Eye: ${eye}; onset: ${onset}.`);
+    if(sel("pain")==="yes") handover.push("• Severe eye pain present.");
+    if(sel("visionLoss")==="yes") handover.push("• Reduced vision/blurred vision present.");
+    if(sel("halos")==="yes") handover.push("• Halos around lights present.");
+    if(sel("nv")==="yes") handover.push("• Nausea/vomiting present.");
+    if(sel("pupil")==="yes") handover.push("• Pupil abnormal (mid-dilated/poorly reactive).");
+    if(sel("corneaHaze")==="yes") handover.push("• Corneal haze present.");
+    if(sel("hardEye")==="yes") handover.push("• Globe feels firm/hard compared with fellow eye.");
+    if(sel("iopMeasured")==="yes" && iop!==null) handover.push(`• IOP measured: ${iop} mmHg.`);
+    if(mimicFlags.length) handover.push(`• Mimic flags: ${mimicFlags.join(" ")}`);
+    handover.push(`• Destination: ${dest}; transport: ${trans}.`);
+    if(arr) handover.push(`• Arrangements: ${arr}`);
+
+    // Review
+    const review = [];
+    review.push(`• Patient: ${$("ptName").value.trim() || "—"}; Age: ${$("age").value.trim() || "—"}`);
+    review.push(`• Eye: ${eye}; onset: ${onset}`);
+    review.push(`• Symptoms: pain ${sel("pain")||"—"}, vision loss ${sel("visionLoss")||"—"}, halos ${sel("halos")||"—"}, N/V ${sel("nv")||"—"}, headache ${sel("headache")||"—"}`);
+    review.push(`• Exam: VA reduced ${sel("vaReduced")||"—"}, red eye ${sel("redEye")||"—"}, corneal haze ${sel("corneaHaze")||"—"}, pupil abnormal ${sel("pupil")||"—"}, hard globe ${sel("hardEye")||"—"}`);
+    review.push(`• IOP: ${sel("iopMeasured")==="yes" ? (iop!==null ? iop+" mmHg" : "measured (value not entered)") : "not measured"}`);
+    review.push(`• Transfer arranged: ${sel("transfer")||"—"}; destination ${dest}; transport ${trans}`);
+
+    // Text outputs
+    const summary = buildClinicianSummary({band, score, triage, actions, meds, handover, mimicFlags});
+    const patient = buildPatientAdvice({band, mimicFlags});
+    const note = buildGPNote({band, score, handover, mimicFlags, showMeds});
+
+    return {pills, triage, band, bandClass, actions, meds, handover, review, summary, patient, note};
+  }
+
+  function buildClinicianSummary(ctx){
+    return `Suspected acute angle-closure glaucoma — clinician summary
+Patient: ${$("ptName").value.trim() || "—"}; Age: ${$("age").value.trim() || "—"}
+Eye: ${sel("eye")||"—"}; Onset: ${sel("onsetTime")||"—"}
+Symptoms: pain ${sel("pain")||"—"}, vision loss ${sel("visionLoss")||"—"}, halos ${sel("halos")||"—"}, N/V ${sel("nv")||"—"}, headache ${sel("headache")||"—"}
+Exam: VA reduced ${sel("vaReduced")||"—"}, red eye ${sel("redEye")||"—"}, corneal haze ${sel("corneaHaze")||"—"}, pupil abnormal ${sel("pupil")||"—"}, hard globe ${sel("hardEye")||"—"}
+IOP: ${sel("iopMeasured")==="yes" ? (num("iop")!==null ? num("iop")+" mmHg" : "measured (value not entered)") : "not measured"}
+
+Assessment: ${ctx.band} (support score ${ctx.score})
+Triage:
+${ctx.triage.map(x=>"- "+stripTags(x)).join("\n")}
+
+Immediate actions:
+${ctx.actions.map(x=>"- "+stripTags(x)).join("\n")}
+
+Medication considerations:
+${ctx.meds.map(x=>"- "+stripTags(x)).join("\n")}
+
+Handover/transfer points:
+${ctx.handover.map(x=>"- "+stripTags(x)).join("\n")}`.trim();
+  }
+
+  function buildPatientAdvice(ctx){
+    const name = $("ptName").value.trim() || "Patient";
+    const eye = sel("eye") || "the affected eye";
+    const mimic = ctx.mimicFlags.length ? `\nOther urgent causes are also being considered: ${ctx.mimicFlags.join(" ")}` : "";
+    return `Urgent eye problem — patient advice
+Name: ${name}
+
+What we are concerned about
+- Your symptoms could be due to a dangerous rise in pressure inside the eye (acute angle-closure glaucoma).
+- This can damage the optic nerve quickly and cause permanent vision loss if not treated urgently.
+
+What happens next
+- You need urgent same-day care in an Emergency Department or eye service.
+- Do not drive yourself. Please go with an escort or ambulance as arranged.
+
+What to do now
+- Do not rub the eye.
+- Avoid driving.
+- If you wear contact lenses, remove them.
+- If you feel worse (more pain, vomiting, reduced vision), tell staff immediately.
+
+Why urgency matters
+- Fast treatment protects sight. Most treatment is done by eye specialists.
+
+Affected side: ${eye}.${mimic}`.trim();
+  }
+
+  function buildGPNote(ctx){
+    const iop = num("iop");
+    const iopLine = (sel("iopMeasured")==="yes")
+      ? (iop!==null ? `IOP measured ${iop} mmHg.` : "IOP measured (value not recorded).")
+      : "IOP not measured in clinic.";
+
+    const mimic = [];
+    if(sel("keratitis")==="yes") mimic.push("keratitis/corneal ulcer possible");
+    if(sel("uveitis")==="yes") mimic.push("anterior uveitis possible");
+    if(sel("trauma")==="yes") mimic.push("trauma/chemical exposure");
+    if(sel("neuroRed")==="yes") mimic.push("neuro red flags");
+
+    const transfer = sel("transfer") || "—";
+    const dest = sel("destination") || "—";
+    const trans = sel("transport") || "—";
+    const arr = $("arrangements").value.trim();
+
+    const medsGiven = (ctx.showMeds && transfer==="yes") ? "See medication considerations output (if administered per local protocol/specialist advice)." : "Medication considerations withheld/not administered in clinic.";
+
+    return `Reason for encounter:
+- Suspected acute angle-closure glaucoma / acute red painful eye
+
+Patient:
+- ${$("ptName").value.trim() || "—"}; Age: ${$("age").value.trim() || "—"}
+
+HPC:
+- Eye affected: ${sel("eye")||"—"}; onset: ${sel("onsetTime")||"—"}
+- Pain: ${sel("pain")||"—"}; blurred/reduced vision: ${sel("visionLoss")||"—"}; halos: ${sel("halos")||"—"}
+- N/V: ${sel("nv")||"—"}; headache: ${sel("headache")||"—"}
+- Contact lenses: ${sel("contacts")||"—"}
+- Trigger/risks: glaucoma/narrow angles history ${sel("historyGlaucoma")||"—"}; dilation trigger ${sel("dilationTrigger")||"—"}; mydriatic meds ${sel("mydriaticMeds")||"—"}
+
+Examination:
+- VA reduced: ${sel("vaReduced")||"—"}
+- Red eye: ${sel("redEye")||"—"}; corneal haze: ${sel("corneaHaze")||"—"}
+- Pupil abnormal (mid-dilated/poorly reactive): ${sel("pupil")||"—"}
+- Globe firm/hard: ${sel("hardEye")||"—"}
+- ${iopLine}
+
+Assessment:
+- ${ctx.band} (support score ${ctx.score})
+- Mimics/red flags: ${mimic.length ? mimic.join(", ") : "none identified on inputs"}
+
+Plan:
+- This is an eye emergency → urgent transfer arranged: ${transfer}
+- Destination: ${dest}; transport: ${trans}
+- Arrangements/hand-over: ${arr || "—"}
+- Supportive care: analgesia/antiemetic as needed; avoid mydriatics; remove contact lens if present.
+- ${medsGiven}
+
+Safety-net:
+- Immediate ED/eye service review same day; do not drive; return/call ambulance if deterioration.`.trim();
+  }
+
+  // ---------- Render ----------
+  function render(){
+    const out = compute();
+
+    const hp = $("headlinePills");
+    hp.innerHTML = "";
+    out.pills.forEach(p=>{
+      const span=document.createElement("span");
+      span.className="pill "+p.cls;
+      span.textContent=p.txt;
+      hp.appendChild(span);
+    });
+
+    $("triage").innerHTML = `<ul class="list">${out.triage.map(x=>`<li>${x}</li>`).join("")}</ul>`;
+    $("likelihood").innerHTML = `<div class="help"><strong>${esc(out.band)}</strong><br/><small class="muted">Support score: ${out.bandClass==="danger" ? "high" : (out.bandClass==="warn" ? "moderate" : "lower")} (tool support only; not diagnostic)</small></div>`;
+    $("actionsOut").innerHTML = `<ul class="list">${out.actions.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`;
+    $("medsOut").innerHTML = `<ul class="list">${out.meds.map(x=>`<li>${x}</li>`).join("")}</ul>`;
+    $("handoverOut").innerHTML = `<ul class="list">${out.handover.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`;
+    $("review").innerHTML = `<ul class="list">${out.review.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`;
+
+    $("summaryOut").value = out.summary;
+    $("patientOut").value = out.patient;
+    $("noteOut").value = out.note;
+
+    autoGrow($("summaryOut"));
+    autoGrow($("patientOut"));
+    autoGrow($("noteOut"));
+
+    // Exam mode reveal UI
+    const examOn = (sel("examMode")==="on");
+    $("revealLabel").style.display = examOn ? "block" : "none";
+    $("revealBtn").style.display = examOn ? "inline-block" : "none";
+    if(!examOn) examRevealed = false;
+
+    renderContinueState();
+  }
+
+  function updateAll(){
+    significance();
+    render();
+  }
+
+  // ---------- Reset ----------
+  function resetAll(){
+    examRevealed = false;
+
+    const ids = [
+      "ptName","age","eye","onsetTime",
+      "pain","visionLoss","halos","nv","headache","contacts",
+      "historyGlaucoma","dilationTrigger","mydriaticMeds","ethnicity",
+      "vaReduced","redEye","corneaHaze","pupil","hardEye","iopMeasured","iop",
+      "keratitis","uveitis","trauma","neuroRed",
+      "transfer","bbContra","acetaContra","needAntiemetic","needAnalgesia","examMode",
+      "destination","transport","arrangements"
+    ];
+    ids.forEach(id=>{
+      const el=$(id);
+      if(!el) return;
+      if(el.tagName==="SELECT") el.value = (id==="examMode") ? "off" : "";
+      else el.value = "";
+    });
+    $("copyMsg").textContent = "";
+    showStep(0);
+    toggleOutputsVisibility();
+    updateAll();
+  }
+
+  // init
+  resetAll();
+</script>
+</body>
+</html>
