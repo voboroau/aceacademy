@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>ED Management Assistant — Australian GP Webapp</title>
+<title>ED Management Assistant — Australian GP (All-in-One)</title>
 <style>
   :root{
     --bg:#f7f9fb; --card:#fff; --text:#1f2a37; --muted:#6b7280;
@@ -13,14 +13,14 @@
   *{box-sizing:border-box}
   body{margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; background:var(--bg); color:var(--text);}
   header{
-    position:sticky; top:0; z-index:10;
+    position:sticky; top:0; z-index:20;
     background:rgba(247,249,251,.92); backdrop-filter: blur(8px);
     border-bottom:1px solid var(--line);
   }
-  .wrap{max-width:1100px; margin:0 auto; padding:14px 18px;}
+  .wrap{max-width:1180px; margin:0 auto; padding:14px 18px;}
   .topbar{display:flex; gap:12px; align-items:flex-start; justify-content:space-between; flex-wrap:wrap;}
   h1{margin:0; font-size:18px;}
-  .sub{color:var(--muted); font-size:12px; margin-top:4px}
+  .sub{color:var(--muted); font-size:12px; margin-top:4px; max-width:820px}
   .actions{display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
   .btn{
     border:1px solid var(--line); background:#fff; color:var(--text);
@@ -29,9 +29,9 @@
   .btn.primary{background:var(--brand); color:#fff; border-color:transparent;}
   .btn.primary:hover{background:var(--brand2);}
   .btn:hover{filter:brightness(.98)}
-  main{max-width:1100px; margin:18px auto 80px; padding:0 18px;}
+  main{max-width:1180px; margin:18px auto 80px; padding:0 18px;}
   .grid{display:grid; grid-template-columns: 1.35fr .95fr; gap:14px;}
-  @media (max-width:980px){ .grid{grid-template-columns:1fr;} }
+  @media (max-width:1020px){ .grid{grid-template-columns:1fr;} }
   .card{
     background:var(--card); border:1px solid var(--line);
     border-radius:16px; padding:16px;
@@ -63,17 +63,18 @@
   }
   .help small{color:var(--muted)}
   .kpi{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
-  @media (max-width:560px){ .kpi{grid-template-columns:1fr;} }
-  .kpi .box{
-    border:1px solid var(--line); border-radius:14px; padding:10px 12px; background:#fff;
-  }
-  .kpi .box .t{font-size:12px; color:var(--muted)}
-  .kpi .box .v{font-size:13px; margin-top:6px}
+  @media (max-width:620px){ .kpi{grid-template-columns:1fr;} }
   .hr{height:1px; background:var(--line); margin:12px 0;}
   .list{margin:8px 0 0 18px;}
-  .stickyOut{
-    position:sticky; top:86px;
+  .stickyOut{ position:sticky; top:86px; }
+  .tiny{font-size:11px}
+  .callout{
+    border:1px solid var(--line);
+    border-radius:14px; padding:10px 12px; background:#fff;
   }
+  .twoCol{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  @media (max-width:780px){ .twoCol{grid-template-columns:1fr;} }
+
   @media print{
     header, .actions, .btn {display:none !important;}
     body{background:#fff;}
@@ -88,13 +89,18 @@
   <div class="wrap">
     <div class="topbar">
       <div>
-        <h1>ED Management Assistant (Australian GP)</h1>
-        <div class="sub">Enter history, exam, and investigations. Each field shows “why it matters”. Generates a plan + Best Practice note.</div>
+        <h1>Erectile Dysfunction (ED) — All-in-One Management Assistant (Australian GP)</h1>
+        <div class="sub">
+          Enter history/exam/investigations. Every field shows <strong>Why this matters</strong>.
+          Outputs include triage flags, ED phenotype, PDE5 eligibility checker, hypogonadism pathway prompts,
+          psychogenic counselling script, referrals, patient summary, and a Best Practice-ready GP note.
+        </div>
       </div>
       <div class="actions">
         <button class="btn" onclick="resetAll()">↻ Reset</button>
-        <button class="btn" onclick="copySummary()">Copy Summary</button>
-        <button class="btn" onclick="copyNote()">Copy GP Note</button>
+        <button class="btn" onclick="copyText('summaryOut','Summary copied.')">Copy Summary</button>
+        <button class="btn" onclick="copyText('patientOut','Patient handout copied.')">Copy Patient Handout</button>
+        <button class="btn" onclick="copyText('noteOut','GP note copied.')">Copy GP Note</button>
         <button class="btn primary" onclick="window.print()">🖨️ Print</button>
       </div>
     </div>
@@ -105,19 +111,24 @@
 
   <!-- INPUTS -->
   <div class="card">
-    <div class="row">
-      <span class="pill ok">Structured</span>
-      <span class="pill warn">CV risk + meds</span>
-      <span class="pill danger">Red flags first</span>
-    </div>
+    <div class="row" id="headlinePills"></div>
 
-    <!-- Patient -->
+    <!-- Basics -->
     <div class="section">
-      <h2>Patient basics</h2>
+      <h2>1) Patient basics</h2>
 
-      <label>Age</label>
-      <input id="age" type="number" min="0" placeholder="e.g., 52" oninput="updateAll()"/>
-      <div class="help" id="sig_age"></div>
+      <div class="twoCol">
+        <div>
+          <label>Patient name (optional)</label>
+          <input id="ptName" type="text" placeholder="e.g., John Smith" oninput="updateAll()"/>
+          <div class="help" id="sig_ptName"></div>
+        </div>
+        <div>
+          <label>Age</label>
+          <input id="age" type="number" min="0" placeholder="e.g., 52" oninput="updateAll()"/>
+          <div class="help" id="sig_age"></div>
+        </div>
+      </div>
 
       <label>Primary goal</label>
       <select id="goal" onchange="updateAll()">
@@ -130,9 +141,52 @@
       <div class="help" id="sig_goal"></div>
     </div>
 
-    <!-- Red flags / CV -->
+    <!-- IIEF-5 -->
     <div class="section">
-      <h2>Safety & cardiovascular stability</h2>
+      <h2>2) Severity (IIEF-5 / SHIM)</h2>
+      <div class="muted tiny">Ask about the last 6 months. Each question scored 1–5. Total 5–25.</div>
+
+      <label>1) Confidence that you can get and keep an erection</label>
+      <select id="iief1" onchange="updateAll()">
+        <option value="0">Select…</option>
+        <option value="1">1 Very low</option><option value="2">2 Low</option><option value="3">3 Moderate</option><option value="4">4 High</option><option value="5">5 Very high</option>
+      </select>
+      <div class="help" id="sig_iief1"></div>
+
+      <label>2) Erections hard enough for penetration</label>
+      <select id="iief2" onchange="updateAll()">
+        <option value="0">Select…</option>
+        <option value="1">1 Almost never/never</option><option value="2">2 A few times</option><option value="3">3 Sometimes</option><option value="4">4 Most times</option><option value="5">5 Almost always/always</option>
+      </select>
+      <div class="help" id="sig_iief2"></div>
+
+      <label>3) Ability to maintain erection after penetration</label>
+      <select id="iief3" onchange="updateAll()">
+        <option value="0">Select…</option>
+        <option value="1">1 Almost never/never</option><option value="2">2 A few times</option><option value="3">3 Sometimes</option><option value="4">4 Most times</option><option value="5">5 Almost always/always</option>
+      </select>
+      <div class="help" id="sig_iief3"></div>
+
+      <label>4) Difficulty maintaining erection to completion</label>
+      <select id="iief4" onchange="updateAll()">
+        <option value="0">Select…</option>
+        <option value="1">1 Extremely difficult</option><option value="2">2 Very difficult</option><option value="3">3 Difficult</option><option value="4">4 Slightly difficult</option><option value="5">5 Not difficult</option>
+      </select>
+      <div class="help" id="sig_iief4"></div>
+
+      <label>5) Intercourse satisfaction</label>
+      <select id="iief5" onchange="updateAll()">
+        <option value="0">Select…</option>
+        <option value="1">1 Almost never/never</option><option value="2">2 A few times</option><option value="3">3 Sometimes</option><option value="4">4 Most times</option><option value="5">5 Almost always/always</option>
+      </select>
+      <div class="help" id="sig_iief5"></div>
+
+      <div class="help" id="sig_iiefTotal"></div>
+    </div>
+
+    <!-- Safety & CV -->
+    <div class="section">
+      <h2>3) Safety & cardiovascular stability</h2>
 
       <label>Any exertional chest pain, unstable angina symptoms, syncope/presyncope, or decompensated heart failure symptoms?</label>
       <select id="cvRedFlags" onchange="updateAll()">
@@ -157,11 +211,20 @@
         <option value="yes">Yes</option>
       </select>
       <div class="help" id="sig_nitrates"></div>
+
+      <label>Uses alpha-blockers for LUTS/BPH? (e.g., tamsulosin, prazosin, doxazosin)</label>
+      <select id="alphaBlocker" onchange="updateAll()">
+        <option value="">Select…</option>
+        <option value="no">No</option>
+        <option value="yes">Yes</option>
+        <option value="unsure">Unsure</option>
+      </select>
+      <div class="help" id="sig_alphaBlocker"></div>
     </div>
 
-    <!-- History -->
+    <!-- ED Pattern -->
     <div class="section">
-      <h2>History (ED pattern)</h2>
+      <h2>4) ED pattern (history)</h2>
 
       <label>Onset</label>
       <select id="onset" onchange="updateAll()">
@@ -171,11 +234,11 @@
       </select>
       <div class="help" id="sig_onset"></div>
 
-      <label>Is ED situational (only with certain situations/partners) or consistent?</label>
+      <label>Situational vs consistent</label>
       <select id="situational" onchange="updateAll()">
         <option value="">Select…</option>
-        <option value="situational">Situational</option>
-        <option value="consistent">Consistent</option>
+        <option value="situational">Situational (partner/situation-specific)</option>
+        <option value="consistent">Consistent (all settings)</option>
         <option value="mixed">Mixed/unclear</option>
       </select>
       <div class="help" id="sig_situational"></div>
@@ -198,14 +261,6 @@
       </select>
       <div class="help" id="sig_libido"></div>
 
-      <label>Penile pain/curvature or palpable plaques (Peyronie features)</label>
-      <select id="peyronie" onchange="updateAll()">
-        <option value="">Select…</option>
-        <option value="no">No</option>
-        <option value="yes">Yes</option>
-      </select>
-      <div class="help" id="sig_peyronie"></div>
-
       <label>Psychological/relationship contributors prominent? (stress, anxiety, depression, relationship conflict)</label>
       <select id="psych" onchange="updateAll()">
         <option value="">Select…</option>
@@ -215,7 +270,19 @@
       </select>
       <div class="help" id="sig_psych"></div>
 
-      <label>Cardiometabolic risk factors (tick all that apply)</label>
+      <label>Penile pain/curvature or palpable plaques (Peyronie features)</label>
+      <select id="peyronie" onchange="updateAll()">
+        <option value="">Select…</option>
+        <option value="no">No</option>
+        <option value="yes">Yes</option>
+      </select>
+      <div class="help" id="sig_peyronie"></div>
+    </div>
+
+    <!-- Cardiometabolic -->
+    <div class="section">
+      <h2>5) Cardiometabolic risks</h2>
+      <label>Risk factors (tick all that apply)</label>
       <div class="row">
         <label style="display:inline-flex;align-items:center;gap:8px;margin:6px 0 0;color:var(--text);font-size:13px;">
           <input type="checkbox" id="rf_dm" onchange="updateAll()"> Diabetes / prediabetes
@@ -239,9 +306,9 @@
       <div class="help" id="sig_riskFactors"></div>
     </div>
 
-    <!-- Medication/Substances -->
+    <!-- Meds/Substances -->
     <div class="section">
-      <h2>Medication / substances</h2>
+      <h2>6) Medication / substances</h2>
 
       <label>Likely contributing medications? (choose primary)</label>
       <select id="meds" onchange="updateAll()">
@@ -267,7 +334,7 @@
 
     <!-- Exam -->
     <div class="section">
-      <h2>Examination</h2>
+      <h2>7) Examination</h2>
 
       <div class="kpi">
         <div>
@@ -301,7 +368,7 @@
 
     <!-- Investigations -->
     <div class="section">
-      <h2>Investigations</h2>
+      <h2>8) Investigations</h2>
 
       <label>HbA1c / glucose status</label>
       <select id="a1c" onchange="updateAll()">
@@ -332,6 +399,25 @@
       </select>
       <div class="help" id="sig_testosterone"></div>
 
+      <label>If testosterone low/confirmed low: have LH/FSH been checked?</label>
+      <select id="lhfsh" onchange="updateAll()">
+        <option value="">Select…</option>
+        <option value="notdone">Not done</option>
+        <option value="done_normal">Done (interpretation pending/normal)</option>
+        <option value="suggest_primary">Suggest primary (high LH/FSH)</option>
+        <option value="suggest_secondary">Suggest secondary (low/normal LH/FSH)</option>
+      </select>
+      <div class="help" id="sig_lhfsh"></div>
+
+      <label>Prolactin (if indicated: low T + symptoms/secondary features)</label>
+      <select id="prolactin" onchange="updateAll()">
+        <option value="">Select…</option>
+        <option value="notdone">Not done</option>
+        <option value="normal">Normal</option>
+        <option value="high">High</option>
+      </select>
+      <div class="help" id="sig_prolactin"></div>
+
       <label>TSH (if tested)</label>
       <select id="tsh" onchange="updateAll()">
         <option value="">Select…</option>
@@ -341,16 +427,34 @@
       </select>
       <div class="help" id="sig_tsh"></div>
 
+      <label>Renal/hepatic impairment relevant? (for dosing/caution)</label>
+      <select id="organImpair" onchange="updateAll()">
+        <option value="">Select…</option>
+        <option value="no">No / not known</option>
+        <option value="mild">Mild impairment</option>
+        <option value="modsev">Moderate–severe impairment</option>
+      </select>
+      <div class="help" id="sig_organImpair"></div>
+
       <label>Free text: other relevant results</label>
-      <input id="otherInv" type="text" placeholder="e.g., eGFR 55, LFTs normal, prolactin..." oninput="updateAll()"/>
+      <input id="otherInv" type="text" placeholder="e.g., eGFR 55, LFTs normal..." oninput="updateAll()"/>
       <div class="help" id="sig_otherInv"></div>
+
+      <label>Trying to conceive / fertility goal?</label>
+      <select id="fertility" onchange="updateAll()">
+        <option value="">Select…</option>
+        <option value="no">No / not relevant</option>
+        <option value="yes">Yes</option>
+        <option value="unsure">Unsure</option>
+      </select>
+      <div class="help" id="sig_fertility"></div>
     </div>
 
-    <!-- Notes -->
+    <!-- Extra notes -->
     <div class="section">
-      <h2>Clinical notes (optional)</h2>
+      <h2>9) Clinical notes (optional)</h2>
       <label>Extra context</label>
-      <textarea id="freeText" placeholder="Anything else important…" oninput="updateAll()"></textarea>
+      <textarea id="freeText" placeholder="Any other important context…" oninput="updateAll()"></textarea>
       <div class="help" id="sig_freeText"></div>
     </div>
 
@@ -360,30 +464,43 @@
   <div class="stickyOut">
     <div class="card">
       <h2>Outputs</h2>
-      <div class="row" id="headlinePills"></div>
 
-      <div class="hr"></div>
+      <h3>Triage & key flags</h3>
+      <div id="triage" class="help"></div>
 
-      <h3>Assessment synthesis</h3>
-      <div id="assessment" class="help"></div>
+      <h3>ED phenotype (most likely contributors)</h3>
+      <div id="phenotype" class="help"></div>
 
-      <h3>Management advice</h3>
+      <h3>PDE5 eligibility checker (practical)</h3>
+      <div id="pde5" class="help"></div>
+
+      <h3>Management plan (Australian GP)</h3>
       <div id="plan" class="help"></div>
 
-      <h3>Suggested investigations / next checks</h3>
-      <div id="nextChecks" class="help"></div>
+      <h3>Hypogonadism module (if relevant)</h3>
+      <div id="hypogonad" class="help"></div>
+
+      <h3>Psychogenic module (if relevant)</h3>
+      <div id="psychModule" class="help"></div>
+
+      <h3>Referral suggestions</h3>
+      <div id="referrals" class="help"></div>
 
       <div class="hr"></div>
 
-      <h3>Copyable summary</h3>
+      <h3>Clinician summary (copyable)</h3>
       <textarea id="summaryOut" readonly></textarea>
 
-      <h3>Best Practice GP note</h3>
+      <h3>Patient handout (copyable)</h3>
+      <textarea id="patientOut" readonly></textarea>
+
+      <h3>Best Practice GP note (copyable)</h3>
       <textarea id="noteOut" readonly></textarea>
 
       <div class="row" style="margin-top:10px;">
-        <button class="btn" onclick="copySummary()">Copy Summary</button>
-        <button class="btn primary" onclick="copyNote()">Copy GP Note</button>
+        <button class="btn" onclick="copyText('summaryOut','Summary copied.')">Copy Summary</button>
+        <button class="btn" onclick="copyText('patientOut','Patient handout copied.')">Copy Handout</button>
+        <button class="btn primary" onclick="copyText('noteOut','GP note copied.')">Copy GP Note</button>
       </div>
       <div class="muted small" id="copyMsg" style="margin-top:8px;"></div>
     </div>
@@ -392,250 +509,356 @@
 </main>
 
 <script>
-  // -------- helpers ----------
+  // Utilities
   const $ = (id)=>document.getElementById(id);
-  const yes = (v)=>v==="yes";
-  const no = (v)=>v==="no";
   function checked(id){ return $(id).checked; }
-
+  function esc(s){
+    return (s||"").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
   function setHelp(id, html){
     const el = $(id);
     if(!el) return;
     el.innerHTML = html || "<small class='muted'>Enter/select a value to see significance.</small>";
   }
-  function esc(s){
-    return (s||"").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  function sel(id){ return $(id).value; }
+  function num(id){ const v=parseFloat($(id).value); return isNaN(v)? null : v; }
+  function anyFilled(arr){ return arr.some(v=>v!=="" && v!==null && v!==undefined); }
+
+  async function copyToClipboard(text){
+    try{ await navigator.clipboard.writeText(text); return true; }
+    catch(e){
+      const ta=document.createElement("textarea");
+      ta.value=text; document.body.appendChild(ta);
+      ta.select();
+      try{ document.execCommand("copy"); }
+      catch(err){ document.body.removeChild(ta); return false; }
+      document.body.removeChild(ta); return true;
+    }
+  }
+  async function copyText(id, msg){
+    const ok = await copyToClipboard($(id).value || "");
+    $("copyMsg").textContent = ok ? msg : "Copy failed (browser restriction).";
+    setTimeout(()=>{$("copyMsg").textContent="";}, 1500);
   }
 
-  // -------- significance texts ----------
+  // IIEF-5 total + band
+  function iiefTotal(){
+    const v1=parseInt(sel("iief1")||"0",10);
+    const v2=parseInt(sel("iief2")||"0",10);
+    const v3=parseInt(sel("iief3")||"0",10);
+    const v4=parseInt(sel("iief4")||"0",10);
+    const v5=parseInt(sel("iief5")||"0",10);
+    const any = [v1,v2,v3,v4,v5].some(v=>v>0);
+    if(!any) return {total:null, band:"not scored"};
+    const total = v1+v2+v3+v4+v5;
+    // common bands
+    let band="";
+    if(total >= 22) band="No/mild ED";
+    else if(total >= 17) band="Mild ED";
+    else if(total >= 12) band="Mild–moderate ED";
+    else if(total >= 8) band="Moderate ED";
+    else band="Severe ED";
+    return {total, band};
+  }
+
+  // SIGNIFICANCE (Why this matters) for every field
   function significance(){
-    const age = parseFloat($("age").value);
+    const ptName = $("ptName").value.trim();
+    setHelp("sig_ptName", ptName ? "<strong>Why this matters:</strong> Helps auto-generate a polished note/handout without retyping." : "");
+
+    const age = num("age");
     setHelp("sig_age",
-      isNaN(age) ? "" :
+      age===null ? "" :
       (age < 40)
       ? "<strong>Why this matters:</strong> In younger men, ED is more often situational/psychogenic or medication/substance-related—still screen cardiometabolic risk, but focus on stress/anxiety and reversible factors."
-      : "<strong>Why this matters:</strong> With increasing age, ED more often reflects vascular/cardiometabolic disease. Treat ED as an opportunity to assess CV risk and optimise risk factors."
+      : "<strong>Why this matters:</strong> With increasing age, ED more often reflects vascular/cardiometabolic disease. Treat ED as an opportunity to assess and optimise CV risk."
     );
 
-    const goal = $("goal").value;
+    const goal = sel("goal");
     setHelp("sig_goal",
       !goal ? "" :
-      (goal==="erection") ? "<strong>Why this matters:</strong> Clarifies that treatment should focus on erection rigidity/maintenance (lifestyle + PDE5 safety + correct use + comorbidity management)."
-      : (goal==="confidence") ? "<strong>Why this matters:</strong> Points to performance anxiety/psychogenic contributors—counselling, graded exposure, relationship work may be central (PDE5 may still help confidence if safe)."
-      : (goal==="fertility") ? "<strong>Why this matters:</strong> Fertility intentions affect therapy (e.g., avoid casual testosterone therapy when trying to conceive)."
-      : "<strong>Why this matters:</strong> A mixed goal suggests a multi-pronged plan (medical + psychosocial + risk factor optimisation)."
+      (goal==="erection") ? "<strong>Why this matters:</strong> Prioritises erection rigidity/maintenance strategies (lifestyle + correct PDE5 use if safe + comorbidity treatment)."
+      : (goal==="confidence") ? "<strong>Why this matters:</strong> Points to performance anxiety/psychogenic contributors—counselling and graded exposure may be central (PDE5 may help confidence if safe)."
+      : (goal==="fertility") ? "<strong>Why this matters:</strong> Fertility goals affect endocrine decisions—avoid casual testosterone therapy when trying to conceive."
+      : "<strong>Why this matters:</strong> Mixed goals usually require a multi-pronged plan (medical + psychosocial + risk optimisation)."
     );
 
-    const cvRedFlags = $("cvRedFlags").value;
+    // IIEF question significance (brief, but per input)
+    setHelp("sig_iief1", sel("iief1")!=="0" ? "<strong>Why this matters:</strong> Confidence correlates strongly with performance anxiety and treatment response; low confidence often improves with education + successful trials." : "");
+    setHelp("sig_iief2", sel("iief2")!=="0" ? "<strong>Why this matters:</strong> Penetration hardness reflects vascular rigidity; low scores suggest organic contributors or incorrect PDE5 use." : "");
+    setHelp("sig_iief3", sel("iief3")!=="0" ? "<strong>Why this matters:</strong> Maintenance difficulty is common in vascular ED and anxiety; guides counselling and dose/timing review." : "");
+    setHelp("sig_iief4", sel("iief4")!=="0" ? "<strong>Why this matters:</strong> “Difficulty to completion” can highlight performance anxiety, distraction, alcohol, or inadequate dosing/timing." : "");
+    setHelp("sig_iief5", sel("iief5")!=="0" ? "<strong>Why this matters:</strong> Satisfaction captures relationship and expectations; sometimes the main issue is distress rather than physiology." : "");
+
+    const it = iiefTotal();
+    setHelp("sig_iiefTotal",
+      it.total===null
+        ? "<strong>Why this matters:</strong> IIEF-5 provides a baseline severity score and helps track response over time."
+        : `<strong>Why this matters:</strong> Total ${it.total}/25 → <strong>${it.band}</strong>. Useful for baseline and monitoring response after interventions.`
+    );
+
+    const cvRedFlags = sel("cvRedFlags");
     setHelp("sig_cvRedFlags",
       !cvRedFlags ? "" :
       (cvRedFlags==="yes")
-        ? "<span style='color:#b91c1c'><strong>Why this matters:</strong> Possible cardiovascular instability. Prioritise urgent CV assessment before ED pharmacotherapy or resumption of sexual activity guidance.</strong></span>"
+        ? "<span style='color:#b91c1c'><strong>Why this matters:</strong> Possible cardiovascular instability. Prioritise urgent CV assessment before ED pharmacotherapy and before advising sexual activity.</strong></span>"
         : "<strong>Why this matters:</strong> Absence of red flags supports proceeding with ED evaluation and treatment (still assess overall CV risk)."
     );
 
-    const exTol = $("exerciseTol").value;
+    const exTol = sel("exerciseTol");
     setHelp("sig_exerciseTol",
       !exTol ? "" :
       (exTol==="no")
-        ? "<span style='color:#b45309'><strong>Why this matters:</strong> Poor/uncertain exercise tolerance may indicate higher cardiac risk with sexual activity. Consider CV assessment before PDE5 inhibitors.</span>"
+        ? "<span style='color:#b45309'><strong>Why this matters:</strong> Poor/uncertain exercise tolerance suggests higher cardiac risk with sexual activity and PDE5 use—consider CV assessment first.</span>"
         : "<strong>Why this matters:</strong> Good exercise tolerance supports cardiovascular safety for sexual activity in most stable patients."
     );
 
-    const nitrates = $("nitrates").value;
+    const nitrates = sel("nitrates");
     setHelp("sig_nitrates",
       !nitrates ? "" :
       (nitrates==="yes")
-        ? "<span style='color:#b91c1c'><strong>Why this matters:</strong> PDE5 inhibitors are contraindicated with nitrates/riociguat due to risk of profound hypotension. Explore non-PDE5 options and address CV disease.</span>"
-        : "<strong>Why this matters:</strong> If no nitrates/riociguat, PDE5 inhibitors may be considered if the patient is otherwise stable and has no major interactions."
+        ? "<span style='color:#b91c1c'><strong>Why this matters:</strong> PDE5 inhibitors are contraindicated with nitrates/riociguat due to risk of profound hypotension. Explore non-PDE5 options.</span>"
+        : "<strong>Why this matters:</strong> If no nitrates/riociguat, PDE5 inhibitors may be considered if the patient is otherwise stable."
     );
 
-    const onset = $("onset").value;
+    const ab = sel("alphaBlocker");
+    setHelp("sig_alphaBlocker",
+      !ab ? "" :
+      (ab==="yes")
+        ? "<strong>Why this matters:</strong> Alpha-blockers + PDE5 can cause symptomatic hypotension. Use caution: start low, separate timing, monitor dizziness/BP."
+        : "<strong>Why this matters:</strong> No alpha-blocker reduces hypotension interaction concern."
+    );
+
+    const onset = sel("onset");
     setHelp("sig_onset",
       !onset ? "" :
       (onset==="sudden")
-        ? "<strong>Why this matters:</strong> Sudden onset suggests psychogenic factors, acute stress, medication/substance effects, or relationship issues (but still screen cardiometabolic disease)."
-        : "<strong>Why this matters:</strong> Gradual onset is more consistent with organic causes (vascular, endocrine, neuropathy), especially with risk factors."
+        ? "<strong>Why this matters:</strong> Sudden onset suggests psychogenic factors, acute stress, medication/substance effects, or relationship issues (still screen CV risk)."
+        : "<strong>Why this matters:</strong> Gradual onset is more consistent with organic causes (vascular/endocrine/neuropathy), especially with risk factors."
     );
 
-    const situ = $("situational").value;
+    const situ = sel("situational");
     setHelp("sig_situational",
       !situ ? "" :
       (situ==="situational")
-        ? "<strong>Why this matters:</strong> Situational ED (partner/situation-specific) often points to performance anxiety/psychogenic contributors with preserved physiology."
+        ? "<strong>Why this matters:</strong> Situational ED often points to performance anxiety/psychogenic contributors with preserved physiology."
         : (situ==="consistent")
-          ? "<strong>Why this matters:</strong> Consistent ED across settings suggests organic causes (vascular/endocrine/neurologic/medication)."
+          ? "<strong>Why this matters:</strong> Consistent ED suggests organic causes (vascular/endocrine/neurologic/medication)."
           : "<strong>Why this matters:</strong> Mixed features often mean combined organic + psychogenic contributors—treat both."
     );
 
-    const morn = $("morningErections").value;
+    const morn = sel("morningErections");
     setHelp("sig_morningErections",
       !morn ? "" :
       (morn==="present")
-        ? "<strong>Why this matters:</strong> Preserved morning/nocturnal erections suggest intact physiological erectile capacity; anxiety/relationship factors may be prominent."
+        ? "<strong>Why this matters:</strong> Preserved morning/nocturnal erections suggests intact physiological capacity; anxiety/relationship factors may dominate."
         : (morn==="reduced")
-          ? "<strong>Why this matters:</strong> Reduced/absent morning erections supports organic pathology (vascular/endocrine/neuropathy) and warrants cardiometabolic/endocrine evaluation."
-          : "<strong>Why this matters:</strong> If unsure, focus on overall pattern and objective risk factors; consider trial-based management plus workup."
+          ? "<strong>Why this matters:</strong> Reduced/absent morning erections supports organic pathology (vascular/endocrine/neuropathy)."
+          : "<strong>Why this matters:</strong> If unsure, rely on overall pattern and risk factors; treat and reassess."
     );
 
-    const libido = $("libido").value;
+    const libido = sel("libido");
     setHelp("sig_libido",
       !libido ? "" :
       (libido==="low")
-        ? "<strong>Why this matters:</strong> Low libido raises suspicion of hypogonadism, depression, medication effects, or systemic illness—consider morning testosterone (and repeat if low)."
-        : "<strong>Why this matters:</strong> Normal libido makes primary hypogonadism less likely (though testosterone can still be relevant in selected cases)."
+        ? "<strong>Why this matters:</strong> Low libido raises suspicion of hypogonadism, depression, medication effects, or systemic illness—consider morning testosterone (repeat if low)."
+        : "<strong>Why this matters:</strong> Normal libido makes primary hypogonadism less likely (but testosterone can be relevant in selected cases)."
     );
 
-    const pey = $("peyronie").value;
-    setHelp("sig_peyronie",
-      !pey ? "" :
-      (pey==="yes")
-        ? "<strong>Why this matters:</strong> Penile curvature/plaques suggest Peyronie disease. Consider urology referral, pain/sexual function counselling, and avoid traumatic intercourse."
-        : "<strong>Why this matters:</strong> No Peyronie features—management can focus on functional ED pathways."
-    );
-
-    const psych = $("psych").value;
+    const psych = sel("psych");
     setHelp("sig_psych",
       !psych ? "" :
       (psych==="yes")
-        ? "<strong>Why this matters:</strong> Psychological/relationship factors can directly cause ED or amplify organic ED. Treating anxiety/depression and relationship stress improves outcomes; PDE5 can help confidence if safe."
-        : "<strong>Why this matters:</strong> If psych factors are minimal, focus more on organic causes (vascular, endocrine, neuropathy, medications)."
+        ? "<strong>Why this matters:</strong> Psychological/relationship factors can directly cause ED or amplify organic ED. Treating anxiety/depression and relationship stress improves outcomes."
+        : "<strong>Why this matters:</strong> If psych factors are minimal, focus more on organic causes and comorbidities."
+    );
+
+    const pey = sel("peyronie");
+    setHelp("sig_peyronie",
+      !pey ? "" :
+      (pey==="yes")
+        ? "<strong>Why this matters:</strong> Curvature/plaques suggest Peyronie disease. Consider urology referral and specific counselling; ED treatments may differ."
+        : "<strong>Why this matters:</strong> No Peyronie features—management can follow functional ED pathway."
     );
 
     const rfCount = [checked("rf_dm"),checked("rf_htn"),checked("rf_lipids"),checked("rf_smoke"),checked("rf_obesity"),checked("rf_osa")].filter(Boolean).length;
     setHelp("sig_riskFactors",
       rfCount===0
-        ? "<strong>Why this matters:</strong> Fewer vascular risk factors makes purely vascular ED less likely (but not impossible). Consider psychogenic, medication/substance, endocrine causes and still check baseline metabolic health."
-        : "<strong>Why this matters:</strong> Multiple cardiometabolic risk factors strongly support vascular ED and indicate opportunity to optimise CV risk (exercise, weight, BP, diabetes, lipids, smoking, sleep apnoea)."
+        ? "<strong>Why this matters:</strong> Fewer vascular risk factors makes purely vascular ED less likely (not impossible). Consider psychogenic, medication/substance, endocrine causes and still screen baseline metabolic health."
+        : "<strong>Why this matters:</strong> Multiple cardiometabolic risk factors strongly support vascular ED and indicate opportunity to reduce future CV events while improving erections."
     );
 
-    const meds = $("meds").value;
+    const meds = sel("meds");
     setHelp("sig_meds",
       !meds ? "" :
       (meds==="none") ? "<strong>Why this matters:</strong> If no clear medication cause, focus on vascular/endocrine/psychogenic contributors."
-      : (meds==="ssri") ? "<strong>Why this matters:</strong> SSRIs/SNRIs commonly contribute to sexual dysfunction. Consider dose/timing changes or alternatives in shared decision-making; don’t stop abruptly."
-      : (meds==="bp") ? "<strong>Why this matters:</strong> Some antihypertensives may contribute; consider alternatives while maintaining BP control (shared decision-making)."
-      : (meds==="opioid") ? "<strong>Why this matters:</strong> Opioids can suppress gonadal axis and libido; consider tapering plans, alternative pain strategies, and endocrine evaluation if indicated."
-      : (meds==="finasteride") ? "<strong>Why this matters:</strong> Finasteride/anti-androgen effects may contribute to libido/ED in some patients—review indication and risks/benefits."
+      : (meds==="ssri") ? "<strong>Why this matters:</strong> SSRIs/SNRIs commonly cause sexual dysfunction. Consider dose/timing changes or alternatives in shared decision-making (avoid abrupt cessation)."
+      : (meds==="bp") ? "<strong>Why this matters:</strong> Some antihypertensives may contribute; consider alternatives while maintaining BP control."
+      : (meds==="opioid") ? "<strong>Why this matters:</strong> Opioids can suppress libido/testosterone. Consider tapering/alternatives and endocrine evaluation if indicated."
+      : (meds==="finasteride") ? "<strong>Why this matters:</strong> Finasteride/anti-androgen effects may contribute—review indication and risks/benefits."
       : "<strong>Why this matters:</strong> Multiple possible contributors—prioritise reversible causes and stage changes safely."
     );
 
-    const subs = $("substances").value;
+    const subs = sel("substances");
     setHelp("sig_substances",
       !subs ? "" :
       (subs==="yes")
-        ? "<strong>Why this matters:</strong> Alcohol and recreational drugs can impair erections and worsen anxiety/sleep. Reducing intake may significantly improve ED."
-        : "<strong>Why this matters:</strong> Minimal substance contribution shifts emphasis to other aetiologies."
+        ? "<strong>Why this matters:</strong> Alcohol/recreational drugs can impair erections and worsen sleep/anxiety. Reduction often improves function."
+        : "<strong>Why this matters:</strong> Minimal substance contribution shifts emphasis to other causes."
     );
 
     const bp = $("bp").value.trim();
-    setHelp("sig_bp",
-      !bp ? "" :
-      "<strong>Why this matters:</strong> Hypertension is linked to vascular ED and overall CV risk. BP control and vascular health optimisation are central to ED management."
-    );
+    setHelp("sig_bp", bp ? "<strong>Why this matters:</strong> Hypertension is linked to vascular ED and CV risk. Control supports erectile and long-term outcomes." : "");
 
     const bmi = $("bmi").value.trim();
-    setHelp("sig_bmi",
-      !bmi ? "" :
-      "<strong>Why this matters:</strong> Obesity and central adiposity are associated with ED (vascular + hormonal + sleep apnoea pathways). Weight reduction and fitness can improve erectile function."
-    );
+    setHelp("sig_bmi", bmi ? "<strong>Why this matters:</strong> Obesity/central adiposity drives ED via vascular, hormonal and sleep apnoea pathways; weight loss improves ED." : "");
 
-    const genitalAbn = $("genitalAbn").value;
+    const genitalAbn = sel("genitalAbn");
     setHelp("sig_genitalAbn",
       !genitalAbn ? "" :
       (genitalAbn==="yes")
-        ? "<strong>Why this matters:</strong> Abnormal genital findings may indicate Peyronie disease, hypogonadism signs, or other pathology—consider targeted referral (urology/endocrinology) and focused workup."
-        : "<strong>Why this matters:</strong> Normal genital exam supports functional ED management; continue risk factor and psychosocial assessment."
+        ? "<strong>Why this matters:</strong> Abnormal genital findings may indicate Peyronie or hypogonadism signs—consider targeted referral and focused workup."
+        : "<strong>Why this matters:</strong> Normal genital exam supports functional ED management and reassurance."
     );
 
-    const neuro = $("neuro").value;
+    const neuro = sel("neuro");
     setHelp("sig_neuro",
       !neuro ? "" :
       (neuro==="yes")
-        ? "<strong>Why this matters:</strong> Neuropathy (often diabetes-related) supports organic ED and emphasises glycaemic control and vascular risk management."
-        : "<strong>Why this matters:</strong> No neuropathy signs makes neurogenic ED less likely."
+        ? "<strong>Why this matters:</strong> Neuropathy (often diabetes-related) supports organic ED; emphasise glycaemic and vascular optimisation."
+        : "<strong>Why this matters:</strong> No neuropathy makes neurogenic ED less likely."
     );
 
-    const a1c = $("a1c").value;
+    const a1c = sel("a1c");
     setHelp("sig_a1c",
       !a1c ? "" :
       (a1c==="dm")
-        ? "<strong>Why this matters:</strong> Diabetes is a major cause of ED (vascular + neuropathy). Optimising glycaemic control and CV risk factors is key."
+        ? "<strong>Why this matters:</strong> Diabetes is a major cause of ED (vascular + neuropathy). Optimising glycaemia and CV risk factors is central."
         : (a1c==="predm")
-          ? "<strong>Why this matters:</strong> Prediabetes supports early vascular risk—lifestyle intervention may improve ED and prevent diabetes."
+          ? "<strong>Why this matters:</strong> Prediabetes suggests early vascular risk—lifestyle changes may improve ED and prevent diabetes."
           : (a1c==="unknown")
-            ? "<strong>Why this matters:</strong> Baseline metabolic screening helps identify treatable drivers of ED and overall CV risk."
-            : "<strong>Why this matters:</strong> Normal glycaemia makes diabetic ED less likely, but vascular/psychogenic/medication causes may still apply."
+            ? "<strong>Why this matters:</strong> Screening identifies treatable drivers and overall CV risk."
+            : "<strong>Why this matters:</strong> Normal glycaemia makes diabetic ED less likely; other causes may dominate."
     );
 
-    const lip = $("lipids").value;
+    const lip = sel("lipids");
     setHelp("sig_lipids",
       !lip ? "" :
       (lip==="high")
-        ? "<strong>Why this matters:</strong> Dyslipidaemia supports vascular ED and increased CV risk. Treating lipids can improve vascular function and long-term outcomes."
+        ? "<strong>Why this matters:</strong> Dyslipidaemia supports vascular ED and increased CV risk—treating lipids improves vascular health."
         : (lip==="unknown")
-          ? "<strong>Why this matters:</strong> Lipid assessment helps stratify CV risk and identify a reversible driver of ED."
-          : "<strong>Why this matters:</strong> Acceptable lipids lower (but do not remove) suspicion of vascular ED."
+          ? "<strong>Why this matters:</strong> Lipids help stratify CV risk and identify a reversible driver."
+          : "<strong>Why this matters:</strong> Acceptable lipids reduce (not remove) suspicion of vascular ED."
     );
 
-    const tt = $("testosterone").value;
+    const tt = sel("testosterone");
     setHelp("sig_testosterone",
       !tt ? "" :
       (tt==="notdone")
-        ? "<strong>Why this matters:</strong> Testosterone testing is most useful if low libido/hypogonadism features are present. If suspected, order morning total testosterone (repeat if low)."
+        ? "<strong>Why this matters:</strong> Testosterone testing is most useful if low libido/hypogonadism features are present."
         : (tt==="low")
-          ? "<strong>Why this matters:</strong> A single low testosterone needs confirmation with a repeat morning test before labelling hypogonadism; consider LH/FSH if confirmed."
+          ? "<strong>Why this matters:</strong> A single low result needs repeat morning confirmation before diagnosing hypogonadism."
           : (tt==="confirmedlow")
-            ? "<strong>Why this matters:</strong> Confirmed low testosterone supports hypogonadism pathway. Evaluate cause (primary vs secondary) and consider specialist input; be cautious with TRT if fertility desired."
-            : "<strong>Why this matters:</strong> Normal testosterone makes primary hypogonadism less likely; focus on vascular/psychogenic/medication causes."
+            ? "<strong>Why this matters:</strong> Confirmed low T supports hypogonadism pathway—evaluate cause and fertility issues before treatment."
+            : "<strong>Why this matters:</strong> Normal T makes primary hypogonadism less likely."
     );
 
-    const tsh = $("tsh").value;
+    const lhfsh = sel("lhfsh");
+    setHelp("sig_lhfsh",
+      !lhfsh ? "" :
+      (lhfsh==="suggest_primary")
+        ? "<strong>Why this matters:</strong> High LH/FSH suggests primary testicular failure → consider causes and specialist input."
+        : (lhfsh==="suggest_secondary")
+          ? "<strong>Why this matters:</strong> Low/normal LH/FSH suggests secondary hypogonadism → consider pituitary causes; prolactin and further assessment may be indicated."
+          : "<strong>Why this matters:</strong> LH/FSH helps determine primary vs secondary hypogonadism and guides next investigations/referral."
+    );
+
+    const prl = sel("prolactin");
+    setHelp("sig_prolactin",
+      !prl ? "" :
+      (prl==="high")
+        ? "<strong>Why this matters:</strong> Elevated prolactin can suppress gonadal axis and libido; investigate cause and consider endocrinology referral."
+        : "<strong>Why this matters:</strong> Normal prolactin makes hyperprolactinaemia less likely."
+    );
+
+    const tsh = sel("tsh");
     setHelp("sig_tsh",
       !tsh ? "" :
       (tsh==="abn")
-        ? "<strong>Why this matters:</strong> Thyroid disorders can contribute to sexual dysfunction. Treating underlying thyroid disease may improve symptoms."
+        ? "<strong>Why this matters:</strong> Thyroid disorders can contribute to sexual dysfunction; treating underlying thyroid disease may improve ED."
         : (tsh==="notdone")
-          ? "<strong>Why this matters:</strong> TSH is not mandatory for all ED, but consider it if symptoms suggest thyroid disorder."
-          : "<strong>Why this matters:</strong> Normal thyroid function reduces likelihood of thyroid-related ED."
+          ? "<strong>Why this matters:</strong> TSH is not mandatory for all ED; consider if symptoms suggest thyroid disease."
+          : "<strong>Why this matters:</strong> Normal thyroid reduces likelihood of thyroid-related ED."
+    );
+
+    const organImpair = sel("organImpair");
+    setHelp("sig_organImpair",
+      !organImpair ? "" :
+      (organImpair==="modsev")
+        ? "<strong>Why this matters:</strong> Moderate–severe renal/hepatic impairment may require lower starting doses/caution and increases adverse event risk."
+        : "<strong>Why this matters:</strong> Organ function influences medication choice and safety."
     );
 
     const otherInv = $("otherInv").value.trim();
-    setHelp("sig_otherInv", otherInv ? "<strong>Why this matters:</strong> Other results can affect medication choice (e.g., renal/hepatic impairment may require dose adjustments/caution) and identify systemic contributors." : "");
+    setHelp("sig_otherInv", otherInv ? "<strong>Why this matters:</strong> Other results can affect safety and guide targeted management (e.g., renal function for dosing)." : "");
+
+    const fert = sel("fertility");
+    setHelp("sig_fertility",
+      !fert ? "" :
+      (fert==="yes")
+        ? "<strong>Why this matters:</strong> Avoid casual testosterone therapy when trying to conceive (can suppress spermatogenesis). Consider specialist advice."
+        : "<strong>Why this matters:</strong> Fertility not a constraint for endocrine options (still weigh risks/benefits)."
+    );
 
     const freeText = $("freeText").value.trim();
-    setHelp("sig_freeText", freeText ? "<strong>Why this matters:</strong> Context (relationship, trauma, mental health, treatment goals) often determines the best first step and improves adherence." : "");
+    setHelp("sig_freeText", freeText ? "<strong>Why this matters:</strong> Context often determines the best first step and improves adherence." : "");
   }
 
-  // --------- decision engine ----------
+  // Decision engine
   function compute(){
-    // inputs
-    const age = parseFloat($("age").value);
-    const cvRedFlags = $("cvRedFlags").value;
-    const exerciseTol = $("exerciseTol").value;
-    const nitrates = $("nitrates").value;
+    const ptName = $("ptName").value.trim();
+    const age = num("age");
 
-    const onset = $("onset").value;
-    const situational = $("situational").value;
-    const morning = $("morningErections").value;
-    const libido = $("libido").value;
-    const peyronie = $("peyronie").value;
-    const psych = $("psych").value;
+    const cvRedFlags = sel("cvRedFlags");
+    const exerciseTol = sel("exerciseTol");
+    const nitrates = sel("nitrates");
+    const alphaBlocker = sel("alphaBlocker");
 
-    const meds = $("meds").value;
-    const substances = $("substances").value;
+    const onset = sel("onset");
+    const situational = sel("situational");
+    const morning = sel("morningErections");
+    const libido = sel("libido");
+    const psych = sel("psych");
+    const peyronie = sel("peyronie");
+
+    const meds = sel("meds");
+    const substances = sel("substances");
 
     const rfCount = [checked("rf_dm"),checked("rf_htn"),checked("rf_lipids"),checked("rf_smoke"),checked("rf_obesity"),checked("rf_osa")].filter(Boolean).length;
 
-    const a1c = $("a1c").value;
-    const lipids = $("lipids").value;
-    const testosterone = $("testosterone").value;
-    const tsh = $("tsh").value;
+    const a1c = sel("a1c");
+    const lipids = sel("lipids");
 
-    // flags
+    const testosterone = sel("testosterone");
+    const lhfsh = sel("lhfsh");
+    const prolactin = sel("prolactin");
+    const tsh = sel("tsh");
+    const organImpair = sel("organImpair");
+    const fertility = sel("fertility");
+
+    const iief = iiefTotal();
+
+    // Flags
     const urgentCV = (cvRedFlags==="yes");
-    const cvUnclear = (exerciseTol==="no");
-    const pde5Contra = (nitrates==="yes");
+    const cvUnclear = (!urgentCV && exerciseTol==="no");
+    const stableCV = (!urgentCV && exerciseTol==="yes");
+
+    const pde5Contra = (nitrates==="yes"); // includes riociguat selection
+    const pde5CautionAlpha = (alphaBlocker==="yes" || alphaBlocker==="unsure");
+    const pde5CautionOrgan = (organImpair==="modsev");
+
+    const medsLikely = (meds && meds!=="" && meds!=="none");
+    const substancesLikely = (substances==="yes");
 
     const psychogenicLikely =
       (onset==="sudden" || situational==="situational") &&
@@ -650,164 +873,279 @@
 
     const peyronieLikely = (peyronie==="yes");
 
-    const medsLikely = (meds && meds !== "" && meds !== "none");
-    const substancesLikely = (substances==="yes");
+    // Severity from IIEF
+    const severeED = (iief.total!==null && iief.total <= 7);
+    const modED = (iief.total!==null && iief.total >= 8 && iief.total <= 11);
 
-    // headline pills
+    // Pills
     const pills = [];
-    if(urgentCV) pills.push({cls:"danger", txt:"CV red flags"});
-    else pills.push({cls:"ok", txt:"No red flags selected"});
+    if(urgentCV) pills.push({cls:"danger", txt:"CV red flags / unstable"});
+    else if(cvUnclear) pills.push({cls:"warn", txt:"CV safety uncertain"});
+    else if(stableCV) pills.push({cls:"ok", txt:"CV stability likely"});
 
-    if(pde5Contra) pills.push({cls:"danger", txt:"PDE5 contraindication (nitrates/riociguat)"});
-    else pills.push({cls:"ok", txt:"PDE5 may be possible (check interactions)"});
+    if(pde5Contra) pills.push({cls:"danger", txt:"PDE5 contraindicated (nitrates/riociguat)"});
+    else pills.push({cls:"ok", txt:"PDE5 potentially eligible"});
+
+    if(iief.total!==null){
+      pills.push({cls: severeED ? "danger" : (modED ? "warn" : "ok"), txt:`IIEF-5: ${iief.total}/25 (${iief.band})`});
+    } else {
+      pills.push({cls:"warn", txt:"IIEF-5 not scored"});
+    }
 
     if(psychogenicLikely) pills.push({cls:"warn", txt:"Psychogenic component likely"});
-    if(organicLikely) pills.push({cls:"warn", txt:"Organic component likely"});
-    if(hypogonadismLikely) pills.push({cls:"warn", txt:"Consider hypogonadism workup"});
-    if(peyronieLikely) pills.push({cls:"warn", txt:"Possible Peyronie disease"});
+    if(organicLikely) pills.push({cls:"warn", txt:"Organic/vascular component likely"});
+    if(hypogonadismLikely) pills.push({cls:"warn", txt:"Consider hypogonadism"});
+    if(peyronieLikely) pills.push({cls:"warn", txt:"Possible Peyronie"});
+    if(medsLikely) pills.push({cls:"warn", txt:"Medication contributor"});
+    if(substancesLikely) pills.push({cls:"warn", txt:"Substance contributor"});
 
-    // assessment narrative
-    let assessLines = [];
-    assessLines.push("ED is likely multifactorial. Based on inputs:");
+    // Triage
+    const triage = [];
     if(urgentCV){
-      assessLines.push("• Cardiovascular instability/red flags are present/uncertain → prioritise cardiovascular assessment before ED pharmacotherapy and before advising sexual activity resumption.");
+      triage.push("• CV red flags present/uncertain → prioritise urgent cardiovascular assessment before PDE5 and before advising sexual activity resumption.");
     } else if(cvUnclear){
-      assessLines.push("• Exercise tolerance is uncertain/poor → consider cardiovascular risk assessment before PDE5 inhibitors.");
+      triage.push("• Exercise tolerance uncertain/poor → consider CV assessment/risk stratification before PDE5 prescribing.");
     } else {
-      assessLines.push("• No CV red flags selected and exercise tolerance appears acceptable → proceed with ED management after checking contraindications.");
+      triage.push("• No red flags selected and exercise tolerance acceptable → proceed with ED management (still treat CV risk factors).");
     }
-
-    if(psychogenicLikely){
-      assessLines.push("• Pattern suggests a strong psychogenic/performance component (situational/sudden onset + preserved morning erections).");
-    }
-    if(organicLikely){
-      assessLines.push("• Features suggest organic ED (gradual/consistent, reduced morning erections, metabolic risks, diabetes/lipids).");
-    }
-    if(medsLikely){
-      assessLines.push("• Medication effects may be contributing → consider staged medication review and alternatives where safe.");
-    }
-    if(substancesLikely){
-      assessLines.push("• Alcohol/recreational substances likely contributing → reduction may significantly improve function.");
-    }
-    if(hypogonadismLikely){
-      assessLines.push("• Low libido and/or low testosterone suggests possible hypogonadism → confirm with repeat morning testosterone if not confirmed; evaluate cause if confirmed low.");
-    }
-    if(peyronieLikely){
-      assessLines.push("• Penile pain/curvature/plaques suggest Peyronie disease → consider urology referral.");
-    }
-
-    // management plan
-    const plan = [];
-
-    // 1) safety first
-    if(urgentCV){
-      plan.push("1) Safety first: arrange urgent evaluation of cardiac symptoms / instability as clinically indicated. Defer PDE5 inhibitors until stable and nitrates status clarified.");
-    } else if(cvUnclear){
-      plan.push("1) Cardiovascular safety: assess CV risk/exercise tolerance before PDE5 prescribing if uncertain (especially in older patients or with multiple risk factors).");
-    } else {
-      plan.push("1) Cardiovascular risk opportunity: optimise BP, glycaemia, lipids, weight, smoking cessation and sleep apnoea screening/treatment as appropriate.");
-    }
-
-    // 2) lifestyle + contributors
-    plan.push("2) Foundational management for most patients: regular aerobic exercise, weight reduction if overweight, alcohol moderation, stop smoking, manage sleep, treat diabetes/BP/lipids.");
-
-    if(medsLikely){
-      plan.push("3) Medication review: identify likely contributing drugs (e.g., SSRIs/SNRIs, opioids, some antihypertensives). Consider dose/timing changes or alternatives via shared decision-making; avoid abrupt cessation of essential meds.");
-    } else {
-      plan.push("3) Medication review: still document current meds and exclude nitrates/riociguat; consider contributors if symptoms persist.");
-    }
-
-    if(psychogenicLikely){
-      plan.push("4) Psychogenic/performance pathway: normalise, address stress/anxiety/depression, consider brief counselling/psychosexual therapy, graded exposure/low-pressure intimacy goals; PDE5 can be used as a confidence aid if safe.");
-    } else {
-      plan.push("4) Psychosocial factors: screen for depression/anxiety and relationship stress where relevant; offer counselling supports when contributory.");
-    }
-
-    // 3) PDE5 guidance (non-dosing)
     if(pde5Contra){
-      plan.push("5) PDE5 inhibitors: CONTRAINDICATED with nitrates/riociguat. Consider non-PDE5 options and address underlying disease; consider specialist input.");
-    } else if(urgentCV || cvUnclear){
-      plan.push("5) PDE5 inhibitors: consider only after cardiovascular stability confirmed; check interactions (e.g., alpha-blockers) and counsel on correct use, expectations, adverse effects, and when to seek urgent help.");
+      triage.push("• Nitrates/riociguat reported → PDE5 inhibitors contraindicated.");
+    }
+
+    // Phenotype
+    const phen = [];
+    phen.push(psychogenicLikely ? "• Psychogenic/performance anxiety: likely important." : "• Psychogenic/performance anxiety: not prominent on inputs.");
+    phen.push(organicLikely ? "• Organic/vascular/neurogenic: likely important (risk factors/pattern suggest)." : "• Organic/vascular: less strongly suggested (still possible).");
+    phen.push(medsLikely ? "• Medication-related: possible contributor → consider staged review." : "• Medication-related: no obvious contributor selected.");
+    phen.push(substancesLikely ? "• Alcohol/drugs: likely contributor → advise reduction." : "• Alcohol/drugs: not selected as major driver.");
+    phen.push(hypogonadismLikely ? "• Endocrine/hypogonadism: consider workup (esp. low libido or low T)." : "• Endocrine/hypogonadism: less likely from inputs.");
+    phen.push(peyronieLikely ? "• Structural (Peyronie): suspected → urology consideration." : "• Structural (Peyronie): not suggested.");
+
+    // PDE5 checker (non-dosing)
+    const pde5 = [];
+    if(pde5Contra){
+      pde5.push("• PDE5 inhibitors: <strong>DO NOT USE</strong> with nitrates/riociguat (risk of profound hypotension).");
+      pde5.push("• Consider non-PDE5 pathways and address underlying CV disease; specialist input may be appropriate.");
     } else {
-      plan.push("5) PDE5 inhibitors (if appropriate): check contraindications/interactions; counsel on correct use (requires stimulation, timing, multiple attempts), adverse effects, and emergency advice for chest pain or prolonged painful erection.");
-    }
-
-    // 4) endocrine
-    if(hypogonadismLikely){
-      if(testosterone==="confirmedlow"){
-        plan.push("6) Hypogonadism pathway: confirmed low testosterone → evaluate aetiology (primary vs secondary) and fertility intentions; consider specialist referral. Avoid casual testosterone therapy if fertility desired.");
-      } else if(testosterone==="low" || testosterone==="notdone"){
-        plan.push("6) Hypogonadism workup: order/confirm repeat morning total testosterone (fasting preferred) if low libido/symptoms; if persistently low, proceed with further endocrine evaluation.");
+      if(urgentCV){
+        pde5.push("• Defer PDE5 inhibitors until cardiovascular stability clarified and urgent symptoms addressed.");
+      } else if(cvUnclear){
+        pde5.push("• Consider CV risk assessment first if exercise tolerance uncertain (especially with multiple risk factors).");
       } else {
-        plan.push("6) Testosterone normal: hypogonadism less likely—continue vascular/psychogenic/medication-focused management.");
+        pde5.push("• PDE5 inhibitors may be considered if no other contraindications.");
       }
+      if(pde5CautionAlpha){
+        pde5.push("• Caution with alpha-blockers: risk of symptomatic hypotension. Consider low starting dose, separate timing, and monitor dizziness/BP.");
+      }
+      if(pde5CautionOrgan){
+        pde5.push("• Caution with moderate–severe renal/hepatic impairment: consider lower starting dose and monitor adverse effects.");
+      }
+      pde5.push("• Practical counselling: requires sexual stimulation; trial on several occasions; avoid heavy alcohol; check timing and expectations.");
+      pde5.push("• Safety-net: seek urgent help for chest pain (avoid nitrates if PDE5 taken recently) or prolonged painful erection.");
     }
 
-    // 5) Peyronie / referral
-    if(peyronieLikely){
-      plan.push("7) Peyronie features: consider urology referral; counsel regarding pain/curvature and sexual function; avoid traumatic intercourse.");
+    // Management plan
+    const plan = [];
+    plan.push("1) Explain ED as common and usually multifactorial (vascular + psychological + medication + endocrine).");
+    plan.push("2) Optimise cardiometabolic health: exercise, weight reduction if needed, BP/diabetes/lipids management, smoking cessation, alcohol moderation, sleep apnoea assessment/treatment where indicated.");
+    if(medsLikely){
+      plan.push("3) Medication review: consider contributors (e.g., SSRIs/SNRIs, opioids, some antihypertensives, finasteride). Use staged changes and shared decision-making; do not stop essential medicines abruptly.");
+    } else {
+      plan.push("3) Medication review: document list; confirm no nitrates/riociguat; consider hidden contributors if poor response.");
+    }
+    if(psychogenicLikely){
+      plan.push("4) Psychogenic pathway: address stress/anxiety/depression and relationship factors; offer counselling/psychosexual therapy; graded exposure with low-pressure intimacy goals.");
+    } else {
+      plan.push("4) Screen for psychological and relationship contributors where relevant; offer supports when contributory.");
+    }
+    if(!pde5Contra){
+      plan.push("5) Consider PDE5 inhibitors if clinically appropriate and safe (contraindications/interactions checked) + correct use counselling.");
+    } else {
+      plan.push("5) PDE5 inhibitors contraindicated with nitrates/riociguat → focus on underlying disease + non-PDE5 strategies; consider referral.");
+    }
+    plan.push("6) Follow-up: review in ~4–12 weeks (earlier if concerns). If inadequate response: confirm correct use, address anxiety, optimise comorbidities, consider alternate strategies/referral.");
+
+    // Hypogonad module
+    const hypo = [];
+    if(hypogonadismLikely){
+      if(testosterone==="notdone" || testosterone===""){
+        hypo.push("• Low libido/symptoms suggest hypogonadism: order <strong>morning total testosterone</strong> (fasting preferred).");
+        hypo.push("• If low: repeat morning testosterone to confirm before diagnosing hypogonadism.");
+      } else if(testosterone==="low"){
+        hypo.push("• Single low testosterone: repeat morning testosterone to confirm.");
+        hypo.push("• If confirmed low: check LH/FSH to classify primary vs secondary; consider prolactin if secondary features.");
+      } else if(testosterone==="confirmedlow"){
+        hypo.push("• Confirmed low testosterone: evaluate cause.");
+        if(lhfsh==="suggest_primary") hypo.push("• Pattern suggests primary hypogonadism (high LH/FSH) → consider testicular causes; consider endocrinology/men’s health input.");
+        else if(lhfsh==="suggest_secondary") hypo.push("• Pattern suggests secondary hypogonadism (low/normal LH/FSH) → consider pituitary causes; prolactin and further assessment may be indicated; endocrinology referral often appropriate.");
+        else if(lhfsh==="notdone" || lhfsh==="") hypo.push("• Next: LH/FSH (and consider prolactin) to help classify cause.");
+        if(prolactin==="high") hypo.push("• Prolactin elevated: investigate causes and refer to endocrinology.");
+      } else {
+        hypo.push("• Testosterone normal: hypogonadism less likely; focus on vascular/psychogenic/medication contributors.");
+      }
+
+      if(fertility==="yes"){
+        hypo.push("• Fertility goal present: avoid casual testosterone therapy (may suppress spermatogenesis). Consider specialist advice.");
+      } else {
+        hypo.push("• If considering testosterone therapy: weigh risks/benefits, contraindications, and monitor appropriately; consider specialist input for complex cases.");
+      }
+    } else {
+      hypo.push("• Hypogonadism not strongly suggested from current inputs (consider testing if symptoms arise).");
     }
 
-    plan.push("8) Follow-up: review in ~4–12 weeks (or earlier if concerns). If inadequate response, check correct PDE5 use, address anxiety, optimise comorbidities, and consider referral (urology/men’s health/psychosexual therapy).");
+    // Psych module with counselling script
+    const psychMod = [];
+    if(psychogenicLikely || psych==="yes"){
+      psychMod.push("<strong>Brief counselling script (GP-friendly):</strong>");
+      psychMod.push("• “This is extremely common. Stress and worry can switch off the erection response even when the body is physically capable.”");
+      psychMod.push("• “Let’s shift the goal from ‘performing’ to relaxed intimacy. We’ll use a stepwise plan that reduces pressure.”");
+      psychMod.push("• “A medication can help confidence, but we’ll also work on the drivers: stress, sleep, alcohol, mood, and relationship factors.”");
+      psychMod.push("<strong>Practical steps:</strong>");
+      psychMod.push("• Normalise + education; limit alcohol; schedule relaxed time; graded exposure (non-penetrative intimacy first).");
+      psychMod.push("• Screen for depression/anxiety if indicated; offer counselling/psychosexual therapy referral.");
+    } else {
+      psychMod.push("• Psychogenic pathway not prominent on current inputs (revisit if symptoms fluctuate or anxiety/relationship stress emerges).");
+    }
 
-    // next checks (suggested investigations)
+    // Referrals
+    const refs = [];
+    if(urgentCV || cvUnclear) refs.push("• Consider cardiology / urgent assessment if cardiac symptoms or poor exercise tolerance.");
+    if(peyronieLikely || sel("genitalAbn")==="yes") refs.push("• Urology if Peyronie features, abnormal genital exam, severe ED refractory to first-line measures, or complex pathology.");
+    if(testosterone==="confirmedlow" || lhfsh==="suggest_secondary" || prolactin==="high") refs.push("• Endocrinology/men’s health for confirmed hypogonadism, suspected pituitary causes, or elevated prolactin.");
+    if(psychogenicLikely || psych==="yes") refs.push("• Psychosexual therapy / counselling if performance anxiety, relationship conflict, or persistent distress.");
+    if(refs.length===0) refs.push("• Referral not mandatory based on current inputs; consider if refractory, complex, or patient preference.");
+
+    // Suggested outstanding checks
     const checks = [];
-    if(a1c==="unknown") checks.push("• HbA1c / fasting glucose (screen diabetes/prediabetes).");
-    if(lipids==="unknown") checks.push("• Fasting lipids (CV risk; vascular ED).");
-    if(hypogonadismLikely && (testosterone==="notdone")) checks.push("• Morning total testosterone (repeat if low).");
-    if(testosterone==="low") checks.push("• Repeat morning testosterone to confirm before diagnosing hypogonadism.");
+    if(sel("a1c")==="unknown" || sel("a1c")==="") checks.push("• HbA1c / fasting glucose (if not done).");
+    if(sel("lipids")==="unknown" || sel("lipids")==="") checks.push("• Fasting lipids (if not done).");
+    if(hypogonadismLikely && (testosterone==="" || testosterone==="notdone")) checks.push("• Morning total testosterone (repeat if low).");
+    if(testosterone==="low") checks.push("• Repeat morning testosterone to confirm.");
+    if(testosterone==="confirmedlow" && (lhfsh==="" || lhfsh==="notdone")) checks.push("• LH/FSH (classify primary vs secondary).");
+    if(testosterone==="confirmedlow" && (prolactin==="" || prolactin==="notdone") && (lhfsh==="suggest_secondary" || libido==="low")) checks.push("• Consider prolactin (if secondary features).");
     if(tsh==="" || tsh==="notdone") checks.push("• TSH only if clinical suspicion of thyroid disease.");
-    if(rfCount>=2) checks.push("• Consider broader CV risk assessment and management plan (BP, weight/waist, smoking, OSA screening).");
-    if(medsLikely) checks.push("• Document medication list and consider staged changes (shared decision-making).");
-    if(checks.length===0) checks.push("• No additional tests selected as outstanding based on inputs; tailor to clinical context.");
+    if(checks.length===0) checks.push("• No outstanding tests suggested from current inputs (tailor to clinical context).");
 
-    // summary text
-    const summary = buildSummaryText({
-      urgentCV, cvUnclear, pde5Contra, psychogenicLikely, organicLikely, hypogonadismLikely, peyronieLikely, medsLikely, substancesLikely, rfCount
-    }, plan, checks);
+    // Clinician summary / patient handout / GP note
+    const summary = buildClinicianSummary({ptName, age, iief, urgentCV, cvUnclear, stableCV, pde5Contra, pde5CautionAlpha, pde5CautionOrgan,
+      psychogenicLikely, organicLikely, hypogonadismLikely, peyronieLikely, medsLikely, substancesLikely, rfCount}, triage, phen, pde5, plan, checks, refs);
 
-    const note = buildGPNote(plan, checks);
+    const patient = buildPatientHandout({ptName, iief, pde5Contra, urgentCV, cvUnclear, psychogenicLikely, organicLikely}, plan);
 
-    return {
-      pills,
-      assessment: assessLines,
-      plan,
-      checks,
-      summary,
-      note
-    };
+    const note = buildGPNote({ptName, age, iief, plan, checks, refs});
+
+    return {pills, triage, phen, pde5, plan, hypo, psychMod, refs, summary, patient, note};
   }
 
-  function buildSummaryText(flags, plan, checks){
-    const f = [];
-    if(flags.urgentCV) f.push("CV red flags present/uncertain");
-    if(flags.cvUnclear && !flags.urgentCV) f.push("exercise tolerance uncertain");
-    if(flags.pde5Contra) f.push("PDE5 contraindication (nitrates/riociguat)");
-    if(flags.psychogenicLikely) f.push("psychogenic component likely");
-    if(flags.organicLikely) f.push("organic/vascular component likely");
-    if(flags.hypogonadismLikely) f.push("hypogonadism considered");
-    if(flags.peyronieLikely) f.push("Peyronie features");
-    if(flags.medsLikely) f.push("medication contributor possible");
-    if(flags.substancesLikely) f.push("substance contributor possible");
-    if(flags.rfCount>=2) f.push("multiple cardiometabolic risk factors");
+  function buildClinicianSummary(flags, triage, phen, pde5, plan, checks, refs){
+    const rf = [];
+    if(checked("rf_dm")) rf.push("DM/prediabetes");
+    if(checked("rf_htn")) rf.push("HTN");
+    if(checked("rf_lipids")) rf.push("dyslipidaemia");
+    if(checked("rf_smoke")) rf.push("smoking");
+    if(checked("rf_obesity")) rf.push("obesity");
+    if(checked("rf_osa")) rf.push("OSA risk");
+    const meds = sel("meds") || "—";
+    const subs = sel("substances") || "—";
 
-    return `ED assessment summary:
-- Key flags: ${f.length? f.join("; ") : "none selected"}
-- Management outline:
+    const hxBits = [];
+    if(sel("onset")) hxBits.push(`onset: ${sel("onset")}`);
+    if(sel("situational")) hxBits.push(`pattern: ${sel("situational")}`);
+    if(sel("morningErections")) hxBits.push(`morning erections: ${sel("morningErections")}`);
+    if(sel("libido")) hxBits.push(`libido: ${sel("libido")}`);
+    if(sel("psych")) hxBits.push(`psych factors: ${sel("psych")}`);
+    if(sel("peyronie")) hxBits.push(`pain/curvature: ${sel("peyronie")}`);
+
+    const invBits = [];
+    if(sel("a1c")) invBits.push(`glycaemia: ${sel("a1c")}`);
+    if(sel("lipids")) invBits.push(`lipids: ${sel("lipids")}`);
+    if(sel("testosterone")) invBits.push(`testosterone: ${sel("testosterone")}`);
+    if(sel("lhfsh")) invBits.push(`LH/FSH: ${sel("lhfsh")}`);
+    if(sel("prolactin")) invBits.push(`prolactin: ${sel("prolactin")}`);
+    if(sel("tsh")) invBits.push(`TSH: ${sel("tsh")}`);
+    if(sel("organImpair")) invBits.push(`organ impairment: ${sel("organImpair")}`);
+    if($("otherInv").value.trim()) invBits.push(`other: ${$("otherInv").value.trim()}`);
+
+    return `ED clinician summary:
+- Patient: ${flags.ptName || "—"}; Age: ${flags.age ?? "—"}
+- IIEF-5: ${flags.iief.total===null ? "not scored" : `${flags.iief.total}/25 (${flags.iief.band})`}
+- CV screen: red flags ${sel("cvRedFlags")||"—"}; exercise tolerance ${sel("exerciseTol")||"—"}; nitrates/riociguat ${sel("nitrates")||"—"}; alpha-blocker ${sel("alphaBlocker")||"—"}
+- ED history: ${hxBits.length ? hxBits.join("; ") : "—"}
+- Cardiometabolic RF: ${rf.length ? rf.join(", ") : "none stated"}
+- Meds/substances: meds ${meds}; substances ${subs}
+- Exam: BP ${$("bp").value.trim()||"—"}; BMI/waist ${$("bmi").value.trim()||"—"}; genital exam ${sel("genitalAbn")||"—"}; neuropathy ${sel("neuro")||"—"}
+- Investigations: ${invBits.length ? invBits.join("; ") : "—"}
+
+Triage:
+${triage.map(x=>"- "+stripTags(x)).join("\n")}
+
+Phenotype:
+${phen.map(x=>"- "+x).join("\n")}
+
+PDE5 eligibility/cautions:
+${pde5.map(x=>"- "+stripTags(x)).join("\n")}
+
+Plan:
 ${plan.map(x=>"- "+x).join("\n")}
-- Next checks:
-${checks.map(x=>x.startsWith("•")? x : "• "+x).join("\n")}`.trim();
+
+Suggested checks:
+${checks.map(x=>"- "+x.replace(/^•\s*/,"")).join("\n")}
+
+Referrals:
+${refs.map(x=>"- "+x.replace(/^•\s*/,"")).join("\n")}`.trim();
   }
 
-  function buildGPNote(plan, checks){
-    const age = $("age").value.trim();
-    const patternBits = [];
-    const onset = $("onset").value; if(onset) patternBits.push("onset: "+onset);
-    const situ = $("situational").value; if(situ) patternBits.push("pattern: "+situ);
-    const morn = $("morningErections").value; if(morn) patternBits.push("morning erections: "+morn);
-    const libido = $("libido").value; if(libido) patternBits.push("libido: "+libido);
-    const psych = $("psych").value; if(psych) patternBits.push("psych factors: "+psych);
-    const pey = $("peyronie").value; if(pey) patternBits.push("pain/curvature: "+pey);
+  function buildPatientHandout(flags, plan){
+    const name = flags.ptName || "Patient";
+    const severity = flags.iief.total===null ? "Not scored" : `${flags.iief.band}`;
+    const pde5 = flags.pde5Contra ? "Some ED tablets are not safe with nitrate/heart medicines. Your GP will choose a safe option." :
+      "ED tablets may help if safe for you. They require sexual stimulation and sometimes several attempts to work well.";
+    const cv = (flags.urgentCV || flags.cvUnclear) ?
+      "Because of possible heart/cardiovascular risk, your GP may check your heart fitness before certain ED medicines." :
+      "Your GP will still check blood pressure, diabetes and cholesterol because ED can reflect blood vessel health.";
+
+    return `Erectile Dysfunction (ED) — Patient Summary
+Name: ${name}
+
+What this means
+- ED is common and often treatable. It can be related to blood vessel health, stress/anxiety, medications, hormones, sleep and lifestyle.
+
+Your ED severity (IIEF-5)
+- ${severity}
+
+Safety and heart health
+- ${cv}
+
+What helps most (first steps)
+- Regular exercise, weight management, good sleep, reducing alcohol, stopping smoking.
+- Managing blood pressure, diabetes and cholesterol.
+- Reviewing medications that may affect sexual function.
+- Relationship or stress support if anxiety is part of the problem.
+
+Medicines
+- ${pde5}
+
+When to seek urgent help
+- Chest pain or severe breathlessness with activity or sex
+- A painful erection lasting longer than a few hours
+- Feeling unsafe or severely depressed
+
+Follow-up
+- Review progress with your GP in the next few weeks.`.trim();
+  }
+
+  function buildGPNote(ctx){
+    const pt = ctx.ptName || "—";
+    const age = ctx.age ?? "—";
+    const iief = ctx.iief.total===null ? "Not scored" : `${ctx.iief.total}/25 (${ctx.iief.band})`;
+
+    const hxBits = [];
+    if(sel("onset")) hxBits.push(`Onset: ${sel("onset")}`);
+    if(sel("situational")) hxBits.push(`Pattern: ${sel("situational")}`);
+    if(sel("morningErections")) hxBits.push(`Morning erections: ${sel("morningErections")}`);
+    if(sel("libido")) hxBits.push(`Libido: ${sel("libido")}`);
+    if(sel("psych")) hxBits.push(`Psych factors: ${sel("psych")}`);
+    if(sel("peyronie")) hxBits.push(`Pain/curvature/plaques: ${sel("peyronie")}`);
 
     const rf = [];
     if(checked("rf_dm")) rf.push("DM/prediabetes");
@@ -817,64 +1155,73 @@ ${checks.map(x=>x.startsWith("•")? x : "• "+x).join("\n")}`.trim();
     if(checked("rf_obesity")) rf.push("obesity");
     if(checked("rf_osa")) rf.push("OSA risk");
 
-    const cv = $("cvRedFlags").value;
-    const exTol = $("exerciseTol").value;
-    const nitr = $("nitrates").value;
-    const meds = $("meds").value;
-    const subs = $("substances").value;
+    const invBits = [];
+    if(sel("a1c")) invBits.push(`HbA1c/glucose: ${sel("a1c")}`);
+    if(sel("lipids")) invBits.push(`Lipids: ${sel("lipids")}`);
+    if(sel("testosterone")) invBits.push(`Morning testosterone: ${sel("testosterone")}`);
+    if(sel("lhfsh")) invBits.push(`LH/FSH: ${sel("lhfsh")}`);
+    if(sel("prolactin")) invBits.push(`Prolactin: ${sel("prolactin")}`);
+    if(sel("tsh")) invBits.push(`TSH: ${sel("tsh")}`);
+    if(sel("organImpair")) invBits.push(`Renal/hepatic impairment: ${sel("organImpair")}`);
+    if($("otherInv").value.trim()) invBits.push(`Other: ${$("otherInv").value.trim()}`);
 
-    const bp = $("bp").value.trim();
-    const bmi = $("bmi").value.trim();
-    const genitalAbn = $("genitalAbn").value;
-    const neuro = $("neuro").value;
+    const cv = `CV screen: red flags ${sel("cvRedFlags")||"—"}; exercise tolerance ${sel("exerciseTol")||"—"}; nitrates/riociguat ${sel("nitrates")||"—"}; alpha-blocker ${sel("alphaBlocker")||"—"}`;
 
-    const a1c = $("a1c").value;
-    const lipids = $("lipids").value;
-    const tt = $("testosterone").value;
-    const tsh = $("tsh").value;
-    const otherInv = $("otherInv").value.trim();
-    const extra = $("freeText").value.trim();
+    const planLines = ctx.plan.map(x=>"- "+x).join("\n");
+    const checkLines = ctx.checks.map(x=>"- "+x.replace(/^•\s*/,"")).join("\n");
+    const refLines = ctx.refs.map(x=>"- "+x.replace(/^•\s*/,"")).join("\n");
+    const extra = $("freeText").value.trim() || "—";
 
     return `Reason for encounter:
 - Erectile dysfunction (ED)
 
+Patient:
+- ${pt}; Age: ${age}
+
+Severity:
+- IIEF-5: ${iief}
+
 HPC:
-- Age: ${age || "—"}
-- ED features: ${patternBits.length? patternBits.join("; ") : "—"}
-- Cardiometabolic risk factors: ${rf.length? rf.join(", ") : "none stated"}
-- Medications: ${meds || "—"}; Substances: ${subs || "—"}
-- CV screen: red flags ${cv || "—"}; exercise tolerance ${exTol || "—"}; nitrates/riociguat ${nitr || "—"}
+- ${hxBits.length ? hxBits.join("; ") : "—"}
+- Cardiometabolic risk factors: ${rf.length ? rf.join(", ") : "none stated"}
+- Medications: ${sel("meds")||"—"}; Substances: ${sel("substances")||"—"}
+- ${cv}
 
 Examination:
-- BP: ${bp || "—"}; BMI/waist: ${bmi || "—"}
-- Genital exam abnormal: ${genitalAbn || "—"}; Neuropathy: ${neuro || "—"}
+- BP: ${$("bp").value.trim()||"—"}; BMI/waist: ${$("bmi").value.trim()||"—"}
+- Genital exam abnormal: ${sel("genitalAbn")||"—"}; Neuropathy: ${sel("neuro")||"—"}
 
 Investigations:
-- HbA1c/glucose: ${a1c || "—"}
-- Lipids: ${lipids || "—"}
-- Morning testosterone: ${tt || "—"}
-- TSH: ${tsh || "—"}
-- Other: ${otherInv || "—"}
+- ${invBits.length ? invBits.join("; ") : "—"}
 
 Assessment:
-- ED likely multifactorial (vascular/psychogenic/medication/endocrine considered), with management plan as below.
+- ED likely multifactorial (vascular/psychogenic/medication/endocrine considered).
 
 Plan:
-${plan.map(x=>"- "+x).join("\n")}
-Investigations / next checks:
-${checks.map(x=>x.startsWith("•")? "- "+x.slice(1).trim() : "- "+x).join("\n")}
+${planLines}
+
+Suggested checks:
+${checkLines}
+
+Referrals:
+${refLines}
 
 Safety-net:
-- Escalate urgently for chest pain/unstable symptoms with exertion/sex, or prolonged painful erection.
+- Seek urgent care for chest pain/unstable symptoms with exertion/sex, or prolonged painful erection.
 
 Additional notes:
-- ${extra || "—"}`.trim();
+- ${extra}`.trim();
   }
 
-  function renderOutputs(){
+  function stripTags(html){
+    return (html||"").replace(/<[^>]*>/g,"");
+  }
+
+  // Render outputs
+  function render(){
     const out = compute();
 
-    // pills
+    // headline pills
     const hp = $("headlinePills");
     hp.innerHTML = "";
     out.pills.forEach(p=>{
@@ -884,70 +1231,49 @@ Additional notes:
       hp.appendChild(span);
     });
 
-    $("assessment").innerHTML = `<ul class="list">${out.assessment.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`;
+    $("triage").innerHTML = `<ul class="list">${out.triage.map(x=>`<li>${x}</li>`).join("")}</ul>`;
+    $("phenotype").innerHTML = `<ul class="list">${out.phen.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`;
+    $("pde5").innerHTML = `<ul class="list">${out.pde5.map(x=>`<li>${x}</li>`).join("")}</ul>`;
     $("plan").innerHTML = `<ul class="list">${out.plan.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`;
-    $("nextChecks").innerHTML = `<ul class="list">${out.checks.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`;
+    $("hypogonad").innerHTML = `<ul class="list">${out.hypo.map(x=>`<li>${x}</li>`).join("")}</ul>`;
+    $("psychModule").innerHTML = `<ul class="list">${out.psychMod.map(x=>`<li>${x}</li>`).join("")}</ul>`;
+    $("referrals").innerHTML = `<ul class="list">${out.refs.map(x=>`<li>${esc(x.replace(/^•\s*/,""))}</li>`).join("")}</ul>`;
 
     $("summaryOut").value = out.summary;
+    $("patientOut").value = out.patient;
     $("noteOut").value = out.note;
   }
 
-  // -------- actions ----------
   function updateAll(){
     significance();
-    renderOutputs();
+    render();
   }
 
   function resetAll(){
     const ids = [
-      "age","goal","cvRedFlags","exerciseTol","nitrates",
-      "onset","situational","morningErections","libido","peyronie","psych",
-      "meds","substances","bp","bmi","genitalAbn","neuro",
-      "a1c","lipids","testosterone","tsh","otherInv","freeText"
+      "ptName","age","goal",
+      "iief1","iief2","iief3","iief4","iief5",
+      "cvRedFlags","exerciseTol","nitrates","alphaBlocker",
+      "onset","situational","morningErections","libido","psych","peyronie",
+      "meds","substances",
+      "bp","bmi","genitalAbn","neuro",
+      "a1c","lipids","testosterone","lhfsh","prolactin","tsh","organImpair","otherInv","fertility",
+      "freeText"
     ];
     ids.forEach(id=>{
-      const el = $(id);
+      const el=$(id);
       if(!el) return;
-      if(el.tagName==="SELECT") el.value = "";
+      if(el.tagName==="SELECT") el.value = (id.startsWith("iief") ? "0" : "");
       else el.value = "";
     });
     ["rf_dm","rf_htn","rf_lipids","rf_smoke","rf_obesity","rf_osa"].forEach(id=>$(id).checked=false);
-
     $("copyMsg").textContent = "";
     updateAll();
     window.scrollTo({top:0, behavior:"smooth"});
   }
 
-  async function copyToClipboard(text){
-    try{
-      await navigator.clipboard.writeText(text);
-      return true;
-    }catch(e){
-      // fallback
-      const ta = document.createElement("textarea");
-      ta.value = text;
-      document.body.appendChild(ta);
-      ta.select();
-      try{ document.execCommand("copy"); }catch(err){ document.body.removeChild(ta); return false; }
-      document.body.removeChild(ta);
-      return true;
-    }
-  }
-
-  async function copySummary(){
-    const ok = await copyToClipboard($("summaryOut").value);
-    $("copyMsg").textContent = ok ? "Summary copied." : "Copy failed (browser restriction).";
-    setTimeout(()=>{$("copyMsg").textContent="";}, 1500);
-  }
-
-  async function copyNote(){
-    const ok = await copyToClipboard($("noteOut").value);
-    $("copyMsg").textContent = ok ? "GP note copied." : "Copy failed (browser restriction).";
-    setTimeout(()=>{$("copyMsg").textContent="";}, 1500);
-  }
-
   // init
-  updateAll();
+  resetAll();
 </script>
 </body>
 </html>
