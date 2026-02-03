@@ -88,7 +88,14 @@ const pathways = [
   href: "./pathways/erectile-dysfunction/",
   tags: ["Men’s Health", "CardioMetabolic", "Urology", "Exam Mode"],
   summary: "History → red flags/CV risk → exam + baseline labs → lifestyle/med review → PDE5 safety + counselling → review/referral + IIEF-5 + patient handout + Best Practice note generator."
+},
+  {
+  title: "Erectile Dysfunction — Management Assistant (History→Exam→Investigations)",
+  href: "./pathways/erectile-dysfunction-assistant/",
+  tags: ["Men’s Health", "Urology", "CardioMetabolic", "Decision Support"],
+  summary: "Collects history/exam/investigations; shows significance per input; generates management plan + Best Practice note + printable summary."
 }
+
 
 
 ];
