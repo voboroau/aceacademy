@@ -94,6 +94,9 @@
     font-size:12.5px;
   }
 
+  /* IMPORTANT: hide all wizard panels by default (JS will show the current one) */
+  .stepPanel{display:none;}
+
   @media print{
     header, .actions, .btn {display:none !important;}
     body{background:#fff;}
@@ -134,7 +137,6 @@
 
     <div id="stepWarning" class="warnBox" style="display:none; margin-top:10px;"></div>
 
-    <!-- STEP PANELS -->
     <div id="steps">
 
       <!-- 0 Basics -->
@@ -563,7 +565,10 @@
   const $ = (id)=>document.getElementById(id);
   function checked(id){ return $(id).checked; }
   function esc(s){ return (s||"").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
-  function setHelp(id, html){ const el=$(id); if(!el) return; el.innerHTML = html || "<small class='muted'>Enter/select a value to see significance.</small>"; }
+  function setHelp(id, html){
+    const el=$(id); if(!el) return;
+    el.innerHTML = html || "<small class='muted'>Enter/select a value to see significance.</small>";
+  }
   function sel(id){ return $(id).value; }
   function num(id){ const v=parseFloat($(id).value); return isNaN(v)? null : v; }
   function stripTags(html){ return (html||"").replace(/<[^>]*>/g,""); }
@@ -586,48 +591,26 @@
   }
 
   // ---------- Wizard state ----------
-  const STEP_TITLES = [
-    "Basics","IIEF-5","Safety","Pattern","Risks/Meds","Exam","Investigations","Outputs"
-  ];
+  const STEP_TITLES = ["Basics","IIEF-5","Safety","Pattern","Risks/Meds","Exam","Investigations","Outputs"];
   let currentStep = 0;
 
-  // Continue rules (soft gating: show warning + disable Next until satisfied)
   function stepRequirements(step){
-    // Return {ok:boolean, message:string}
     if(step===0){
-      // encourage age but allow continue if blank; show gentle warning only
       const age = num("age");
       if(age===null) return {ok:true, message:"Tip: adding age improves CV-risk framing and counselling output."};
       return {ok:true, message:""};
     }
     if(step===1){
-      // allow skip, but warn if not scored
       const any = ["iief1","iief2","iief3","iief4","iief5"].some(id => parseInt(sel(id)||"0",10) > 0);
       if(!any) return {ok:true, message:"Tip: IIEF-5 helps baseline severity and follow-up tracking (optional)."};
       return {ok:true, message:""};
     }
     if(step===2){
-      // prefer the three key safety selections, but allow continue; if nitrates unknown and trying PDE5, outputs will warn anyway
       const a = sel("cvRedFlags"), b=sel("exerciseTol"), c=sel("nitrates");
       if(a==="" || b==="" || c==="") return {ok:false, message:"Please complete the safety screen (red flags, exercise tolerance, nitrates/riociguat) before continuing."};
       return {ok:true, message:""};
     }
-    // Others optional
     return {ok:true, message:""};
-  }
-
-  function showStep(step){
-    currentStep = Math.max(0, Math.min(7, step));
-    document.querySelectorAll(".stepPanel").forEach(p=>{
-      p.style.display = (parseInt(p.dataset.step,10)===currentStep) ? "block" : "none";
-    });
-    $("backBtn").disabled = (currentStep===0);
-    $("nextBtn").textContent = (currentStep===7) ? "Done ✓" : "Next →";
-    renderStepper();
-    renderContinueState();
-    // if step 7, ensure review is visible
-    updateAll();
-    window.scrollTo({top:0, behavior:"smooth"});
   }
 
   function renderStepper(){
@@ -670,6 +653,19 @@
       warn.textContent="";
     }
     $("nextBtn").disabled = !req.ok && currentStep!==7;
+  }
+
+  function showStep(step){
+    currentStep = Math.max(0, Math.min(7, step));
+    document.querySelectorAll(".stepPanel").forEach(p=>{
+      p.style.display = (parseInt(p.dataset.step,10)===currentStep) ? "block" : "none";
+    });
+    $("backBtn").disabled = (currentStep===0);
+    $("nextBtn").textContent = (currentStep===7) ? "Done ✓" : "Next →";
+    renderStepper();
+    renderContinueState();
+    updateAll();
+    window.scrollTo({top:0, behavior:"smooth"});
   }
 
   function nextStep(){
@@ -718,7 +714,6 @@
       : "<strong>Why this matters:</strong> Mixed goals usually require medical + psychosocial + risk optimisation."
     );
 
-    // IIEF significance
     setHelp("sig_iief1", sel("iief1")!=="0" ? "<strong>Why this matters:</strong> Confidence links to performance anxiety and response to education/successful trials." : "");
     setHelp("sig_iief2", sel("iief2")!=="0" ? "<strong>Why this matters:</strong> Hardness for penetration reflects vascular rigidity and/or correct use of treatment." : "");
     setHelp("sig_iief3", sel("iief3")!=="0" ? "<strong>Why this matters:</strong> Maintenance difficulty is common in vascular ED and anxiety; guides counselling and review." : "");
@@ -951,7 +946,6 @@
 
   // ---------- Decision engine ----------
   function compute(){
-    const age = num("age");
     const iief = iiefTotal();
 
     const cvRedFlags = sel("cvRedFlags");
@@ -1006,7 +1000,6 @@
     const severeED = (iief.total!==null && iief.total <= 7);
     const modED = (iief.total!==null && iief.total >= 8 && iief.total <= 11);
 
-    // Pills
     const pills = [];
     if(urgentCV) pills.push({cls:"danger", txt:"CV red flags / unstable"});
     else if(cvUnclear) pills.push({cls:"warn", txt:"CV safety uncertain"});
@@ -1026,14 +1019,12 @@
     if(medsLikely) pills.push({cls:"warn", txt:"Medication contributor"});
     if(substancesLikely) pills.push({cls:"warn", txt:"Substance contributor"});
 
-    // Triage
     const triage = [];
     if(urgentCV) triage.push("• CV red flags present/uncertain → urgent CV assessment before ED pharmacotherapy and before advising sexual activity.");
     else if(cvUnclear) triage.push("• Exercise tolerance uncertain/poor → consider CV risk stratification before PDE5 prescribing.");
     else triage.push("• No red flags selected and exercise tolerance acceptable → proceed with ED management (still treat CV risk factors).");
     if(pde5Contra) triage.push("• Nitrates/riociguat reported → PDE5 inhibitors contraindicated.");
 
-    // Phenotype
     const phen = [];
     phen.push(psychogenicLikely ? "• Psychogenic/performance anxiety: likely important." : "• Psychogenic/performance anxiety: not prominent on inputs.");
     phen.push(organicLikely ? "• Organic/vascular/neurogenic: likely important." : "• Organic/vascular: less strongly suggested (still possible).");
@@ -1042,7 +1033,6 @@
     phen.push(hypogonadismLikely ? "• Endocrine/hypogonadism: consider workup." : "• Endocrine/hypogonadism: less likely from inputs.");
     phen.push(peyronieLikely ? "• Structural: suspected → consider urology." : "• Structural: not suggested.");
 
-    // PDE5 checker (non-dosing)
     const pde5 = [];
     if(pde5Contra){
       pde5.push("• PDE5 inhibitors: <strong>DO NOT USE</strong> with nitrates/riociguat (profound hypotension).");
@@ -1057,7 +1047,6 @@
       pde5.push("• Safety-net: urgent help for chest pain or prolonged painful erection.");
     }
 
-    // Plan
     const plan = [];
     plan.push("1) Explain ED is common and often multifactorial (vascular + psychological + medication + endocrine).");
     plan.push("2) Optimise cardiometabolic health: exercise, weight, BP/diabetes/lipids, smoking cessation, alcohol moderation, sleep apnoea assessment.");
@@ -1068,7 +1057,6 @@
     else plan.push("5) PDE5 contraindicated → focus on non-PDE5 strategies and underlying disease; consider referral.");
     plan.push("6) Follow-up 4–12 weeks; if inadequate response: confirm correct use, optimise comorbidities, address anxiety, consider referral/alternate strategies.");
 
-    // Hypogonad module
     const hypo = [];
     if(hypogonadismLikely){
       if(testosterone==="" || testosterone==="notdone"){
@@ -1091,7 +1079,6 @@
       hypo.push("• Hypogonadism not strongly suggested from inputs (revisit if symptoms).");
     }
 
-    // Psych module
     const psychMod = [];
     if(psychogenicLikely || psych==="yes"){
       psychMod.push("<strong>Brief counselling script:</strong>");
@@ -1104,7 +1091,6 @@
       psychMod.push("• Psychogenic pathway not prominent from inputs (revisit if fluctuating/situational symptoms emerge).");
     }
 
-    // Referrals
     const refs = [];
     if(urgentCV || cvUnclear) refs.push("• Consider cardiology / urgent assessment if cardiac symptoms or poor exercise tolerance.");
     if(peyronieLikely) refs.push("• Urology if Peyronie/structural findings, severe or refractory ED, or complex pathology.");
@@ -1112,7 +1098,6 @@
     if(psychogenicLikely || psych==="yes") refs.push("• Psychosexual therapy / counselling if anxiety/relationship conflict or persistent distress.");
     if(refs.length===0) refs.push("• Referral not mandatory from current inputs; consider if refractory or patient preference.");
 
-    // Outstanding checks
     const checks = [];
     if(sel("a1c")==="unknown" || sel("a1c")==="") checks.push("• HbA1c / fasting glucose (if not done).");
     if(sel("lipids")==="unknown" || sel("lipids")==="") checks.push("• Fasting lipids (if not done).");
@@ -1172,7 +1157,7 @@ Referrals:
 ${ctx.refs.map(x=>"- "+x.replace(/^•\s*/,"")).join("\n")}`.trim();
   }
 
-  function buildPatientHandout(ctx, plan){
+  function buildPatientHandout(ctx){
     const name = $("ptName").value.trim() || "Patient";
     const severity = ctx.iief.total===null ? "Not scored" : ctx.iief.band;
     const pde5 = ctx.pde5Contra
@@ -1212,8 +1197,10 @@ Follow-up
 - Review progress with your GP in the next few weeks.`.trim();
   }
 
+  // FIXED HERE ✅ (the syntax error that broke everything)
   function buildGPNote(ctx){
-    const iief = ctx.iief.total===null ? "Not scored" : `${ctx.iief.total}/25 (${ctx.iief.band)}`;
+    const iief = ctx.iief.total===null ? "Not scored" : `${ctx.iief.total}/25 (${ctx.iief.band})`;
+
     const hxBits = [];
     if(sel("onset")) hxBits.push(`Onset: ${sel("onset")}`);
     if(sel("situational")) hxBits.push(`Pattern: ${sel("situational")}`);
@@ -1288,7 +1275,6 @@ Additional notes:
   function render(){
     const out = compute();
 
-    // pills
     const hp = $("headlinePills");
     hp.innerHTML = "";
     out.pills.forEach(p=>{
@@ -1310,7 +1296,6 @@ Additional notes:
     $("patientOut").value = out.patient;
     $("noteOut").value = out.note;
 
-    // review on step 7
     $("review").innerHTML = `<ul class="list">${out.review.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`;
 
     renderContinueState();
