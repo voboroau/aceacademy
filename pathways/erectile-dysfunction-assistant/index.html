@@ -509,7 +509,7 @@
   </div>
 
   <!-- OUTPUTS -->
-  <div class="stickyOut">
+  <div class="stickyOut" id="outputsPanel">
     <div class="card">
       <h2>Outputs</h2>
 
@@ -654,6 +654,11 @@
     }
     $("nextBtn").disabled = !req.ok && currentStep!==7;
   }
+  function toggleOutputsVisibility(){
+  const panel = document.getElementById("outputsPanel");
+  if(!panel) return;
+  panel.style.display = (currentStep === 7) ? "block" : "none"; // Step 8 = index 7
+}
 
   function showStep(step){
     currentStep = Math.max(0, Math.min(7, step));
@@ -664,6 +669,7 @@
     $("nextBtn").textContent = (currentStep===7) ? "Done ✓" : "Next →";
     renderStepper();
     renderContinueState();
+    toggleOutputsVisibility(); // ✅ hide/unhide outputs panel
     updateAll();
     window.scrollTo({top:0, behavior:"smooth"});
   }
@@ -1327,6 +1333,7 @@ Additional notes:
     ["rf_dm","rf_htn","rf_lipids","rf_smoke","rf_obesity","rf_osa"].forEach(id=>$(id).checked=false);
     $("copyMsg").textContent = "";
     showStep(0);
+    toggleOutputsVisibility();
     updateAll();
   }
 
