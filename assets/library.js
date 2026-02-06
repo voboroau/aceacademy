@@ -100,7 +100,14 @@ const pathways = [
   href: "./pathways/acute-angle-closure-glaucoma-wizard/",
   tags: ["Eyes", "Emergency", "Glaucoma"],
   summary: "Symptoms → risks → exam → mimics → urgent transfer → GP actions checklist → copyable handover + Best Practice note."
+},
+  {
+  title: "Emergency Department — Common Presentations (Click-through)",
+  href: "./pathways/ed-common-presentations-clickthrough/",
+  tags: ["ED", "Triage", "Acute", "General"],
+  summary: "Select presentation → assess immediate risk → identify red flags → initiate investigations and management → generate ED summary."
 }
+
 ];
 
 const grid = document.getElementById("grid");
