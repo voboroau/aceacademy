@@ -1,181 +1,238 @@
-const pathways = [
-  {
-    title: "Chronic Rhinosinusitis (Nasal Polyps) — Click-through",
-    href: "./pathways/crs-nasal-polyps/",
-    tags: ["ENT", "CRS", "Asthma"],
-    summary: "Assessment → saline + intranasal steroid → review → escalation → CT/ENT referral + safety-net."
-  },
-  {
-    title: "COPD Exacerbation — Click-through",
-    href: "./pathways/copd-exacerbation/",
-    tags: ["Resp", "COPD", "Acute"],
-    summary: "Triage → severity → SABA/SAMA + steroids → antibiotics criteria → escalation/ED criteria → follow-up."
-  },
-  {
-  title: "Hyperthyroidism / Thyrotoxicosis — Click-through",
-  href: "./pathways/hyperthyroidism-thyrotoxicosis/",
-  tags: ["Endocrine", "Thyroid"],
-  summary: "Confirm biochemistry → triage emergencies → determine cause → β-blocker → referral and follow-up."
-},
-  {
-  title: "Acute Diarrhoea / Gastroenteritis — Click-through",
-  href: "./pathways/acute-diarrhoea-gastroenteritis/",
-  tags: ["GI", "Infectious", "Acute"],
-  summary: "Triage dehydration and red flags → selective stool testing → supportive care → antibiotics only when indicated → safety-net and public health."
-},
-  {
-  title: "Atrial Fibrillation — Click-through",
-  href: "./pathways/atrial-fibrillation/",
-  tags: ["Cardiology", "AF", "Stroke"],
-  summary: "Confirm AF → assess stability → rate control → CHA₂DS₂-VA → anticoagulation → ongoing follow-up and referral."
-},
-  {
-  title: "Atrial Fibrillation — Exam Mode (Click-through)",
-  href: "./pathways/atrial-fibrillation-exam/",
-  tags: ["Cardiology", "AF", "Exam"],
-  summary: "Exam mode: make a decision first → then reveal guidance. Great for PESCI/AMC-style practice."
-},
-{
-  title: "STEMI (ST-Elevation MI) — Click-through",
-  href: "./pathways/stemi/",
-  tags: ["Cardiology", "Emergency", "ACS"],
-  summary: "Recognise STEMI → activate 000/PCI network → ECG + aspirin → supportive care → reperfusion plan (PCI vs lysis) → structured handover."
-},
-{
-  title: "Acute Asthma — Click-through",
-  href: "./pathways/acute-asthma/",
-  tags: ["Respiratory", "Emergency", "Asthma"],
-  summary: "Assess severity → SABA (spacer/neb) + O₂ if needed → steroids early → reassess → escalate (ipratropium/MgSO₄/transfer) → discharge plan & action plan."
-},
-{
-  title: "Anaphylaxis — Click-through",
-  href: "./pathways/anaphylaxis/",
-  tags: ["Emergency", "Allergy", "Immunology"],
-  summary: "Rapid recognition → IM adrenaline early → airway/oxygen/IV fluids → repeat adrenaline if needed → transfer, observation, autoinjector & action plan."
-},
-{
-  title: "Dyspnoea (Shortness of Breath) — Click-through",
-  href: "./pathways/dyspnoea/",
-  tags: ["Respiratory", "Emergency"],
-  summary: "Rapid triage → ABCDE → identify life-threatening causes (PE, ACS, asthma, pneumothorax, oedema) → targeted tests → initial treatment → disposition and handover."
-},
-{
-  title: "Acute Angina / Suspected ACS — Click-through",
-  href: "./pathways/acute-angina/",
-  tags: ["Cardiology", "Emergency", "ACS"],
-  summary: "Assess chest pain → ECG within 10 minutes → aspirin + GTN → reassess → risk stratify → urgent ED transfer or cardiology review."
-},
-{
-  title: "Stable Angina — Click-through",
-  href: "./pathways/stable-angina/",
-  tags: ["Cardio", "Angina", "Chest Pain", "Chronic"],
-  summary: "Rule out ACS → angina pattern & risk factors → baseline tests → anti-anginal therapy → secondary prevention → referral & follow-up → GP note."
-},
-  {
-  title: "Primary Dysmenorrhoea — Click-through",
-  href: "./pathways/primary-dysmenorrhoea/",
-  tags: ["Gynae", "Women’s Health", "Pain"],
-  summary: "Diagnosis → red flags → non-pharmacological measures → NSAIDs → hormonal therapy → escalation."
-},
-  {
-  title: "Premenstrual Syndrome — Click-through (Exam Mode + Note Generator)",
-  href: "./pathways/premenstrual-syndrome/",
-  tags: ["Gynae", "Women’s Health", "Mental Health", "Exam Mode"],
-  summary: "Confirm cyclic pattern → assess severity/PMDD + safety → lifestyle/diary → SSRIs/CHC options → review/escalation + patient handout + Best Practice note generator."
-},
-{
-  title: "Erectile Dysfunction — Click-through (Exam Mode + IIEF-5 + Note Generator)",
-  href: "./pathways/erectile-dysfunction/",
-  tags: ["Men’s Health", "CardioMetabolic", "Urology", "Exam Mode"],
-  summary: "History → red flags/CV risk → exam + baseline labs → lifestyle/med review → PDE5 safety + counselling → review/referral + IIEF-5 + patient handout + Best Practice note generator."
-},
-  {
-  title: "Erectile Dysfunction — Management Assistant (History→Exam→Investigations)",
-  href: "./pathways/erectile-dysfunction-assistant/",
-  tags: ["Men’s Health", "Urology", "CardioMetabolic", "Decision Support"],
-  summary: "Collects history/exam/investigations; shows significance per input; generates management plan + Best Practice note + printable summary."
-},
-  {
-  title: "Acute Angle-Closure Glaucoma — Wizard",
-  href: "./pathways/acute-angle-closure-glaucoma-wizard/",
-  tags: ["Eyes", "Emergency", "Glaucoma"],
-  summary: "Symptoms → risks → exam → mimics → urgent transfer → GP actions checklist → copyable handover + Best Practice note."
-},
-  {
-  title: "Emergency Department — Common Presentations (Click-through)",
-  href: "./pathways/ed-common-presentations-clickthrough/",
-  tags: ["ED", "Triage", "Acute", "General"],
-  summary: "Select presentation → assess immediate risk → identify red flags → initiate investigations and management → generate ED summary."
-},
-  {
-  title: "Pulmonary embolism",
-  href: "./pathways/pulmonary-embolism-wizard/",
-  tags: ["ED", "Triage", "Acute", "General"],
-  summary: "Select presentation → assess immediate risk → identify red flags → initiate investigations and management → generate ED summary."
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Pulmonary Embolism — ED Click-through Wizard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f5f7fa;
+  margin: 0;
+}
+.container {
+  max-width: 900px;
+  margin: auto;
+  background: #fff;
+  padding: 24px;
+}
+h1, h2 {
+  color: #1a3c6e;
+}
+.step {
+  display: none;
+}
+.step.active {
+  display: block;
+}
+label {
+  display: block;
+  margin-top: 12px;
+  font-weight: bold;
+}
+input[type="checkbox"] {
+  margin-right: 8px;
+}
+button {
+  margin-top: 20px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.next {
+  background: #1a73e8;
+  color: white;
+}
+.back {
+  background: #666;
+  color: white;
+}
+.info {
+  background: #eef4ff;
+  padding: 12px;
+  border-left: 4px solid #1a73e8;
+  margin-top: 10px;
+}
+.redflag {
+  background: #ffecec;
+  padding: 12px;
+  border-left: 4px solid #d93025;
+  margin-top: 10px;
+}
+textarea {
+  width: 100%;
+  min-height: 120px;
+  margin-top: 10px;
+}
+.footer {
+  margin-top: 30px;
+  font-size: 0.9em;
+  color: #666;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>Pulmonary Embolism</h1>
+<p>Emergency Department — Step-by-step Clinical Reasoning</p>
+
+<!-- STEP 1 -->
+<div class="step active">
+  <h2>Step 1 — Presenting Features</h2>
+
+  <label><input type="checkbox"> Sudden onset dyspnoea</label>
+  <label><input type="checkbox"> Pleuritic chest pain</label>
+  <label><input type="checkbox"> Tachycardia</label>
+  <label><input type="checkbox"> Haemoptysis</label>
+  <label><input type="checkbox"> Syncope / collapse</label>
+
+  <div class="info">
+    <strong>Why this matters:</strong><br>
+    Pulmonary embolism is often subtle and easily missed. Sudden dyspnoea or chest pain without clear cause should always prompt consideration of PE.
+  </div>
+
+  <button class="next" onclick="nextStep()">Next →</button>
+</div>
+
+<!-- STEP 2 -->
+<div class="step">
+  <h2>Step 2 — Immediate Stability Check</h2>
+
+  <label><input type="checkbox"> Hypotension or shock</label>
+  <label><input type="checkbox"> Oxygen saturation &lt; 90%</label>
+  <label><input type="checkbox"> Altered consciousness</label>
+
+  <div class="redflag">
+    <strong>Red flag:</strong><br>
+    Haemodynamic instability suggests massive PE and requires immediate senior review and urgent imaging / treatment.
+  </div>
+
+  <button class="back" onclick="prevStep()">← Back</button>
+  <button class="next" onclick="nextStep()">Next →</button>
+</div>
+
+<!-- STEP 3 -->
+<div class="step">
+  <h2>Step 3 — Wells Risk Stratification</h2>
+
+  <label><input type="checkbox"> Clinical signs of DVT</label>
+  <label><input type="checkbox"> PE more likely than alternative diagnosis</label>
+  <label><input type="checkbox"> Heart rate &gt; 100</label>
+  <label><input type="checkbox"> Recent surgery or immobilisation</label>
+  <label><input type="checkbox"> Previous DVT / PE</label>
+  <label><input type="checkbox"> Haemoptysis</label>
+  <label><input type="checkbox"> Active malignancy</label>
+
+  <div class="info">
+    <strong>Why this matters:</strong><br>
+    Wells score guides investigation strategy and avoids unnecessary CT pulmonary angiography.
+  </div>
+
+  <button class="back" onclick="prevStep()">← Back</button>
+  <button class="next" onclick="nextStep()">Next →</button>
+</div>
+
+<!-- STEP 4 -->
+<div class="step">
+  <h2>Step 4 — Initial Investigations</h2>
+
+  <div class="info">
+    <ul>
+      <li>ECG (sinus tachycardia, right heart strain)</li>
+      <li>D-dimer (if low/intermediate risk)</li>
+      <li>CTPA (if high risk or positive D-dimer)</li>
+      <li>Troponin / BNP if risk stratifying</li>
+      <li>ABG if hypoxic</li>
+    </ul>
+  </div>
+
+  <textarea id="investigations" placeholder="Investigations ordered..."></textarea>
+
+  <button class="back" onclick="prevStep()">← Back</button>
+  <button class="next" onclick="nextStep()">Next →</button>
+</div>
+
+<!-- STEP 5 -->
+<div class="step">
+  <h2>Step 5 — Initial Management</h2>
+
+  <div class="info">
+    <ul>
+      <li>Oxygen if hypoxic</li>
+      <li>Analgesia</li>
+      <li>Anticoagulation unless contraindicated</li>
+      <li>Consider thrombolysis if massive PE</li>
+      <li>Early senior / ICU involvement if unstable</li>
+    </ul>
+  </div>
+
+  <textarea id="management" placeholder="Immediate management..."></textarea>
+
+  <button class="back" onclick="prevStep()">← Back</button>
+  <button class="next" onclick="nextStep()">Next →</button>
+</div>
+
+<!-- STEP 6 -->
+<div class="step">
+  <h2>Step 6 — ED Summary</h2>
+
+  <textarea id="summary"></textarea>
+
+  <button class="back" onclick="prevStep()">← Back</button>
+  <button class="next" onclick="generateSummary()">Generate Summary</button>
+</div>
+
+<div class="footer">
+  Educational tool — Australian ED practice aligned
+</div>
+
+</div>
+
+<script>
+let current = 0;
+const steps = document.querySelectorAll(".step");
+
+function showStep(n) {
+  steps.forEach(s => s.classList.remove("active"));
+  steps[n].classList.add("active");
 }
 
-];
-
-const grid = document.getElementById("grid");
-const search = document.getElementById("search");
-const chips = document.getElementById("chips");
-let activeTag = "All";
-
-function uniqueTags() {
-  const set = new Set();
-  pathways.forEach(p => p.tags.forEach(t => set.add(t)));
-  return ["All", ...Array.from(set).sort()];
-}
-
-function renderChips() {
-  chips.innerHTML = "";
-  uniqueTags().forEach(tag => {
-    const el = document.createElement("div");
-    el.className = "chip" + (tag === activeTag ? " active" : "");
-    el.textContent = tag;
-    el.addEventListener("click", () => {
-      activeTag = tag;
-      renderChips();
-      render();
-    });
-    chips.appendChild(el);
-  });
-}
-
-function matches(p, q) {
-  const hay = (p.title + " " + p.summary + " " + p.tags.join(" ")).toLowerCase();
-  return hay.includes(q.toLowerCase());
-}
-
-function tagPass(p) {
-  return activeTag === "All" || p.tags.includes(activeTag);
-}
-
-function render() {
-  const q = (search.value || "").trim();
-  const filtered = pathways.filter(p => tagPass(p) && (q === "" || matches(p, q)));
-
-  grid.innerHTML = "";
-  filtered.forEach(p => {
-    const card = document.createElement("div");
-    card.className = "card";
-    card.innerHTML = `
-      <h3>${p.title}</h3>
-      <div class="meta">${p.tags.map(t => `<span class="tag">${t}</span>`).join("")}</div>
-      <p>${p.summary}</p>
-      <a href="${p.href}">Open pathway →</a>
-    `;
-    grid.appendChild(card);
-  });
-
-  if (filtered.length === 0) {
-    const empty = document.createElement("div");
-    empty.className = "card";
-    empty.innerHTML = `<h3>No matches</h3><p>Try a different search term or tag.</p>`;
-    grid.appendChild(empty);
+function nextStep() {
+  if (current < steps.length - 1) {
+    current++;
+    showStep(current);
   }
 }
 
-search.addEventListener("input", render);
-renderChips();
-render();
+function prevStep() {
+  if (current > 0) {
+    current--;
+    showStep(current);
+  }
+}
+
+function generateSummary() {
+  const summaryText = `
+Diagnosis considered: Pulmonary Embolism
+
+Risk stratification performed (Wells criteria applied).
+
+Investigations:
+${document.getElementById("investigations").value}
+
+Initial Management:
+${document.getElementById("management").value}
+
+Plan:
+CTPA as indicated, anticoagulation commenced if appropriate, senior review arranged.
+`;
+  document.getElementById("summary").value = summaryText;
+}
+</script>
+
+</body>
+</html>
