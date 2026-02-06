@@ -106,6 +106,12 @@ const pathways = [
   href: "./pathways/ed-common-presentations-clickthrough/",
   tags: ["ED", "Triage", "Acute", "General"],
   summary: "Select presentation → assess immediate risk → identify red flags → initiate investigations and management → generate ED summary."
+},
+  {
+  title: "Pulmonary embolism",
+  href: "./pathways/pulmonary-embolism-wizard/",
+  tags: ["ED", "Triage", "Acute", "General"],
+  summary: "Select presentation → assess immediate risk → identify red flags → initiate investigations and management → generate ED summary."
 }
 
 ];
