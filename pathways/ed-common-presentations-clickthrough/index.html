@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>ED Common Presentations — Click-through Decision Tool</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f5f7fa;
+  margin: 0;
+  padding: 0;
+}
+.container {
+  max-width: 900px;
+  margin: auto;
+  background: #fff;
+  padding: 24px;
+}
+h1, h2 {
+  color: #1a3c6e;
+}
+.step {
+  display: none;
+}
+.step.active {
+  display: block;
+}
+button {
+  padding: 10px 16px;
+  margin-top: 20px;
+  background: #1a73e8;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+button.secondary {
+  background: #666;
+}
+.info {
+  background: #eef4ff;
+  padding: 12px;
+  border-left: 4px solid #1a73e8;
+  margin-top: 12px;
+}
+.redflag {
+  background: #ffecec;
+  padding: 12px;
+  border-left: 4px solid #d93025;
+  margin-top: 12px;
+}
+select, textarea {
+  width: 100%;
+  padding: 8px;
+  margin-top: 8px;
+}
+textarea {
+  min-height: 120px;
+}
+.footer {
+  margin-top: 30px;
+  font-size: 0.9em;
+  color: #666;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>Emergency Department Decision Tool</h1>
+<p>Common ED Presentations — Structured Clinical Reasoning</p>
+
+<!-- STEP 1 -->
+<div class="step active">
+  <h2>Step 1 — Select Presentation</h2>
+
+  <select id="presentation">
+    <option value="">-- Select --</option>
+    <option>Chest pain</option>
+    <option>Abdominal pain</option>
+    <option>Shortness of breath</option>
+    <option>Injury / trauma / falls</option>
+    <option>Fever / suspected infection</option>
+    <option>Back pain</option>
+    <option>Headache</option>
+    <option>Mental health crisis</option>
+    <option>Nausea / vomiting</option>
+    <option>Palpitations / syncope</option>
+    <option>Poisoning / overdose</option>
+    <option>Wound / bite / skin infection</option>
+  </select>
+
+  <div class="info">
+    <strong>Why this matters:</strong><br>
+    ED presentations often appear benign but may conceal life-threatening pathology.
+  </div>
+
+  <button onclick="nextStep()">Next →</button>
+</div>
+
+<!-- STEP 2 -->
+<div class="step">
+  <h2>Step 2 — Immediate Risk Assessment</h2>
+
+  <div class="redflag">
+    <strong>Always assess for:</strong>
+    <ul>
+      <li>Airway compromise</li>
+      <li>Respiratory distress</li>
+      <li>Circulatory instability</li>
+      <li>Altered consciousness</li>
+      <li>Severe pain out of proportion</li>
+    </ul>
+  </div>
+
+  <textarea id="riskNotes" placeholder="Document immediate concerns, vital signs, instability..."></textarea>
+
+  <button class="secondary" onclick="prevStep()">← Back</button>
+  <button onclick="nextStep()">Next →</button>
+</div>
+
+<!-- STEP 3 -->
+<div class="step">
+  <h2>Step 3 — Focused Red Flags</h2>
+
+  <div class="info">
+    <strong>High-risk features to actively exclude:</strong>
+    <ul>
+      <li>Chest pain → ACS, PE, dissection</li>
+      <li>Headache → SAH, meningitis</li>
+      <li>Abdominal pain → peritonitis, AAA</li>
+      <li>Dyspnoea → PE, pneumonia, heart failure</li>
+      <li>Mental health → suicidality, psychosis</li>
+    </ul>
+  </div>
+
+  <textarea id="redFlagNotes" placeholder="Red flags present / absent..."></textarea>
+
+  <button class="secondary" onclick="prevStep()">← Back</button>
+  <button onclick="nextStep()">Next →</button>
+</div>
+
+<!-- STEP 4 -->
+<div class="step">
+  <h2>Step 4 — Initial Investigations</h2>
+
+  <div class="info">
+    <strong>Common first-line ED investigations:</strong>
+    <ul>
+      <li>ECG</li>
+      <li>Bloods (FBE, U&E, CRP, troponin)</li>
+      <li>Imaging (CXR, CT where indicated)</li>
+      <li>Urinalysis</li>
+      <li>ABG / VBG if unwell</li>
+    </ul>
+  </div>
+
+  <textarea id="investigations" placeholder="Investigations ordered..."></textarea>
+
+  <button class="secondary" onclick="prevStep()">← Back</button>
+  <button onclick="nextStep()">Next →</button>
+</div>
+
+<!-- STEP 5 -->
+<div class="step">
+  <h2>Step 5 — Initial Management</h2>
+
+  <div class="info">
+    <strong>Principles:</strong>
+    <ul>
+      <li>Analgesia early</li>
+      <li>Oxygen only if hypoxic</li>
+      <li>IV access if unstable</li>
+      <li>Antibiotics if sepsis suspected</li>
+      <li>Early senior review if red flags</li>
+    </ul>
+  </div>
+
+  <textarea id="management" placeholder="Immediate management..."></textarea>
+
+  <button class="secondary" onclick="prevStep()">← Back</button>
+  <button onclick="nextStep()">Next →</button>
+</div>
+
+<!-- STEP 6 -->
+<div class="step">
+  <h2>Step 6 — ED Summary</h2>
+
+  <textarea id="summary"></textarea>
+
+  <button class="secondary" onclick="prevStep()">← Back</button>
+  <button onclick="generateSummary()">Generate Summary</button>
+</div>
+
+<div class="footer">
+  Educational tool only — aligns with Australian ED practice principles
+</div>
+
+</div>
+
+<script>
+let currentStep = 0;
+const steps = document.querySelectorAll(".step");
+
+function showStep(index) {
+  steps.forEach(s => s.classList.remove("active"));
+  steps[index].classList.add("active");
+}
+
+function nextStep() {
+  if (currentStep < steps.length - 1) {
+    currentStep++;
+    showStep(currentStep);
+  }
+}
+
+function prevStep() {
+  if (currentStep > 0) {
+    currentStep--;
+    showStep(currentStep);
+  }
+}
+
+function generateSummary() {
+  const summary = `
+Presentation: ${document.getElementById("presentation").value}
+
+Immediate Risk Assessment:
+${document.getElementById("riskNotes").value}
+
+Red Flags:
+${document.getElementById("redFlagNotes").value}
+
+Investigations:
+${document.getElementById("investigations").value}
+
+Initial Management:
+${document.getElementById("management").value}
+`;
+  document.getElementById("summary").value = summary;
+}
+</script>
+
+</body>
+</html>
