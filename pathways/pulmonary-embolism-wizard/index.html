@@ -2,74 +2,37 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Pulmonary Embolism — ED Click-through Wizard</title>
+<title>Pulmonary Embolism — ED Wizard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body {
-  font-family: Arial, sans-serif;
-  background: #f5f7fa;
-  margin: 0;
-}
-.container {
-  max-width: 900px;
-  margin: auto;
-  background: #fff;
-  padding: 24px;
-}
-h1, h2 {
-  color: #1a3c6e;
-}
-.step {
-  display: none;
-}
-.step.active {
-  display: block;
-}
-label {
-  display: block;
-  margin-top: 12px;
-  font-weight: bold;
-}
-input[type="checkbox"] {
-  margin-right: 8px;
-}
-button {
-  margin-top: 20px;
-  padding: 10px 16px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-.next {
-  background: #1a73e8;
-  color: white;
-}
-.back {
-  background: #666;
-  color: white;
-}
-.info {
-  background: #eef4ff;
-  padding: 12px;
-  border-left: 4px solid #1a73e8;
-  margin-top: 10px;
-}
-.redflag {
-  background: #ffecec;
-  padding: 12px;
-  border-left: 4px solid #d93025;
-  margin-top: 10px;
-}
-textarea {
-  width: 100%;
-  min-height: 120px;
-  margin-top: 10px;
-}
-.footer {
-  margin-top: 30px;
-  font-size: 0.9em;
-  color: #666;
+body { font-family: Arial, sans-serif; background:#f5f7fa; margin:0; }
+.container { max-width: 900px; margin:auto; background:#fff; padding:24px; }
+h1,h2 { color:#1a3c6e; }
+.step { display:none; }
+.step.active { display:block; }
+label { display:block; margin-top:10px; }
+input[type="checkbox"] { margin-right:8px; }
+input[type="number"], select { width:100%; padding:8px; margin-top:6px; }
+button { margin-top:20px; padding:10px 16px; border-radius:4px; border:none; cursor:pointer; }
+.next { background:#1a73e8; color:#fff; }
+.back { background:#666; color:#fff; }
+.secondary { background:#0b8043; color:#fff; }
+.info { background:#eef4ff; padding:12px; border-left:4px solid #1a73e8; margin-top:12px; }
+.redflag { background:#ffecec; padding:12px; border-left:4px solid #d93025; margin-top:12px; }
+.warn { background:#fff7e6; padding:12px; border-left:4px solid #f9ab00; margin-top:12px; }
+.exam-hidden { display:none; }
+textarea { width:100%; min-height:120px; margin-top:10px; }
+.kpi { display:flex; gap:12px; flex-wrap:wrap; margin-top:12px; }
+.kpi > div { background:#f8fafc; border:1px solid #e5e7eb; border-radius:8px; padding:10px 12px; }
+hr { border:none; border-top:1px solid #e5e7eb; margin:16px 0; }
+.footer { margin-top:30px; font-size:0.9em; color:#666; }
+
+#printArea { display:none; }
+@media print {
+  body { background:#fff; }
+  .container, .step, .footer, button, #examModeRow { display:none !important; }
+  #printArea { display:block !important; }
 }
 </style>
 </head>
@@ -78,21 +41,28 @@ textarea {
 <div class="container">
 
 <h1>Pulmonary Embolism</h1>
-<p>Emergency Department — Step-by-step Clinical Reasoning</p>
+<p>Emergency Department — Click-through Decision Wizard</p>
+
+<div id="examModeRow">
+  <label>
+    <input type="checkbox" id="examMode" onchange="toggleExamMode()">
+    Exam Mode (hide guidance until decisions made)
+  </label>
+</div>
 
 <!-- STEP 1 -->
 <div class="step active">
   <h2>Step 1 — Presenting Features</h2>
 
-  <label><input type="checkbox"> Sudden onset dyspnoea</label>
+  <label><input type="checkbox"> Sudden unexplained dyspnoea</label>
   <label><input type="checkbox"> Pleuritic chest pain</label>
   <label><input type="checkbox"> Tachycardia</label>
   <label><input type="checkbox"> Haemoptysis</label>
   <label><input type="checkbox"> Syncope / collapse</label>
 
-  <div class="info">
+  <div class="info exam">
     <strong>Why this matters:</strong><br>
-    Pulmonary embolism is often subtle and easily missed. Sudden dyspnoea or chest pain without clear cause should always prompt consideration of PE.
+    PE can be subtle and is frequently missed. Sudden dyspnoea or pleuritic pain without a clear alternative diagnosis should prompt PE consideration.
   </div>
 
   <button class="next" onclick="nextStep()">Next →</button>
@@ -100,15 +70,26 @@ textarea {
 
 <!-- STEP 2 -->
 <div class="step">
-  <h2>Step 2 — Immediate Stability Check</h2>
+  <h2>Step 2 — Immediate Stability</h2>
 
-  <label><input type="checkbox"> Hypotension or shock</label>
-  <label><input type="checkbox"> Oxygen saturation &lt; 90%</label>
-  <label><input type="checkbox"> Altered consciousness</label>
+  <label>SpO₂ (%)
+    <input type="number" id="spo2" min="50" max="100" placeholder="e.g., 96">
+  </label>
 
-  <div class="redflag">
+  <label>Systolic BP (mmHg)
+    <input type="number" id="sbp" min="40" max="250" placeholder="e.g., 120">
+  </label>
+
+  <label>Heart rate (bpm)
+    <input type="number" id="hr" min="20" max="220" placeholder="e.g., 105">
+  </label>
+
+  <label><input type="checkbox" id="shock"> Hypotension / shock / requiring vasopressors</label>
+  <label><input type="checkbox" id="altered"> Altered consciousness</label>
+
+  <div class="redflag exam">
     <strong>Red flag:</strong><br>
-    Haemodynamic instability suggests massive PE and requires immediate senior review and urgent imaging / treatment.
+    Haemodynamic instability suggests massive PE → immediate senior review, resus approach, urgent imaging and/or treatment pathway.
   </div>
 
   <button class="back" onclick="prevStep()">← Back</button>
@@ -117,36 +98,72 @@ textarea {
 
 <!-- STEP 3 -->
 <div class="step">
-  <h2>Step 3 — Wells Risk Stratification</h2>
+  <h2>Step 3 — Wells Criteria</h2>
 
-  <label><input type="checkbox"> Clinical signs of DVT</label>
-  <label><input type="checkbox"> PE more likely than alternative diagnosis</label>
-  <label><input type="checkbox"> Heart rate &gt; 100</label>
-  <label><input type="checkbox"> Recent surgery or immobilisation</label>
-  <label><input type="checkbox"> Previous DVT / PE</label>
-  <label><input type="checkbox"> Haemoptysis</label>
-  <label><input type="checkbox"> Active malignancy</label>
+  <label><input type="checkbox" data-wells="3" id="w_dvt"> Clinical signs of DVT</label>
+  <label><input type="checkbox" data-wells="3" id="w_peLikely"> PE more likely than alternative diagnosis</label>
+  <label><input type="checkbox" data-wells="1.5" id="w_hr100"> HR &gt; 100</label>
+  <label><input type="checkbox" data-wells="1.5" id="w_immob"> Recent surgery / immobilisation</label>
+  <label><input type="checkbox" data-wells="1.5" id="w_prev"> Previous DVT / PE</label>
+  <label><input type="checkbox" data-wells="1" id="w_hemo"> Haemoptysis</label>
+  <label><input type="checkbox" data-wells="1" id="w_ca"> Active malignancy</label>
 
-  <div class="info">
+  <div class="info exam">
     <strong>Why this matters:</strong><br>
-    Wells score guides investigation strategy and avoids unnecessary CT pulmonary angiography.
+    Wells stratifies pre-test probability and guides investigation (e.g., D-dimer vs direct imaging).
+  </div>
+
+  <button class="back" onclick="prevStep()">← Back</button>
+  <button class="next" onclick="calculateWells()">Calculate Risk →</button>
+</div>
+
+<!-- STEP 4 -->
+<div class="step">
+  <h2>Step 4 — Risk Result + Auto-PERC</h2>
+
+  <div class="kpi">
+    <div><strong>Wells score:</strong> <span id="wellsScore">—</span></div>
+    <div><strong>Risk category:</strong> <span id="wellsRisk">—</span></div>
+    <div><strong>PERC status:</strong> <span id="percStatus">—</span></div>
+  </div>
+
+  <div id="riskResult" class="info"></div>
+
+  <div id="percBlock" class="warn">
+    <strong>PERC Rule (auto):</strong> Complete ONLY if Wells is low risk.<br>
+    <div style="margin-top:8px;">
+      <label>Age (years)
+        <input type="number" id="age" min="0" max="120" placeholder="e.g., 45">
+      </label>
+      <label><input type="checkbox" id="perc_oestrogen"> Oestrogen use (e.g., OCP/HRT)</label>
+      <label><input type="checkbox" id="perc_unilatLeg"> Unilateral leg swelling</label>
+    </div>
+
+    <div class="info exam" style="margin-top:12px;">
+      <strong>Why this matters:</strong><br>
+      If low risk AND PERC negative, PE is considered sufficiently unlikely that further testing may be avoided (context-dependent).
+    </div>
+
+    <button class="secondary" onclick="runPERC()">Run Auto-PERC</button>
+    <div id="percResultText" style="margin-top:10px;"></div>
   </div>
 
   <button class="back" onclick="prevStep()">← Back</button>
   <button class="next" onclick="nextStep()">Next →</button>
 </div>
 
-<!-- STEP 4 -->
+<!-- STEP 5 -->
 <div class="step">
-  <h2>Step 4 — Initial Investigations</h2>
+  <h2>Step 5 — Investigations</h2>
 
-  <div class="info">
+  <div class="info exam">
     <ul>
-      <li>ECG (sinus tachycardia, right heart strain)</li>
-      <li>D-dimer (if low/intermediate risk)</li>
-      <li>CTPA (if high risk or positive D-dimer)</li>
-      <li>Troponin / BNP if risk stratifying</li>
-      <li>ABG if hypoxic</li>
+      <li>ECG (often sinus tachycardia; consider right heart strain patterns)</li>
+      <li>CXR (rule out alternative causes; usually non-specific in PE)</li>
+      <li>D-dimer if low/intermediate probability and appropriate</li>
+      <li>CTPA if high probability or D-dimer positive</li>
+      <li>Troponin/BNP if risk stratifying (RV strain)</li>
+      <li>ABG/VBG if hypoxic or unwell</li>
     </ul>
   </div>
 
@@ -156,44 +173,109 @@ textarea {
   <button class="next" onclick="nextStep()">Next →</button>
 </div>
 
-<!-- STEP 5 -->
+<!-- STEP 6 -->
 <div class="step">
-  <h2>Step 5 — Initial Management</h2>
+  <h2>Step 6 — Management</h2>
 
-  <div class="info">
+  <div class="info exam">
     <ul>
-      <li>Oxygen if hypoxic</li>
+      <li>Oxygen only if hypoxic</li>
       <li>Analgesia</li>
-      <li>Anticoagulation unless contraindicated</li>
-      <li>Consider thrombolysis if massive PE</li>
-      <li>Early senior / ICU involvement if unstable</li>
+      <li>Anticoagulation unless contraindicated (consider bleeding risk)</li>
+      <li>If unstable: senior/ICU, consider thrombolysis / interventional options per local protocol</li>
     </ul>
   </div>
 
   <textarea id="management" placeholder="Immediate management..."></textarea>
 
+  <div class="info exam">
+    <strong>DOAC selection + dosing (educational — local protocol + renal function required):</strong><br>
+    <em>Standard VTE treatment regimens (adults) — confirm contraindications, drug interactions, pregnancy status, renal/hepatic impairment.</em>
+    <ul>
+      <li><strong>Apixaban</strong>: 10 mg BD x 7 days, then 5 mg BD (extended phase often 2.5 mg BD if indicated)</li>
+      <li><strong>Rivaroxaban</strong>: 15 mg BD x 21 days, then 20 mg daily (with food)</li>
+    </ul>
+    <div class="warn">
+      <strong>Note:</strong> Avoid/seek specialist advice in pregnancy, severe renal impairment, significant liver disease, extremes of weight, or if strong interacting medicines. Consider heparin/warfarin pathways where appropriate.
+    </div>
+  </div>
+
   <button class="back" onclick="prevStep()">← Back</button>
   <button class="next" onclick="nextStep()">Next →</button>
 </div>
 
-<!-- STEP 6 -->
+<!-- STEP 7 -->
 <div class="step">
-  <h2>Step 6 — ED Summary</h2>
+  <h2>Step 7 — Disposition (ED vs Outpatient)</h2>
+
+  <div class="redflag exam">
+    <strong>ED admission / higher-acuity pathway triggers:</strong>
+    <ul>
+      <li>Shock / hypotension, persistent hypoxia, syncope</li>
+      <li>Evidence of RV strain (echo/CT), raised troponin, significant tachycardia</li>
+      <li>High clinical probability, major comorbidities, high bleeding risk</li>
+      <li>Inadequate supports / inability to adhere / follow-up not assured</li>
+    </ul>
+  </div>
+
+  <div class="info exam">
+    <strong>Possible outpatient pathway (site-dependent):</strong><br>
+    Low-risk PE, stable vitals, low bleeding risk, reliable follow-up, clear safety net.
+  </div>
+
+  <label>Disposition chosen:
+    <select id="disposition">
+      <option value="">-- Select --</option>
+      <option>Admit / observe (ED/ward)</option>
+      <option>Outpatient management pathway (if suitable)</option>
+      <option>Transfer to higher level of care</option>
+    </select>
+  </label>
+
+  <button class="back" onclick="prevStep()">← Back</button>
+  <button class="next" onclick="nextStep()">Next →</button>
+</div>
+
+<!-- STEP 8 -->
+<div class="step">
+  <h2>Step 8 — ED Summary + Printable Discharge Sheet</h2>
 
   <textarea id="summary"></textarea>
 
   <button class="back" onclick="prevStep()">← Back</button>
   <button class="next" onclick="generateSummary()">Generate Summary</button>
+  <button class="secondary" onclick="buildDischargeSheet()">Build Printable Discharge Sheet</button>
+  <button class="secondary" onclick="window.print()">Print</button>
+
+  <div class="warn exam" style="margin-top:12px;">
+    The discharge sheet is educational and should be aligned with local hospital policy and patient-specific factors.
+  </div>
 </div>
 
 <div class="footer">
-  Educational tool — Australian ED practice aligned
+  Educational tool — align to local ED pathways and protocols.
 </div>
 
+</div>
+
+<!-- PRINT AREA (only shows when printing) -->
+<div id="printArea">
+  <div style="font-family:Arial,sans-serif; padding:24px;">
+    <h1 style="color:#1a3c6e; margin-top:0;">Pulmonary Embolism — Discharge / Safety Net</h1>
+    <div id="printContent"></div>
+    <hr>
+    <p style="color:#444; font-size:12px;">
+      This document is generated for educational use and must be reviewed by the treating clinician.
+    </p>
+  </div>
 </div>
 
 <script>
 let current = 0;
+let lastWellsScore = null;
+let lastWellsRisk = null;
+let lastPerc = null;
+
 const steps = document.querySelectorAll(".step");
 
 function showStep(n) {
@@ -202,35 +284,217 @@ function showStep(n) {
 }
 
 function nextStep() {
-  if (current < steps.length - 1) {
-    current++;
-    showStep(current);
-  }
+  if (current < steps.length - 1) { current++; showStep(current); }
 }
 
 function prevStep() {
-  if (current > 0) {
-    current--;
-    showStep(current);
+  if (current > 0) { current--; showStep(current); }
+}
+
+function numVal(id) {
+  const v = parseFloat(document.getElementById(id).value);
+  return isNaN(v) ? null : v;
+}
+
+function calculateWells() {
+  // auto-mark HR > 100 checkbox based on entered HR (if provided)
+  const hr = numVal("hr");
+  if (hr !== null) document.getElementById("w_hr100").checked = hr > 100;
+
+  let score = 0;
+  document.querySelectorAll("[data-wells]").forEach(cb => {
+    if (cb.checked) score += parseFloat(cb.dataset.wells);
+  });
+
+  // Simple 3-tier categorisation (educational)
+  let risk = score > 6 ? "High" : score >= 2 ? "Intermediate" : "Low";
+
+  lastWellsScore = score;
+  lastWellsRisk = risk;
+
+  document.getElementById("wellsScore").textContent = score.toFixed(1);
+  document.getElementById("wellsRisk").textContent = risk;
+
+  // reset PERC status on recalculation
+  lastPerc = null;
+  document.getElementById("percStatus").textContent = "—";
+  document.getElementById("percResultText").innerHTML = "";
+
+  // Show guidance text (depending on risk)
+  const stableRedFlags = [];
+  const spo2 = numVal("spo2");
+  const sbp  = numVal("sbp");
+  const shock = document.getElementById("shock").checked;
+
+  if (shock) stableRedFlags.push("Shock/hypotension suggests massive PE.");
+  if (spo2 !== null && spo2 < 90) stableRedFlags.push("SpO₂ < 90% increases concern and supports higher acuity pathway.");
+  if (sbp !== null && sbp < 90) stableRedFlags.push("SBP < 90 mmHg is a major red flag.");
+
+  let planHtml = `<strong>Suggested testing approach (educational):</strong><br>`;
+  if (risk === "Low") {
+    planHtml += `Low pre-test probability → consider PERC. If PERC negative, may avoid further testing (context-dependent). If PERC positive, consider D-dimer and proceed accordingly.`;
+  } else if (risk === "Intermediate") {
+    planHtml += `Intermediate probability → D-dimer (if appropriate). If positive → imaging (e.g., CTPA).`;
+  } else {
+    planHtml += `High probability → proceed to imaging (CTPA) and consider empiric anticoagulation if appropriate and not contraindicated.`;
+  }
+
+  if (stableRedFlags.length) {
+    planHtml += `<div class="redflag" style="margin-top:12px;"><strong>Instability flags:</strong><ul>${stableRedFlags.map(x=>`<li>${x}</li>`).join("")}</ul></div>`;
+  }
+
+  document.getElementById("riskResult").innerHTML = planHtml;
+
+  // PERC block only relevant when Wells Low
+  document.getElementById("percBlock").style.display = (risk === "Low") ? "block" : "none";
+
+  nextStep();
+}
+
+function runPERC() {
+  if (lastWellsRisk !== "Low") {
+    document.getElementById("percStatus").textContent = "Not applicable (Wells not Low)";
+    document.getElementById("percResultText").innerHTML = `<div class="warn">PERC is intended for low-risk patients.</div>`;
+    return;
+  }
+
+  // PERC items (educational). Some are derived from entered vitals/checkboxes.
+  const age = numVal("age");
+  const hr  = numVal("hr");
+  const spo2 = numVal("spo2");
+
+  const oestrogen = document.getElementById("perc_oestrogen").checked;
+  const unilatLeg = document.getElementById("perc_unilatLeg").checked;
+
+  const hemo = document.getElementById("w_hemo").checked;      // haemoptysis
+  const prev = document.getElementById("w_prev").checked;      // prior DVT/PE
+  const immob = document.getElementById("w_immob").checked;    // recent surgery/immob
+  const dvtSigns = document.getElementById("w_dvt").checked;   // unilateral leg swelling proxy (we also asked explicitly)
+
+  const percFailReasons = [];
+
+  if (age === null) percFailReasons.push("Age not entered (needed for PERC).");
+  else if (age >= 50) percFailReasons.push("Age ≥ 50");
+
+  if (hr === null) percFailReasons.push("HR not entered (needed for PERC).");
+  else if (hr >= 100) percFailReasons.push("HR ≥ 100");
+
+  if (spo2 === null) percFailReasons.push("SpO₂ not entered (needed for PERC).");
+  else if (spo2 < 95) percFailReasons.push("SpO₂ < 95%");
+
+  if (hemo) percFailReasons.push("Haemoptysis present");
+  if (oestrogen) percFailReasons.push("Oestrogen use");
+  if (prev) percFailReasons.push("Previous DVT/PE");
+  if (immob) percFailReasons.push("Recent surgery/immobilisation");
+  if (unilatLeg || dvtSigns) percFailReasons.push("Unilateral leg swelling / DVT signs");
+
+  const pass = percFailReasons.length === 0;
+
+  lastPerc = pass ? "PERC Negative (Pass)" : "PERC Positive (Fail)";
+  document.getElementById("percStatus").textContent = lastPerc;
+
+  if (pass) {
+    document.getElementById("percResultText").innerHTML =
+      `<div class="info"><strong>PERC negative.</strong><br>
+      In a low-risk patient, this supports no further PE testing (context-dependent; clinician judgement + local protocol apply).</div>`;
+  } else {
+    document.getElementById("percResultText").innerHTML =
+      `<div class="warn"><strong>PERC positive.</strong><br>
+      Reasons: <ul>${percFailReasons.map(r=>`<li>${r}</li>`).join("")}</ul>
+      Consider D-dimer (if appropriate) and proceed per pathway.</div>`;
   }
 }
 
 function generateSummary() {
-  const summaryText = `
-Diagnosis considered: Pulmonary Embolism
+  const spo2 = document.getElementById("spo2").value || "—";
+  const sbp  = document.getElementById("sbp").value  || "—";
+  const hr   = document.getElementById("hr").value   || "—";
 
-Risk stratification performed (Wells criteria applied).
+  const disp = document.getElementById("disposition").value || "—";
+
+  const summaryText =
+`Pulmonary Embolism — ED Summary
+
+Vitals (entered): SpO₂ ${spo2}%, SBP ${sbp} mmHg, HR ${hr} bpm
+Stability concern: ${document.getElementById("shock").checked ? "Yes (shock/hypotension)" : "No shock flagged"}
+
+Wells score: ${lastWellsScore !== null ? lastWellsScore.toFixed(1) : "—"}
+Wells risk: ${lastWellsRisk || "—"}
+PERC: ${lastPerc || "—"}
 
 Investigations:
 ${document.getElementById("investigations").value}
 
-Initial Management:
+Management:
 ${document.getElementById("management").value}
 
+Disposition:
+${disp}
+
 Plan:
-CTPA as indicated, anticoagulation commenced if appropriate, senior review arranged.
+Proceed per risk profile and local protocol; ensure safety-net and follow-up where outpatient pathway used.
 `;
   document.getElementById("summary").value = summaryText;
+}
+
+function buildDischargeSheet() {
+  // basic sheet; clinician edits in print content as needed
+  const disp = document.getElementById("disposition").value || "";
+  const onOutpatient = disp.toLowerCase().includes("outpatient");
+
+  const doacText = `
+<ul>
+  <li><strong>Apixaban</strong>: 10 mg twice daily for 7 days, then 5 mg twice daily</li>
+  <li><strong>Rivaroxaban</strong>: 15 mg twice daily for 21 days, then 20 mg once daily (with food)</li>
+</ul>`;
+
+  const content =
+    `<p><strong>Diagnosis / working diagnosis:</strong> Pulmonary embolism (confirmed or suspected) — clinician to complete.</p>
+     <p><strong>Disposition:</strong> ${disp || "—"}</p>
+
+     <h2 style="color:#1a3c6e;">What to watch for (seek urgent help if any):</h2>
+     <ul>
+       <li>Worsening shortness of breath, chest pain, fainting, blue lips, confusion</li>
+       <li>Coughing up blood</li>
+       <li>New/worsening leg swelling or pain</li>
+       <li>Heavy bleeding, black stools, blood in urine, severe headache (especially if on anticoagulants)</li>
+     </ul>
+
+     <h2 style="color:#1a3c6e;">Medicines (anticoagulation) — clinician to confirm</h2>
+     <p>This section must be checked against renal function, pregnancy status, other medicines, and local protocol.</p>
+     ${doacText}
+
+     <h2 style="color:#1a3c6e;">Follow-up</h2>
+     <ul>
+       <li>Arrange review within an appropriate timeframe (e.g., GP / anticoagulation clinic / respiratory / ED recheck depending on pathway).</li>
+       <li>Ensure clear plan for duration of anticoagulation and review of provoking factors.</li>
+     </ul>
+
+     <h2 style="color:#1a3c6e;">Activity & precautions</h2>
+     <ul>
+       <li>Avoid contact sports/high bleeding-risk activities while anticoagulated.</li>
+       <li>Do not stop anticoagulants without medical advice.</li>
+       <li>Return immediately if symptoms worsen.</li>
+     </ul>
+
+     ${onOutpatient ? `<div style="border-left:4px solid #0b8043; padding:10px; background:#f0fff4;">
+       <strong>Outpatient pathway note:</strong> This plan relies on stability, adherence, and reliable follow-up. If any concerns arise, return to ED.
+     </div>` : ""}`;
+
+  document.getElementById("printContent").innerHTML = content;
+
+  // Also keep a copy in the summary box (editable)
+  const existing = document.getElementById("summary").value || "";
+  if (!existing.includes("Discharge / Safety Net")) {
+    document.getElementById("summary").value =
+      existing + "\n\n---\nDischarge / Safety Net (printable sheet generated — review & edit as needed).\n";
+  }
+}
+
+function toggleExamMode() {
+  document.querySelectorAll(".exam").forEach(el => {
+    el.style.display = examMode.checked ? "none" : "block";
+  });
 }
 </script>
 
